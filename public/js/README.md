@@ -1,0 +1,1 @@
+UI JavaScript resources root
