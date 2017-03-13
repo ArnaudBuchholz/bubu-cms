@@ -16,4 +16,5 @@ npm-debug.log
 
 # Temporary files
 
+tmp/
 debug.log
