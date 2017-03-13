@@ -1,0 +1,21 @@
+{
+  "name": "bubu-cms",
+  "version": "0.0.1",
+  "description": "Small, simple & flat CMS for bubu's family",
+  "directories": {
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArnaudBuchholz/bubu-cms.git"
+  },
+  "author": "Arnaud Buchholz <arnaud.buchholz@free.fr> (http://gpf-js.blogspot.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArnaudBuchholz/bubu-cms/issues"
+  },
+  "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
+  "devDependencies": {
+  }
+}
