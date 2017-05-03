@@ -1,30 +1,29 @@
 {
-    "name": "bubu-cms",
-    "version": "0.0.1",
-    "private": true,
-    "description": "Small, simple & flat CMS for bubu's family",
-    "directories": {
-    },
-    "scripts": {
-        "start": "node ./bin/www"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ArnaudBuchholz/bubu-cms.git"
-    },
-    "author": "Arnaud Buchholz <arnaud.buchholz@free.fr> (http://gpf-js.blogspot.com/)",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/ArnaudBuchholz/bubu-cms/issues"
-    },
-    "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
-    "dependencies": {
-        "body-parser": "~1.16.0",
-        "cookie-parser": "~1.4.3",
-        "debug": "~2.6.0",
-        "express": "~4.14.1",
-        "morgan": "~1.7.0"
-    },
-    "devDependencies": {
-    }
+  "name": "bubu-cms",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Small, simple & flat CMS for bubu's family",
+  "directories": {},
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArnaudBuchholz/bubu-cms.git"
+  },
+  "author": "Arnaud Buchholz <arnaud.buchholz@free.fr> (http://gpf-js.blogspot.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArnaudBuchholz/bubu-cms/issues"
+  },
+  "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
+  "dependencies": {
+    "body-parser": "~1.16.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.0",
+    "express": "~4.14.1",
+    "gpf-js": "^0.2.1-alpha",
+    "morgan": "~1.7.0"
+  },
+  "devDependencies": {}
 }
