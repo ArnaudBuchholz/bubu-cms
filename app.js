@@ -6,7 +6,7 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 
 var api = require("./routes/api");
-var index = require("./routes/index");
+var publicOverrides = require("./routes/public");
 
 var app = express();
 
@@ -14,9 +14,9 @@ app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", index);
+app.use("/", publicOverrides);
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", api);
 
 app.disable("etag");
