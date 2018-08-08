@@ -8,27 +8,23 @@ router.get("/js/gpf.js", (req, res, next) => {
     res.sendFile(path.join(__dirname + "/../node_modules/gpf-js/build/gpf.js"));
 });
 
+// Map OpenUI5 resources folder to bower_components (need to find the proper package)
 router.get(/resources\/.*/, (req, res, next) => {
-    console.log(req.url);
-    const resourceName = req.url.substr(11); // /resources/
-    fs.readdir("bower_components", (err, files) => {
+    fs.readdir("bower_components", (err, packages) => {
         if (err) {
             console.log(err);
-            next(err);
+            return next();
         }
-        const test = () => {
-            if (!files.length) {
-                next();
+        const checkInPackage = () => {
+            if (!packages.length) {
+                return next();
             }
             const
-                openui5Folder = files.shift(),
-                openui5Resource = path.join(openui5Folder, resourceName);
-            console.log(openui5Resource);
-            fs.access(openui5Resource, err => err
-                ? test
-                : res.sendFile(openui5Resource)
-            );
+                packageName = packages.shift(),
+                resourceFileName = path.join(__dirname + "/../bower_components", packageName, req.url);
+            fs.access(resourceFileName, err => err ? checkInPackage() : res.sendFile(resourceFileName));
         }
+        checkInPackage();
     });
 });
 
