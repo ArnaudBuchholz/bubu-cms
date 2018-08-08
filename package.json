@@ -5,7 +5,8 @@
   "description": "Small, simple & flat CMS for bubu's family",
   "directories": {},
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "postinstall": "bower install"
   },
   "repository": {
     "type": "git",
@@ -18,13 +19,14 @@
   },
   "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
   "dependencies": {
-    "body-parser": "~1.16.0",
+    "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
-    "express": "~4.14.1",
-    "gpf-js": "~0.2.4",
-    "morgan": "~1.7.0",
-    "serve-favicon": "^2.4.5",
-    "shortid": "^2.2.8"
+    "express": "^4.16.3",
+    "gpf-js": "~0.2.7",
+    "grunt": "^1.0.3",
+    "morgan": "^1.9.0",
+    "serve-favicon": "^2.5.0",
+    "shortid": "^2.2.12"
   }
 }
