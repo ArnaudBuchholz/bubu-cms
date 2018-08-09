@@ -7,7 +7,7 @@ const
     bodyParser = require("body-parser"),
 
     api = require("./routes/api"),
-    publicOverrides = require("./routes/public"),
+    ui5 = require("./routes/ui5"),
 
     app = express();
 
@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", publicOverrides);
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/", ui5);
+app.use(express.static(path.join(__dirname, "webapp")));
 app.use("/api", api);
 
 app.disable("etag");
