@@ -1,1 +1,0 @@
-UI Styles resources root

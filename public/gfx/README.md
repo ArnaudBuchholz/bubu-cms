@@ -1,1 +1,0 @@
-UI Graphical resources root
