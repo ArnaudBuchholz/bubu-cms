@@ -1,3 +1,4 @@
+"use strict";
 const
     express = require("express"),
     path = require("path"),
@@ -7,7 +8,7 @@ const
     bodyParser = require("body-parser"),
 
     api = require("./routes/api"),
-    ui5 = require("./routes/ui5"),
+    openui5 = require("./routes/openui5"),
 
     app = express();
 
@@ -16,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", ui5);
+app.use("/resources", openui5);
 app.use(express.static(path.join(__dirname, "webapp")));
 app.use("/api", api);
 
