@@ -1,14 +1,17 @@
 "use strict";
 const
-    gpf = require("gpf-js"),
     express = require("express"),
-    router = express.Router();
+    router = express.Router(),
 
-router.get("/", (req, res, next) => {
-    res.type("json");
-    res.json({
-        test: true
-    });
-});
+    metadata = require("./metadata"),
+
+    notImplemented = next => {
+        var error = new Error("Not implemented");
+        error.status = 500;
+        next(error);
+    };
+
+router.get(/\/\$metadata.*/, (req, res, next) => notImplemented(next));
+router.get(/.*/, (req, res, next) => notImplemented(next));
 
 module.exports = router;
