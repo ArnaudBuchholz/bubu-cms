@@ -6,7 +6,7 @@ const
     fs = require("fs"),
     basePath = path.join(__dirname, "/../bower_components");
 
-router.get(/.*\.(css|woff2)$/, (req, res, next) => {
+router.get(/.*\.(css|woff2?)$/, (req, res, next) => {
     res.sendFile(path.join(basePath, "openui5-themelib_sap_belize", "resources", req.url));
 });
 
