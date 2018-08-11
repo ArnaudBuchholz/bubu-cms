@@ -7,7 +7,7 @@ const
     cookieParser = require("cookie-parser"),
     bodyParser = require("body-parser"),
 
-    api = require("./routes/api"),
+    api = require("./api/route"),
     openui5 = require("./routes/openui5"),
 
     app = express();
