@@ -1,0 +1,36 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	controllerName="bubu-cms.controller.App"
+	displayBlock="true"
+>
+	<Shell>
+		<App>
+			<Page title="{i18n>page.title}" backgroundDesign="Solid">
+				<subHeader>
+					<Toolbar>
+						<SearchField id="searchInput" liveChange="onSearch" width="100%" />
+					</Toolbar>
+				</subHeader>
+				<content>
+					<List id="records"
+						items="{/Records}"
+						mode="None"
+						growing="true"
+						growingScrollToLoad="true"
+						showNoData="true"
+						showSeparators="None"
+						rememberSelections="false"
+						noDataText="{i18n>list.nodata}"
+					>
+						<ObjectListItem
+							icon="{path: '', formatter: '.getIcon'}"
+							title="{Title}"
+							detailPress="onRecordPress"
+						/>
+					</List>
+				</content>
+			</Page>
+		</App>
+	</Shell>
+</mvc:View>
