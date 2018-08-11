@@ -11,18 +11,26 @@
             data-sap-ui-bindingSyntax="complex"
             data-sap-ui-compatVersion="edge"
             data-sap-ui-preload="async"
-            data-sap-ui-resourceroots='{"sap.ui.demo.todo": "./"}'>
+            data-sap-ui-resourceroots='{"bubu-cms": "./"}'>
         </script>
         <script>
             sap.ui.getCore().attachInit(function() {
-                sap.ui.require([
-                    "sap/m/Button"
-                ], function(Button) {
-                    new Button({
-                        text: "Press Me!"
-                    }).placeAt("root");
-                });
-            });
+    			sap.ui.require([
+    				"sap/ui/core/Component",
+    				"sap/ui/core/ComponentContainer"
+
+    			], function(Component, ComponentContainer) {
+    				sap.ui.component({
+    					id: "todo",
+    					name: "bubu-cms",
+    					async: true
+    				}).then(function(oComponent) {
+    					new ComponentContainer({
+    						component: oComponent
+    					}).placeAt("root");
+    				});
+    			});
+    		});
         </script>
     </head>
     <body class="sapUiBody" id="root" role="application"></body>
