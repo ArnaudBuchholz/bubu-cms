@@ -11,7 +11,7 @@ const
         next(error);
     };
 
-router.get(/\/\$metadata.*/, (req, res, next) => notImplemented(next));
+router.get(/\/\$metadata.*/, (req, res, next) => metadata.then(body => res.send(body)));
 router.get(/.*/, (req, res, next) => notImplemented(next));
 
 module.exports = router;
