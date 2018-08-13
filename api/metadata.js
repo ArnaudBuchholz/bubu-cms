@@ -33,20 +33,20 @@ module.exports = () => {
         .endElement()
         .endElement()
         .then(() => {
-            .startElement("Property", {
-                Name: "Id",
-                Type: "Edm.String",
-                MaxLength: 10,
-                Nullable: false,
-                "sap:label": "Id",
-                "sap:unicode": true,
-                "sap:creatable": false,
-                "sap:updatable":false,
-                "sap:sortable": false,
-                "sap:filterable": false
-                "sap:visible": false
-            })
-            .endElement()
+            // .startElement("Property", {
+            //     Name: "Id",
+            //     Type: "Edm.String",
+            //     MaxLength: 10,
+            //     Nullable: false,
+            //     "sap:label": "Id",
+            //     "sap:unicode": true,
+            //     "sap:creatable": false,
+            //     "sap:updatable":false,
+            //     "sap:sortable": false,
+            //     "sap:filterable": false
+            //     "sap:visible": false
+            // })
+            // .endElement()
         })
         .endElement()
         .endElement()
