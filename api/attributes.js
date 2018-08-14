@@ -1,11 +1,11 @@
 "use strict";
 
 const
-    gpf = require("gpf"),
+    gpf = require("gpf-js/source"),
     attributes = {};
 
-attributes.Base = gpf.define(
-    $extend: gpf.attributes.Attribute
+attributes.Base = gpf.define({
+    $extend: gpf.attributes.Attribute,
     $class: "Base"
 });
 
@@ -17,14 +17,14 @@ attributes.Base = gpf.define(
     "Hidden"
 
 ].forEach(name => {
-    attributes[name] = gpf.define(
-        $extend: gpf.attributes.Attribute
+    attributes[name] = gpf.define({
+        $extend: gpf.attributes.Attribute,
         $class: attributes.Base
     });
 });
 
-attributes.Name = gpf.define(
-    $extend: attributes.Base
+attributes.Name = gpf.define({
+    $extend: attributes.Base,
     $class: "Name",
 
     _name: "",
@@ -39,8 +39,8 @@ attributes.Name = gpf.define(
 
 });
 
-attributes.Name = gpf.define(
-    $extend: attributes.Base
+attributes.Name = gpf.define({
+    $extend: attributes.Base,
     $class: "Length",
 
     _length: 0,
