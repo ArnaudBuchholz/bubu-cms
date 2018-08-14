@@ -4,7 +4,7 @@ const
     attributes = require("./attributes.js");
 
 gpf.define({
-    $class: "Record"
+    $class: "Record",
 
     "[_id]": [new attributes.Hidden(), new attributes.Length(10)],
     _id: "",
