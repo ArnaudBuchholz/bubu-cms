@@ -3,7 +3,7 @@
 const
     gpf = require("gpf/source");
     Record = require("./Record"),
-    xmlContentHandler = gpf.interfaces.getAsyncWrapper(gpf.interfaces.IXmlContentHandler);
+    xmlContentHandler = gpf.interfaces.promisify(gpf.interfaces.IXmlContentHandler);
 
 module.exports = () => {
     const
