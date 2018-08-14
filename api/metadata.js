@@ -1,7 +1,7 @@
 "use strict";
 
 const
-    gpf = require("gpf/source");
+    gpf = require("gpf-js/source");
     Record = require("./Record"),
     xmlContentHandler = gpf.interfaces.promisify(gpf.interfaces.IXmlContentHandler);
 
@@ -9,12 +9,12 @@ module.exports = () => {
     const
         writer = new gpf.xml.Writer(),
         output = new gpf.stream.WritableString(),
-        promise = gpf.stream.pipe(writer, output).then(() => output.toString());
-    xmlContentHandler(writer)
+        promise = gpf.stream.pipe(writer, output).then(() => output.toString()),
+        promisifiedWriter = xmlContentHandler(writer);
+    promisifiedWriter
         .startDocument()
         .startPrefixMapping("edmx", "http://schemas.microsoft.com/ado/2007/06/edmx")
         .startPrefixMapping("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")
-        .startPrefixMapping("sap", "http://www.sap.com/Protocols/SAPData")
     	.startElement("edmx:DataServices", {
             "m:DataServiceVersion": "2.0"
         })
@@ -32,24 +32,18 @@ module.exports = () => {
         })
         .endElement()
         .endElement()
-        .then(() => {
-            // .startElement("Property", {
-            //     Name: "Id",
-            //     Type: "Edm.String",
-            //     MaxLength: 10,
-            //     Nullable: false,
-            //     "sap:label": "Id",
-            //     "sap:unicode": true,
-            //     "sap:creatable": false,
-            //     "sap:updatable":false,
-            //     "sap:sortable": false,
-            //     "sap:filterable": false
-            //     "sap:visible": false
-            // })
-            // .endElement()
-        })
+        // .then(() => gpf.forEachAsync(Object.keys(Record.prototype), name =>
+        //     promisifiedWriter.startElement("Property", {
+        //         Name: name,
+        //         Type: "Edm.String",
+        //         MaxLength: 10,
+        //         Nullable: false
+        //     })
+        //         .endElement();
+        // ))
         .endElement()
         .endElement()
         .endElement()
         .endDocument();
+    return promise;
 };
