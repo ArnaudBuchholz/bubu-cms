@@ -1,12 +1,10 @@
 "use strict";
 
-const
-    gpf = require("gpf-js/source");
-    Record = require("./Record"),
-    xmlContentHandler = gpf.interfaces.promisify(gpf.interfaces.IXmlContentHandler);
-
 module.exports = () => {
     const
+        gpf = require("gpf-js/source"),
+        Record = require("./Record"),
+        xmlContentHandler = gpf.interfaces.promisify(gpf.interfaces.IXmlContentHandler),
         writer = new gpf.xml.Writer(),
         output = new gpf.stream.WritableString(),
         promise = gpf.stream.pipe(writer, output).then(() => output.toString()),
@@ -20,8 +18,8 @@ module.exports = () => {
         })
         .startPrefixMapping("", "http://schemas.microsoft.com/ado/2008/09/edm")
         .startElement("Schema", {
-            Namespace: "BUBU-CMS",
-            "xml:lang": "en"
+            Namespace: "BUBU-CMS"
+            // "xml:lang": "en"
         })
         .startElement("EntityType", {
             Name: "Record"
