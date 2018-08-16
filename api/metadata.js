@@ -30,14 +30,16 @@ module.exports = () => {
         })
         .endElement()
         .endElement()
-        // .then(() => gpf.forEachAsync(Object.keys(Record.prototype), name =>
-        //     promisifiedWriter.startElement("Property", {
-        //         Name: name,
-        //         Type: "Edm.String",
-        //         MaxLength: 10,
-        //         Nullable: false
-        //     })
-        //         .endElement();
+        .then(() => // gpf.forEachAsync(Object.keys(Record.prototype), name =>
+            Promise.Resolve() // Wait until this works
+            // promisifiedWriter.startElement("Property", {
+            //     Name: "Test",
+            //     Type: "Edm.String",
+            //     MaxLength: 10,
+            //     Nullable: false
+            // })
+            //     .endElement()
+        )
         // ))
         .endElement()
         .endElement()
