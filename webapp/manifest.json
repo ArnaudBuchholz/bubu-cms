@@ -40,7 +40,8 @@
 				"dataSource": "mainService",
 				"settings": {
 					"defaultBindingMode": "TwoWay",
-					"defaultCountMode": "InlineRepeat"
+					"defaultCountMode": "InlineRepeat",
+					"useBatch": false
 				}
 			}
 		},
