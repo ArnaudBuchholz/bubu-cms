@@ -14,7 +14,7 @@
 				</subHeader>
 				<content>
 					<List id="records"
-						items="{/Records}"
+						items="{/RecordSet}"
 						mode="None"
 						growing="true"
 						growingScrollToLoad="true"
@@ -24,8 +24,7 @@
 						noDataText="{i18n>list.nodata}"
 					>
 						<ObjectListItem
-							icon="{path: '', formatter: '.getIcon'}"
-							title="{Title}"
+							title="{Name}"
 							detailPress="onRecordPress"
 						/>
 					</List>
