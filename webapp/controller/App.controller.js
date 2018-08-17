@@ -17,7 +17,7 @@ sap.ui.define([
 		onSearch: function(oEvent) {
 		},
 
-		onItemPress: function(oEvent) {
+		onRecordPress: function(oEvent) {
 		}
 
 	});
