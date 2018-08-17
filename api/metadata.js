@@ -13,12 +13,15 @@ module.exports = () => {
         .startDocument()
         .startPrefixMapping("edmx", "http://schemas.microsoft.com/ado/2007/06/edmx")
         .startPrefixMapping("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")
+        .startPrefixMapping("", "http://schemas.microsoft.com/ado/2008/09/edm")
+        .startElement("edmx:Edmx", {
+            Version: "1.0"
+        })
     	.startElement("edmx:DataServices", {
             "m:DataServiceVersion": "2.0"
         })
-        .startPrefixMapping("", "http://schemas.microsoft.com/ado/2008/09/edm")
         .startElement("Schema", {
-            Namespace: "BUBU-CMS"
+            Namespace: "BUBU_CMS"
             // "xml:lang": "en"
         })
         .startElement("EntityType", {
@@ -28,22 +31,31 @@ module.exports = () => {
         .startElement("PropertyRef", {
             Name: "Id"
         })
-        .endElement()
-        .endElement()
-        .then(() => // gpf.forEachAsync(Object.keys(Record.prototype), name =>
-            Promise.Resolve() // Wait until this works
-            // promisifiedWriter.startElement("Property", {
-            //     Name: "Test",
-            //     Type: "Edm.String",
-            //     MaxLength: 10,
-            //     Nullable: false
-            // })
-            //     .endElement()
-        )
-        // ))
-        .endElement()
-        .endElement()
-        .endElement()
+        .endElement() // PropertyRef
+        .endElement() // Key
+        .then(() => gpf.forEachAsync(Object.keys(Record.prototype), name =>
+            promisifiedWriter.startElement("Property", {
+                Name: name,
+                Type: "Edm.String",
+                MaxLength: 10,
+                Nullable: false
+            })
+                .endElement() // Property
+        ))
+        .endElement() // EntityType
+        .startElement("EntityContainer", {
+            Name: "BUBU_CMS_Entities",
+            "m:IsDefaultEntityContainer": true
+        })
+        .startElement("EntitySet", {
+            Name: "RecordSet",
+            EntityType: "BUBU_CMS.Record"
+        })
+        .endElement() // EntitySet
+        .endElement() // EntityContainer
+        .endElement() // Schema
+        .endElement() // edmx:DataServices
+        .endElement() // edmx:Edmx
         .endDocument();
     return promise;
 };
