@@ -25,7 +25,7 @@ module.exports = () => {
             // "xml:lang": "en"
         })
         .startElement("EntityType", {
-            Name: "Record"
+            Name: Record.name
         })
         .startElement("Key")
         .startElement("PropertyRef", {
@@ -48,8 +48,8 @@ module.exports = () => {
             "m:IsDefaultEntityContainer": true
         })
         .startElement("EntitySet", {
-            Name: "RecordSet",
-            EntityType: "BUBU_CMS.Record"
+            Name: `${Record.name}Set`,
+            EntityType: `BUBU_CMS.${Record.name}`
         })
         .endElement() // EntitySet
         .endElement() // EntityContainer
