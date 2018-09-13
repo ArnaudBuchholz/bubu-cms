@@ -24,7 +24,7 @@
 						noDataText="{i18n>list.nodata}"
 					>
 						<ObjectListItem
-							title="{Name}"
+							title="{name}"
 							detailPress="onRecordPress"
 						/>
 					</List>
