@@ -10,9 +10,7 @@ const
 
     gpf = require("gpf-js/source"),
     attributes = require("./attributes"),
-    entities = [
-        require("./Record")
-    ];
+    entities = require("./entities");
 
 TYPES_MAPPING[gpf.serial.types.string] = "Edm.String";
 
@@ -42,21 +40,21 @@ module.exports = () => {
             Namespace: "BUBU_CMS"
             // "xml:lang": "en"
         })
-        .then(() => gpf.forEachAsync(entities, ClassConstructor => {
+        .then(() => gpf.forEachAsync(entities, EntityClass => {
             const
-                serial = gpf.attributes.get(ClassConstructor, gpf.attributes.Serializable),
-                flags = gpf.attributes.get(ClassConstructor, attributes.Base);
+                serial = gpf.attributes.get(EntityClass, gpf.attributes.Serializable),
+                flags = gpf.attributes.get(EntityClass, attributes.Base);
             Object.keys(serial).forEach(name => {
                 serial[name] = serial[name][0].getProperty();
             });
             return promisifiedWriter
                 .startElement("EntityType", {
-                    Name: ClassConstructor.name
+                    Name: EntityClass.name
                 })
                 .startElement("Key")
                 .then(() => {
                     const
-                        keys = gpf.attributes.get(ClassConstructor, attributes.Key);
+                        keys = gpf.attributes.get(EntityClass, attributes.Key);
                     return gpf.forEachAsync(Object.keys(keys), member => {
                         return promisifiedWriter
                             .startElement("PropertyRef", {
@@ -85,11 +83,11 @@ module.exports = () => {
             Name: "BUBU_CMS_Entities",
             "m:IsDefaultEntityContainer": true
         })
-        .then(() => gpf.forEachAsync(entities, ClassConstructor =>
+        .then(() => gpf.forEachAsync(entities, EntityClass =>
             promisifiedWriter
                 .startElement("EntitySet", {
-                    Name: `${ClassConstructor.name}Set`,
-                    EntityType: `BUBU_CMS.${ClassConstructor.name}`
+                    Name: `${EntityClass.name}Set`,
+                    EntityType: `BUBU_CMS.${EntityClass.name}`
                 })
                 .endElement() // EntitySet
         ))
