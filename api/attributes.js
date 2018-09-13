@@ -27,4 +27,12 @@ attributes.Base = gpf.define({
     });
 });
 
+attributes.serializableProperties = EntityClass => {
+    const serializable = gpf.attributes.get(EntityClass, gpf.attributes.Serializable);
+    return Object.keys(serializable).reduce((properties, name) => {
+        properties[name] = serializable[name][0].getProperty();
+        return properties;
+    }, {});
+};
+
 module.exports = attributes;
