@@ -42,11 +42,8 @@ module.exports = () => {
         })
         .then(() => gpf.forEachAsync(entities, EntityClass => {
             const
-                serial = gpf.attributes.get(EntityClass, gpf.attributes.Serializable),
+                serialProps = attributes.serializableProperties(EntityClass),
                 flags = gpf.attributes.get(EntityClass, attributes.Base);
-            Object.keys(serial).forEach(name => {
-                serial[name] = serial[name][0].getProperty();
-            });
             return promisifiedWriter
                 .startElement("EntityType", {
                     Name: EntityClass.name
@@ -58,18 +55,18 @@ module.exports = () => {
                     return gpf.forEachAsync(Object.keys(keys), member => {
                         return promisifiedWriter
                             .startElement("PropertyRef", {
-                                Name: serial[member].name
+                                Name: serialProps[member].name
                             })
                             .endElement() // PropertyRef
                     });
                 })
                 .endElement() // Key
-                .then(() => gpf.forEachAsync(Object.keys(serial), member =>
+                .then(() => gpf.forEachAsync(Object.keys(serialProps), member =>
                     promisifiedWriter
                         .startElement("Property", {
-                            Name: serial[member].name,
-                            Type: TYPES_MAPPING[serial[member].type],
-                            Nullable: !serial[member].required,
+                            Name: serialProps[member].name,
+                            Type: TYPES_MAPPING[serialProps[member].type],
+                            Nullable: !serialProps[member].required,
                             "sap:creatable": has(flags, member, attributes.Creatable),
                             "sap:updatable": has(flags, member, attributes.Updatable),
                             "sap:sortable": has(flags, member, attributes.Sortable),
