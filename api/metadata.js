@@ -42,7 +42,7 @@ module.exports = () => {
         })
         .then(() => gpf.forEachAsync(entities, EntityClass => {
             const
-                serialProps = attributes.serializableProperties(EntityClass),
+                serialProps = gpf.serial.get(EntityClass),
                 flags = gpf.attributes.get(EntityClass, attributes.Base);
             return promisifiedWriter
                 .startElement("EntityType", {
