@@ -21,17 +21,17 @@ router.get(/\/\$metadata.*/, (req, res, next) => {
 
 entities.forEach(EntityClass => {
     const
-        toJSON = gpf.serial.buildToJSON(EntityClass),
+        toRaw = gpf.serial.buildToRaw(EntityClass),
         keys = gpf.attributes.get(EntityClass, attributes.Key),
-        serialProps = attributes.serializableProperties(EntityClass),
+        serialProps = gpf.serial.get(EntityClass),
         keyProperty = serialProps[Object.keys(keys)[0]].name,
         toODataV2 = entity => {
-            const json = toJSON(entity);
-            json.__metadata = {
-                uri: `${EntityClass.name}Set(${json[keyProperty]})`,
+            const raw = toRaw(entity);
+            raw.__metadata = {
+                uri: `${EntityClass.name}Set(${raw[keyProperty]})`,
                 type: `BUBU_CMS.${EntityClass.name}`
             };
-            return json;
+            return raw;
         };
     router.get(new RegExp(`\/${EntityClass.name}Set\?.*`), (req, res, next) =>
         db.open().then(() => {
