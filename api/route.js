@@ -1,6 +1,7 @@
 "use strict";
 const
     express = require("express"),
+    parser = require("odata-parser"),
     router = express.Router(),
 
     attributes = require("./attributes"),
@@ -35,12 +36,27 @@ entities.forEach(EntityClass => {
         };
     router.get(new RegExp(`\/${EntityClass.name}Set\?.*`), (req, res, next) =>
         db.open().then(() => {
+            const
+                questionMarkPos = req.url.indexOf("?"),
+                params = parser.parse(req.url.substr(questionMarkPos + 1)),
+                top = params.$top,
+                skip = params.$skip || 0,
+                response = {d: {}};
+            let
+                results = EntityClass.get();
+
+            // Paging
+            if (params.$inlinecount === "allpages") {
+                response.d.__count = results.length;
+            }
+            if (top || skip) {
+
+                results = results.slice(skip, skip + top);
+            }
+            response.d.results = results.map(toODataV2);
+
             res.set("Content-Type", "application/json");
-            res.send(JSON.stringify({
-                d: {
-                    results: EntityClass.get().map(toODataV2)
-                }
-            }));
+            res.send(JSON.stringify(response));
         }));
 });
 
