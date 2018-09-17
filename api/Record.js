@@ -23,8 +23,31 @@ const
             type: gpf.serial.types.string,
             required: true
         })],
-        _name: ""
+        _name: "",
 
+        "[_icon]": [creatable, updatable, new gpf.attributes.Serializable({
+            name: "icon",
+            type: gpf.serial.types.string
+        })],
+        _icon: "",
+
+        "[_number]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
+            name: "number",
+            type: gpf.serial.types.string
+        })],
+        _number: "",
+
+        "[_numberUnit]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
+            name: "numberUnit",
+            type: gpf.serial.types.string
+        })],
+        _numberUnit: "",
+
+        "[_rating]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
+            name: "rating",
+            type: gpf.serial.types.string
+        })],
+        _rating: ""
     }),
 
     records = [];
