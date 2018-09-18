@@ -11,9 +11,13 @@ module.exports = {
 
     open: () => {
         if (!opened) {
-            opened = require(`../db/${DB_NAME}/init`)({
-                loadRecords: array => Record.load(array)
-            });
+            try {
+                opened = require(`../db/${DB_NAME}/init`)({
+                    loadRecords: array => Record.load(array)
+                });
+            } catch (e) {
+                console.error(e);
+            }
         }
         return opened;
     }
