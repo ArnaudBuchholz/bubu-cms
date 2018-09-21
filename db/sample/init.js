@@ -12,11 +12,15 @@ module.exports = db => {
             .openTextStream(path.join(__dirname, "records.csv"), gpf.fs.openFor.reading),
         lineAdapter = new gpf.stream.LineAdapter(),
         csvParser = new gpf.stream.csv.Parser(),
-        deserialize = gpf.serial.buildFromRaw(Record),
         map = new gpf.stream.Map(function (raw) {
-            return deserialize(new Record(), Object.assign({
+            return gpf.serial.fromRaw(new Record(), Object.assign({
                 id: nanoid()
-            }, raw));
+            }, raw), function (value, property) {
+                if (property.type === gpf.serial.integer) {
+                    return parseInt(value, 10);
+                }
+                return value;
+            });
         }),
         output = new gpf.stream.WritableArray();
 
