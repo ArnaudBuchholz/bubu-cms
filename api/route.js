@@ -22,12 +22,16 @@ router.get(/\/\$metadata.*/, (req, res, next) => {
 
 entities.forEach(EntityClass => {
     const
-        toRaw = gpf.serial.buildToRaw(EntityClass),
         keys = gpf.attributes.get(EntityClass, attributes.Key),
         serialProps = gpf.serial.get(EntityClass),
         keyProperty = serialProps[Object.keys(keys)[0]].name,
         toODataV2 = entity => {
-            const raw = toRaw(entity);
+            const raw = gpf.serial.toRaw(entity, function (value, property) {
+                if (property.type === gpf.serial.types.datetime) {
+                    return "/Date(" + value.getTime() + ")/";
+                }
+                return value;
+            });
             raw.__metadata = {
                 uri: `${EntityClass.name}Set(${raw[keyProperty]})`,
                 type: `BUBU_CMS.${EntityClass.name}`
@@ -50,7 +54,6 @@ entities.forEach(EntityClass => {
                 response.d.__count = results.length;
             }
             if (top || skip) {
-
                 results = results.slice(skip, skip + top);
             }
             response.d.results = results.map(toODataV2);
