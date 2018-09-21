@@ -45,9 +45,22 @@ const
 
         "[_rating]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "rating",
-            type: gpf.serial.types.string
+            type: gpf.serial.types.integer
         })],
-        _rating: ""
+        _rating: "",
+
+        "[_created]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
+            name: "created",
+            type: gpf.serial.types.datetime,
+            required: true
+        })],
+        _created: null,
+
+        "[_modified]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
+            name: "modified",
+            type: gpf.serial.types.datetime
+        })],
+        _modified: null
     }),
 
     records = [];
