@@ -1,7 +1,7 @@
 "use strict";
 
 const
-    DB_NAME = "sample",
+    config = require("../config"),
     Record = require("./Record");
 
 let
@@ -12,7 +12,7 @@ module.exports = {
     open: () => {
         if (!opened) {
             try {
-                opened = require(`../db/${DB_NAME}/init`)({
+                opened = require(`../db/${config.db}/init`)({
                     loadRecords: array => Record.load(array)
                 });
             } catch (e) {
