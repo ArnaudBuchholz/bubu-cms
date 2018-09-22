@@ -7,6 +7,7 @@ const
     cookieParser = require("cookie-parser"),
     bodyParser = require("body-parser"),
 
+    config = require("./config"),
     api = require("./api/route"),
     openui5 = require("./routes/openui5"),
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use("/resources", openui5);
 app.use(express.static(path.join(__dirname, "webapp")));
 app.use("/api", api);
+app.use("/images", express.static(path.join(__dirname, `db/${config.db}/images`)));
 
 app.disable("etag");
 
