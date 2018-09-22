@@ -13,6 +13,8 @@ const
     entities = require("./entities");
 
 TYPES_MAPPING[gpf.serial.types.string] = "Edm.String";
+TYPES_MAPPING[gpf.serial.types.integer] = "Edm.Int64";
+TYPES_MAPPING[gpf.serial.types.datetime] = "Edm.DateTime";
 
 module.exports = () => {
     const
