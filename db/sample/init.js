@@ -16,7 +16,7 @@ module.exports = db => {
             return gpf.serial.fromRaw(new Record(), Object.assign({
                 id: nanoid()
             }, raw), function (value, property) {
-                if (property.type === gpf.serial.integer) {
+                if (property.type === gpf.serial.types.integer) {
                     return parseInt(value, 10);
                 }
                 return value;
