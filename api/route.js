@@ -28,7 +28,11 @@ entities.forEach(EntityClass => {
         toODataV2 = entity => {
             const raw = gpf.serial.toRaw(entity, function (value, property) {
                 if (property.type === gpf.serial.types.datetime) {
-                    return "/Date(" + value.getTime() + ")/";
+                    if (value) {
+                        return "/Date(" + value.getTime() + ")/";
+                    } else {
+                        return null;
+                    }
                 }
                 return value;
             });
