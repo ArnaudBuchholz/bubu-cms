@@ -38,16 +38,13 @@
 								<ObjectStatus title="title2" text="text2" state="Error" />
 							</secondStatus>
 							<attributes>
-								<ObjectAttribute title="Rating" text="{rating}" />
-								<ObjectAttribute title="Tags" text="test sample db lala" />
+								<ObjectAttribute title="Rating" text="{path: 'rating', formatter: '.renderRating'}" />
+								<ObjectAttribute title="Tags" text="test sample db record very long tag list to check truncation" />
 							</attributes>
 							<markers>
 								<ObjectMarker type="Flagged" />
 								<ObjectMarker type="Favorite" />
-								<ObjectMarker type="Draft" />
 								<ObjectMarker type="Locked" />
-								<ObjectMarker type="LockedBy" />
-								<ObjectMarker type="Unsaved" />
 								<ObjectMarker type="UnsavedBy" />
 							</markers>
 						</ObjectListItem>
