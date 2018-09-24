@@ -13,6 +13,7 @@ module.exports = {
         if (!opened) {
             try {
                 opened = require(`../db/${config.db}/init`)({
+                    Record: Record,
                     loadRecords: array => Record.load(array)
                 });
             } catch (e) {
