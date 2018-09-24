@@ -32,10 +32,10 @@
 							type="Navigation"
 						>
 							<firstStatus>
-								<ObjectStatus title="title1" text="text1" state="Success" />
+								<ObjectStatus title="{statusTitle1}" visible="{= ${statusTitle1}.length &gt; 0}" text="{statusText1}" state="{statusState1}" />
 							</firstStatus>
 							<secondStatus>
-								<ObjectStatus title="title2" text="text2" state="Error" />
+								<ObjectStatus title="{statusTitle2}" visible="{= ${statusTitle2}.length &gt; 0}" text="{statusText2}" state="{statusState2}" />
 							</secondStatus>
 							<attributes>
 								<ObjectAttribute title="Rating" text="{path: 'rating', formatter: '.renderRating'}" />
@@ -45,7 +45,7 @@
 								<ObjectMarker type="Flagged" />
 								<ObjectMarker type="Favorite" />
 								<ObjectMarker type="Locked" />
-								<ObjectMarker type="UnsavedBy" />
+								<ObjectMarker type="Unsaved" />
 							</markers>
 						</ObjectListItem>
 					</List>
