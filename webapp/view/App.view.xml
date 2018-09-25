@@ -27,26 +27,28 @@
 							title="{name}"
 							icon="{icon}"
 							number="{number}"
-							numberUnit="{numberUnit}"
+							numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
 							detailPress="onRecordPress"
 							type="Navigation"
 						>
 							<firstStatus>
-								<ObjectStatus title="{statusTitle1}" visible="{= ${statusTitle1}.length &gt; 0}" text="{statusText1}" state="{statusState1}" />
+								<ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{statusState1}" />
 							</firstStatus>
 							<secondStatus>
-								<ObjectStatus title="{statusTitle2}" visible="{= ${statusTitle2}.length &gt; 0}" text="{statusText2}" state="{statusState2}" />
+								<ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{statusState2}" />
 							</secondStatus>
 							<attributes>
-								<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" />
+								<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" visible="{= ${rating} > 0 }" />
 								<ObjectAttribute title="{i18n>attribute.tags}" text="{tags}" />
 							</attributes>
+<!--
 							<markers>
 								<ObjectMarker type="Flagged" />
 								<ObjectMarker type="Favorite" />
 								<ObjectMarker type="Locked" />
 								<ObjectMarker type="Unsaved" />
 							</markers>
+-->
 						</ObjectListItem>
 					</List>
 				</content>
