@@ -2,8 +2,10 @@
 const
     express = require("express"),
     parser = require("odata-parser"),
+    path = require("path"),
     router = express.Router(),
 
+    config = require("../config"),
     attributes = require("./attributes"),
     metadata = require("./metadata"),
     entities = require("./entities"),
@@ -18,6 +20,10 @@ const
 router.get(/\/\$metadata.*/, (req, res, next) => {
     res.set("Content-Type", "application/xml");
     metadata().then(body => res.send(body))
+});
+
+router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
+    res.sendFile(path.join(__dirname, "../db", config.db, req.url.substr(1)));
 });
 
 entities.forEach(EntityClass => {
