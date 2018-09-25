@@ -25,17 +25,17 @@
 					>
 						<ObjectListItem
 							title="{name}"
-							icon="{icon}"
+							icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
 							number="{number}"
 							numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
 							detailPress="onRecordPress"
 							type="Navigation"
 						>
 							<firstStatus>
-								<ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{statusState1}" />
+								<ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
 							</firstStatus>
 							<secondStatus>
-								<ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{statusState2}" />
+								<ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
 							</secondStatus>
 							<attributes>
 								<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" visible="{= ${rating} > 0 }" />
