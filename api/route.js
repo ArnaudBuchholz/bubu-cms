@@ -27,12 +27,15 @@ entities.forEach(EntityClass => {
         keyProperty = serialProps[Object.keys(keys)[0]].name,
         toODataV2 = entity => {
             const raw = gpf.serial.toRaw(entity, function (value, property) {
-                if (property.type === gpf.serial.types.datetime) {
+                if (gpf.serial.types.datetime === property.type) {
                     if (value) {
                         return "/Date(" + value.getTime() + ")/";
                     } else {
                         return null;
                     }
+                }
+                if ("tags" === property.name) {
+                    return value.join(" ");
                 }
                 return value;
             });
