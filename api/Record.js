@@ -19,6 +19,13 @@ const
         })],
         _id: "",
 
+        "[_type]": [key, new gpf.attributes.Serializable({
+            name: "type",
+            type: gpf.serial.types.string,
+            required: true
+        })],
+        _type: "",
+
         "[_name]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "name",
             type: gpf.serial.types.string,
@@ -37,12 +44,6 @@ const
             type: gpf.serial.types.string
         })],
         _number: "",
-
-        "[_numberUnit]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
-            name: "numberUnit",
-            type: gpf.serial.types.string
-        })],
-        _numberUnit: "",
 
         "[_rating]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "rating",
@@ -63,12 +64,6 @@ const
         })],
         _modified: null,
 
-        "[_statusTitle1]": [new gpf.attributes.Serializable({
-            name: "statusTitle1",
-            type: gpf.serial.types.string
-        })],
-        _statusTitle1: "",
-
         "[_statusText1]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "statusText1",
             type: gpf.serial.types.string
@@ -79,13 +74,7 @@ const
             name: "statusState1",
             type: gpf.serial.types.string
         })],
-        _statusState1: "None",
-
-        "[_statusTitle2]": [new gpf.attributes.Serializable({
-            name: "statusTitle2",
-            type: gpf.serial.types.string
-        })],
-        _statusTitle2: "",
+        _statusState1: "",
 
         "[_statusText2]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "statusText2",
@@ -97,7 +86,7 @@ const
             name: "statusState2",
             type: gpf.serial.types.string
         })],
-        _statusState2: "None",
+        _statusState2: "",
 
         "[_tags]": [new gpf.attributes.Serializable({
             name: "tags",
@@ -109,10 +98,12 @@ const
             const tagRecord = Tag.normalize(tag);
             this._tags.push(tagRecord);
             tagRecord.usedBy(this);
+            return tagRecord;
         },
 
         constructor: function (raw) {
             this._tags = [];
+            this._type = this.addTag(this.constructor.name)._name;
             if (raw.tags) {
                 raw.tags.split(" ").forEach(tag => this.addTag(tag));
                 delete raw.tags;
@@ -132,8 +123,9 @@ const
 Object.assign(Record, {
 
     STATE: {
+        hide: "",
         error: "Error",
-        none: "None",
+        show: "None",
         success: "Success",
         warning: "Warning"
     },
