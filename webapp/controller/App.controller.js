@@ -16,6 +16,17 @@ sap.ui.define([
 			return this._dbI18n.getText(key, params);
 		},
 
+		formatIcon: function (type, icon) {
+			if (icon) {
+				return icon;
+			}
+			var defaultIcon = this.dbI18n(type + ".defaultIcon");
+			if (defaultIcon) {
+				return "sap-icon://" + defaultIcon;
+			}
+			return "";
+		},
+
 		formatNumberUnit: function (type) {
 			return this.dbI18n(type + ".numberUnit");
 		},
