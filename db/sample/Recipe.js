@@ -13,7 +13,6 @@ module.exports = db => gpf.define({
             portions = parseInt(raw.portions, 10);
         this._number = Math.floor(calories / portions);
         this._statusText1 = portions;
-        raw.rating = parseInt(raw.rating, 10);
         this.$super(raw);
     }
 });
