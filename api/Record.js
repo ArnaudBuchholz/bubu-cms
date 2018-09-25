@@ -7,6 +7,7 @@ const
     filterable = new attributes.Filterable(),
     updatable = new attributes.Updatable(),
     creatable = new attributes.Creatable(),
+    Tag = require("./Tag"),
 
     Record = gpf.define({
         $class: "Record",
@@ -98,13 +99,35 @@ const
         })],
         _statusState2: "None",
 
+        "[_tags]": [new gpf.attributes.Serializable({
+            name: "tags",
+            type: gpf.serial.types.string
+        })],
+        _tags: [],
+
+        addTag: function (tag) {
+            const tagRecord = Tag.normalize(tag);
+            this._tags.push(tagRecord);
+            tagRecord.usedBy(this);
+        },
+
         constructor: function (raw) {
+            this._tags = [];
+            if (raw.tags) {
+                raw.tags.split(" ").forEach(tag => this.addTag(tag));
+                delete raw.tags;
+            }
+            if ("string" === typeof raw.rating) {
+                raw.rating = parseInt(raw.rating, 10);
+            }
             gpf.serial.fromRaw(this, raw);
         }
 
     }),
 
-    records = [];
+    records = [],
+    recordsById = {},
+    recordsByTag = {};
 
 Object.assign(Record, {
 
@@ -117,7 +140,13 @@ Object.assign(Record, {
 
     get: () => records,
 
-    load: array => Promise.resolve([].splice.apply(records, [0,0].concat(array)))
+    load: array => {
+        [].splice.apply(records, [0,0].concat(array));
+        array.forEach(record => {
+            recordsById[record._id] = record;
+        })
+        return Promise.resolve();
+    }
 
 });
 
