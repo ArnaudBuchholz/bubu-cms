@@ -38,8 +38,8 @@
 								<ObjectStatus title="{statusTitle2}" visible="{= ${statusTitle2}.length &gt; 0}" text="{statusText2}" state="{statusState2}" />
 							</secondStatus>
 							<attributes>
-								<ObjectAttribute title="Rating" text="{path: 'rating', formatter: '.renderRating'}" />
-								<ObjectAttribute title="Tags" text="test sample db record very long tag list to check truncation" />
+								<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" />
+								<ObjectAttribute title="{i18n>attribute.tags}" text="{tags}" />
 							</attributes>
 							<markers>
 								<ObjectMarker type="Flagged" />
