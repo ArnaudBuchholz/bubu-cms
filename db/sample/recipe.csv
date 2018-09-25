@@ -1,5 +1,5 @@
-name,icon,portions,calories,rating
-My desert,/images/desert.jpg,4,1400,4
-My soup,/images/soup.jpg,8,1200,3
-My pasta,/images/pasta.jpg,4,1000,2
-My chili bread,/images/chilibread.jpg,4,1400,5
+name,icon,portions,calories,rating,tags
+My desert,/images/desert.jpg,4,1400,4,desert sweet
+My soup,/images/soup.jpg,8,1200,3,diner soup
+My pasta,/images/pasta.jpg,4,1000,2,diner pasta
+My chili bread,/images/chilibread.jpg,4,1400,5,diner fat
