@@ -1,5 +1,8 @@
 "use strict";
 
+let
+    Tag;
+
 const
     attributes = require("./attributes.js"),
     key = new attributes.Key(),
@@ -7,7 +10,6 @@ const
     filterable = new attributes.Filterable(),
     updatable = new attributes.Updatable(),
     creatable = new attributes.Creatable(),
-    Tag = require("./Tag"),
 
     Record = gpf.define({
         $class: "Record",
@@ -95,7 +97,7 @@ const
         _tags: [],
 
         addTag: function (tag) {
-            const tagRecord = Tag.normalize(tag);
+            const tagRecord = Tag.allocate(tag);
             this._tags.push(tagRecord);
             tagRecord.usedBy(this);
             return tagRecord;
@@ -141,5 +143,8 @@ Object.assign(Record, {
     }
 
 });
+
+// X-dependency
+Tag = require("./Tag")(Record);
 
 module.exports = Record;
