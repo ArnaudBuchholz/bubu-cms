@@ -1,47 +1,38 @@
 "use strict";
 
-const
-    attributes = require("./attributes.js"),
-    key = new attributes.Key(),
-    sortable = new attributes.Sortable(),
-    filterable = new attributes.Filterable(),
-    updatable = new attributes.Updatable(),
-    creatable = new attributes.Creatable(),
+module.exports = Record => {
 
-    Tag = gpf.define({
-        $class: "Tag",
+    const
+        Tag = gpf.define({
+            $class: "Tag",
+            $extend: Record,
 
-        "[_name]": [key, sortable, filterable, new gpf.attributes.Serializable({
-            name: "name",
-            type: gpf.serial.types.string,
-            required: true
-        })],
-        _name: "",
+            _type: "tag",
+            _records: [],
+            _number: "0",
 
-        _records: [],
+            usedBy: function (record) {
+                this._records.push(record);
+                this._number = this._records.length.toString();
+            },
 
-        usedBy: function (record) {
-            this._records.push(record);
-        },
+            constructor: function (name) {
+                this._records = [];
+                this._id = "#" + name;
+                this._name = name;
+                Record.load([this]);
+            },
 
-        constructor: function (name) {
-            this._name = name;
-        },
+            toString: function () {
+                return this._name;
+            }
 
-        toString: function () {
-            return this._name;
-        }
+        }),
 
-    }),
+        tags = [],
+        tagsByTag = {};
 
-    tags = [],
-    tagsByTag = {};
-
-Object.assign(Tag, {
-
-    get: () => tags,
-
-    normalize: tag => {
+    Tag.allocate = tag => {
         const loweredTag = tag.toLowerCase();
         let tagRecord = tagsByTag[loweredTag];
         if (!tagRecord) {
@@ -50,8 +41,7 @@ Object.assign(Tag, {
             tagsByTag[loweredTag] = tagRecord;
         }
         return tagRecord;
-    }
+    };
 
-});
-
-module.exports = Tag;
+    return Tag;
+};
