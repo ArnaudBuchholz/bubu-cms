@@ -1,7 +1,5 @@
 "use strict";
 
-debugger;
-
 const
     app = require("../app"),
     debug = require("debug")("foo:server"),
