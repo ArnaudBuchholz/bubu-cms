@@ -1,7 +1,6 @@
 "use strict";
 const
     express = require("express"),
-    parser = require("odata-parser"),
     path = require("path"),
     router = express.Router(),
 
@@ -11,27 +10,12 @@ const
     entities = require("./entities"),
     db = require("./db"),
 
-    notImplemented = next => {
-        var error = new Error("Not implemented");
-        error.status = 500;
-        next(error);
-    };
-
-router.get(/\/\$metadata.*/, (req, res, next) => {
-    res.set("Content-Type", "application/xml");
-    metadata().then(body => res.send(body))
-});
-
-router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
-    res.sendFile(path.join(__dirname, "../db", config.db, req.url.substr(1)));
-});
-
-entities.forEach(EntityClass => {
-    const
-        keys = gpf.attributes.get(EntityClass, attributes.Key),
-        serialProps = gpf.serial.get(EntityClass),
-        keyProperty = serialProps[Object.keys(keys)[0]].name,
-        toODataV2 = entity => {
+    buildToODataV2 = EntityClass => {
+        const
+            keys = gpf.attributes.get(EntityClass, attributes.Key),
+            serialProps = gpf.serial.get(EntityClass),
+            keyProperty = serialProps[Object.keys(keys)[0]].name;
+        return entity => {
             const raw = gpf.serial.toRaw(entity, function (value, property) {
                 if (gpf.serial.types.datetime === property.type) {
                     if (value) {
@@ -51,26 +35,65 @@ entities.forEach(EntityClass => {
             };
             return raw;
         };
+    },
+
+    mapOfODataParamTypes = {
+        "undefined": () => {},
+        "number": (aggregated, key, value) => {
+            aggregated[key] = parseInt(value, 10);
+        },
+        "string": (aggregated, key, value) => {
+            aggregated[key] = value;
+        }
+    },
+
+    parseODataParams = url => url
+        .substr(url.indexOf("?") + 1)
+        .split("&")
+        .reduce((aggregated, param) => {
+            const
+                equalPos = param.indexOf("="),
+                key = param.substr(0, equalPos),
+                defaultValue = aggregated[key];
+            mapOfODataParamTypes[typeof defaultValue](aggregated, key, param.substr(equalPos + 1));
+            return aggregated;
+        }, {
+            $top: 0,
+            $skip: 0,
+            $inlinecount: ""
+        }),
+
+    notImplemented = next => {
+        var error = new Error("Not implemented");
+        error.status = 500;
+        next(error);
+    };
+
+router.get(/\/\$metadata.*/, (req, res, next) => {
+    res.set("Content-Type", "application/xml");
+    metadata().then(body => res.send(body))
+});
+
+router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
+    res.sendFile(path.join(__dirname, "../db", config.db, req.url.substr(1)));
+});
+
+entities.forEach(EntityClass => {
+    const toODataV2 = buildToODataV2(EntityClass);
     router.get(new RegExp(`\/${EntityClass.name}Set\?.*`), (req, res, next) =>
         db.open().then(() => {
             const
-                questionMarkPos = req.url.indexOf("?"),
-                params = parser.parse(req.url.substr(questionMarkPos + 1)),
-                top = params.$top,
-                skip = params.$skip || 0,
+                params = parseODataParams(req.url),
                 response = {d: {}};
             let
-                results = EntityClass.get();
-
-            // Paging
+                records = EntityClass.get();
             if (params.$inlinecount === "allpages") {
-                response.d.__count = results.length;
+                response.d.__count = records.length;
             }
-            if (top || skip) {
-                results = results.slice(skip, skip + top);
+            if (params.$top || params.$skip) {
+                records = records.slice(params.$skip, params.$skip + params.$top);
             }
-            response.d.results = results.map(toODataV2);
-
+            response.d.results = records.map(toODataV2);
             res.set("Content-Type", "application/json");
             res.send(JSON.stringify(response));
         }));
