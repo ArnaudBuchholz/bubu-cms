@@ -71,10 +71,23 @@ sap.ui.define([
 			this._i18n = oI18nResourceBundle.getText.bind(oI18nResourceBundle);
 		},
 
-		onSearch: function(oEvent) {
+		onSearch: function(event) {
+			var binding = this.byId("records").getBinding("items"),
+				search = this.byId("search").getValue();
+			if (search) {
+				binding.sCustomParams = "search=" + encodeURIComponent(search);
+			} else {
+				binding.sCustomParams = "";
+			}
+			binding.refresh();
 		},
 
-		onRecordPress: function(oEvent) {
+		onRecordPress: function(event) {
+			var record = event.getSource().getBindingContext().getObject();
+			if (record.type === "tag") {
+				this.byId("search").setValue("#" + record.name);
+				this.onSearch();
+			}
 		}
 
 	});
