@@ -55,12 +55,14 @@ const
                 equalPos = param.indexOf("="),
                 key = param.substr(0, equalPos),
                 defaultValue = aggregated[key];
-            mapOfODataParamTypes[typeof defaultValue](aggregated, key, param.substr(equalPos + 1));
+            mapOfODataParamTypes[typeof defaultValue](aggregated, key, decodeURIComponent(param.substr(equalPos + 1));
             return aggregated;
         }, {
             $top: 0,
             $skip: 0,
-            $inlinecount: ""
+            $inlinecount: "",
+            $orderby: "",
+            search: ""
         }),
 
     notImplemented = next => {
@@ -87,6 +89,12 @@ entities.forEach(EntityClass => {
                 response = {d: {}};
             let
                 records = EntityClass.get();
+            if (params.search) {
+
+            }
+            if (params.$orderby) {
+
+            }
             if (params.$inlinecount === "allpages") {
                 response.d.__count = records.length;
             }
