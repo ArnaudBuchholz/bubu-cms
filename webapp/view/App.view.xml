@@ -6,15 +6,21 @@
 >
 	<Shell>
 		<App>
-			<Page title="{i18n>page.title}" backgroundDesign="Solid">
+			<Page title="{db.i18n>db.title}" backgroundDesign="Solid">
 				<subHeader>
 					<Toolbar>
-						<SearchField id="searchInput" liveChange="onSearch" width="100%" />
+						<SearchField id="search" search="onSearch" width="100%" />
 					</Toolbar>
 				</subHeader>
 				<content>
 					<List id="records"
-						items="{/RecordSet}"
+						items="{
+							path : '/RecordSet',
+							sorter: {
+								path: 'name',
+								descending: false
+							}
+						}"
 						mode="None"
 						growing="true"
 						growingScrollToLoad="true"
@@ -28,7 +34,7 @@
 							icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
 							number="{number}"
 							numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
-							detailPress="onRecordPress"
+							press="onRecordPress"
 							type="Navigation"
 						>
 							<firstStatus>
