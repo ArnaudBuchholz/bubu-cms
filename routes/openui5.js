@@ -23,6 +23,10 @@ router.get(/sap\/m\/.*/, (req, res, next) => {
     res.sendFile(path.join(basePath, "openui5-sap.m", "resources", trimDbg(req.url)));
 });
 
+router.get(/sap\/ui\/unified\/.*/, (req, res, next) => {
+    res.sendFile(path.join(basePath, "openui5-sap.ui.unified", "resources", trimDbg(req.url)));
+});
+
 router.get(/.*/, (req, res, next) => {
     res.sendFile(path.join(basePath, "openui5-sap.ui.core", "resources", trimDbg(req.url)));
 });
