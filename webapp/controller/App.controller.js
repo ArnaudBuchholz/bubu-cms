@@ -1,10 +1,9 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
-	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
+	"sap/ui/model/Sorter"
 
-], function(Controller, JSONModel, Filter, FilterOperator) {
+], function(Controller, JSONModel, Sorter) {
 	"use strict";
 
 	return Controller.extend("bubu-cms.controller.App", {
@@ -80,6 +79,16 @@ sap.ui.define([
 				binding.sCustomParams = "";
 			}
 			binding.refresh();
+		},
+
+		onSort: function (event) {
+			var sortItem = event.getParameter("item"),
+				sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId()),
+				sortMenu = this.byId("sort"),
+				binding = this.byId("records").getBinding("items");
+			sortMenu.setIcon(sortItem.getIcon());
+			sortMenu.setText(sortItem.getText());
+			binding.sort(new Sorter(sort[1], sort[2] === "Desc"));
 		},
 
 		onRecordPress: function(event) {
