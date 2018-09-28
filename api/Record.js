@@ -1,8 +1,5 @@
 "use strict";
 
-let
-    Tag;
-
 const
     attributes = require("./attributes.js"),
     key = new attributes.Key(),
@@ -51,7 +48,7 @@ const
             name: "rating",
             type: gpf.serial.types.integer
         })],
-        _rating: "",
+        _rating: 0,
 
         "[_created]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
             name: "created",
@@ -97,10 +94,22 @@ const
         _tags: [],
 
         addTag: function (tag) {
-            const tagRecord = Tag.allocate(tag);
+            const tagRecord = Record.Tag.allocate(tag);
             this._tags.push(tagRecord);
             tagRecord.usedBy(this);
             return tagRecord;
+        },
+
+        hasTag: function (tag) {
+            return this._tags.indexOf(tag) !== -1;
+        },
+
+        search: function (term) {
+            return [
+                this._name,
+                this._statusText1,
+                this._statusText2
+            ].some(value => value.indexOf(term) !== -1);
         },
 
         constructor: function (raw) {
@@ -132,7 +141,7 @@ Object.assign(Record, {
         warning: "Warning"
     },
 
-    get: () => records,
+    all: () => records,
 
     load: array => {
         [].splice.apply(records, [0,0].concat(array));
@@ -143,8 +152,5 @@ Object.assign(Record, {
     }
 
 });
-
-// X-dependency
-Tag = require("./Tag")(Record);
 
 module.exports = Record;
