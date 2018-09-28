@@ -1,38 +1,52 @@
 "use strict";
 
-module.exports = Record => {
+const
+    Record = require("./Record")
+;
 
-    const
-        Tag = gpf.define({
-            $class: "Tag",
-            $extend: Record,
+const
+    Tag = gpf.define({
+        $class: "Tag",
+        $extend: Record,
 
-            _type: "tag",
-            _records: [],
-            _number: "0",
+        _type: "tag",
+        _records: [],
+        _number: "0",
 
-            usedBy: function (record) {
-                this._records.push(record);
-                this._number = this._records.length.toString();
-            },
+        usedBy: function (record) {
+            this._records.push(record);
+            this._number = this._records.length.toString();
+        },
 
-            constructor: function (name) {
-                this._records = [];
-                this._id = "#" + name;
-                this._name = name;
-                Record.load([this]);
-            },
-
-            toString: function () {
-                return this._name;
+        records: function (RecordType) {
+            if (RecordType) {
+                return this._records.filter(record => record instanceof RecordType);
+            } else {
+                return this._records;
             }
+        },
 
-        }),
+        constructor: function (name) {
+            this._records = [];
+            this._id = "#" + name;
+            this._name = name;
+            Record.load([this]);
+        },
 
-        tags = [],
-        tagsByTag = {};
+        toString: function () {
+            return this._name;
+        }
 
-    Tag.allocate = tag => {
+    }),
+
+    tags = [],
+    tagsByTag = {};
+
+Object.assign(Tag, {
+
+    get: tag => tagsByTag[tag.toLowerCase()],
+
+    allocate: tag => {
         const loweredTag = tag.toLowerCase();
         let tagRecord = tagsByTag[loweredTag];
         if (!tagRecord) {
@@ -41,7 +55,11 @@ module.exports = Record => {
             tagsByTag[loweredTag] = tagRecord;
         }
         return tagRecord;
-    };
+    }
 
-    return Tag;
-};
+});
+
+// X-dependency
+Record.Tag = Tag;
+
+module.exports = Tag;
