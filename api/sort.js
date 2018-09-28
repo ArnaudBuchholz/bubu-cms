@@ -9,7 +9,7 @@ sortersBySerialType[gpf.serial.types.string] = (name, ascending) =>
         return ${ascending ? "a" : "b"}.${name}.localeCompare(${ascending ? "b" : "a"}.${name});
     }`;
 
-sortersBySerialType[gpf.serial.types.number] = (name, ascending) =>
+sortersBySerialType[gpf.serial.types.integer] = (name, ascending) =>
     `if (a.${name} !== b.${name}) {
         return ${ascending ? "a" : "b"}.${name} - ${ascending ? "b" : "a"}.${name};
     }`;
@@ -40,6 +40,6 @@ module.exports = (EntityClass, orderBy) => {
                 ;
                 return sortersBySerialType[property.type](property.member, parts[2] !== "desc")
             });
-    body.push("return 0;");
+    body.push("return a._id.localeCompare(b._id);");
     return new Function("a", "b", body.join("\n"));
 }
