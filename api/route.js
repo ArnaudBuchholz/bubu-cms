@@ -5,65 +5,12 @@ const
     router = express.Router(),
 
     config = require("../config"),
-    attributes = require("./attributes"),
     metadata = require("./metadata"),
     entities = require("./entities"),
     db = require("./db"),
-
-    buildToODataV2 = EntityClass => {
-        const
-            keys = gpf.attributes.get(EntityClass, attributes.Key),
-            serialProps = gpf.serial.get(EntityClass),
-            keyProperty = serialProps[Object.keys(keys)[0]].name;
-        return entity => {
-            const raw = gpf.serial.toRaw(entity, function (value, property) {
-                if (gpf.serial.types.datetime === property.type) {
-                    if (value) {
-                        return "/Date(" + value.getTime() + ")/";
-                    } else {
-                        return null;
-                    }
-                }
-                if ("tags" === property.name) {
-                    return value.join(" ");
-                }
-                return value;
-            });
-            raw.__metadata = {
-                uri: `${EntityClass.name}Set(${raw[keyProperty]})`,
-                type: `BUBU_CMS.${EntityClass.name}`
-            };
-            return raw;
-        };
-    },
-
-    mapOfODataParamTypes = {
-        "undefined": () => {},
-        "number": (aggregated, key, value) => {
-            aggregated[key] = parseInt(value, 10);
-        },
-        "string": (aggregated, key, value) => {
-            aggregated[key] = value;
-        }
-    },
-
-    parseODataParams = url => url
-        .substr(url.indexOf("?") + 1)
-        .split("&")
-        .reduce((aggregated, param) => {
-            const
-                equalPos = param.indexOf("="),
-                key = param.substr(0, equalPos),
-                defaultValue = aggregated[key];
-            mapOfODataParamTypes[typeof defaultValue](aggregated, key, decodeURIComponent(param.substr(equalPos + 1));
-            return aggregated;
-        }, {
-            $top: 0,
-            $skip: 0,
-            $inlinecount: "",
-            $orderby: "",
-            search: ""
-        }),
+    odata = require("./odata"),
+    searcher = require("./search"),
+    sorter = require("./sort"),
 
     notImplemented = next => {
         var error = new Error("Not implemented");
@@ -81,19 +28,21 @@ router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
 });
 
 entities.forEach(EntityClass => {
-    const toODataV2 = buildToODataV2(EntityClass);
+    const toODataV2 = odata.buildToODataV2(EntityClass);
     router.get(new RegExp(`\/${EntityClass.name}Set\?.*`), (req, res, next) =>
         db.open().then(() => {
             const
-                params = parseODataParams(req.url),
+                params = odata.parseParams(req.url),
                 response = {d: {}};
             let
-                records = EntityClass.get();
+                records;
             if (params.search) {
-
+                records = searcher(EntityClass, params.search);
+            } else {
+                records = EntityClass.all();
             }
             if (params.$orderby) {
-
+                records.sort(sorter(EntityClass, params.$orderby));
             }
             if (params.$inlinecount === "allpages") {
                 response.d.__count = records.length;
