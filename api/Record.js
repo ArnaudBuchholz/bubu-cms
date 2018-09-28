@@ -18,7 +18,7 @@ const
         })],
         _id: "",
 
-        "[_type]": [key, new gpf.attributes.Serializable({
+        "[_type]": [new gpf.attributes.Serializable({
             name: "type",
             type: gpf.serial.types.string,
             required: true
