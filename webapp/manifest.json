@@ -26,8 +26,7 @@
 		"rootView": {
 			"viewName": "bubu-cms.view.App",
 			"type": "XML",
-			"async": true,
-			"id": "app"
+			"async": true
 		},
 		"models": {
 			"i18n": {
@@ -51,12 +50,27 @@
 				}
 			}
 		},
-		"resources": {
-			"css": [
-				{
-					"uri": "css/styles.css"
-				}
-			]
+		"routing": {
+		   "config": {
+			  "routerClass": "sap.m.routing.Router",
+			  "viewType": "XML",
+			  "viewPath": "bubu-cms.view",
+			  "controlId": "app",
+			  "controlAggregation": "pages",
+			  "transition": "slide",
+			  "async": true
+		   },
+		   "routes": [{
+			  "pattern": "",
+			  "name": "list",
+			  "target": "list"
+		   }],
+		   "targets": {
+			  "list": {
+				 "viewName": "List",
+				 "viewLevel" : 1
+			  }
+		   }
 		}
 	}
 }
