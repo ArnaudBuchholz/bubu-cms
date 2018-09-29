@@ -1,0 +1,68 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	controllerName="bubu-cms.controller.List"
+	displayBlock="true"
+>
+    <Page title="{db.i18n>db.title}" backgroundDesign="Solid">
+        <subHeader>
+            <Toolbar>
+                <SearchField id="search" search="onSearch" width="100%" />
+                <MenuButton id="sort" text="{i18n>sort.name}" icon="sap-icon://sort-ascending">
+                    <Menu itemSelected="onSort">
+                        <MenuItem id="nameAsc" text="{i18n>sort.name}" icon="sap-icon://sort-ascending" />
+                        <MenuItem id="nameDesc" text="{i18n>sort.name}" icon="sap-icon://sort-descending" />
+                        <MenuItem id="ratingAsc" text="{i18n>sort.rating}" icon="sap-icon://sort-ascending" />
+                        <MenuItem id="ratingDesc" text="{i18n>sort.rating}" icon="sap-icon://sort-descending" />
+                    </Menu>
+                </MenuButton>
+            </Toolbar>
+        </subHeader>
+        <content>
+            <List id="records"
+                items="{
+                    path : '/RecordSet',
+                    sorter: {
+                        path: 'name',
+                        descending: false
+                    }
+                }"
+                mode="None"
+                growing="true"
+                growingScrollToLoad="true"
+                showNoData="true"
+                showSeparators="None"
+                rememberSelections="false"
+                noDataText="{i18n>list.nodata}"
+            >
+                <ObjectListItem
+                    title="{name}"
+                    icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+                    number="{number}"
+                    numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
+                    press="onRecordPress"
+                    type="Navigation"
+                >
+                    <firstStatus>
+                        <ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
+                    </firstStatus>
+                    <secondStatus>
+                        <ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
+                    </secondStatus>
+                    <attributes>
+                        <ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" visible="{= ${rating} > 0 }" />
+                        <ObjectAttribute title="{i18n>attribute.tags}" text="{tags}" visible="{= !!${tags} }"/>
+                    </attributes>
+    <!--
+                    <markers>
+                        <ObjectMarker type="Flagged" />
+                        <ObjectMarker type="Favorite" />
+                        <ObjectMarker type="Locked" />
+                        <ObjectMarker type="Unsaved" />
+                    </markers>
+    -->
+                </ObjectListItem>
+            </List>
+        </content>
+    </Page>
+</mvc:View>
