@@ -144,8 +144,8 @@ Object.assign(Record, {
     all: () => records,
 
     load: array => {
-        [].splice.apply(records, [0,0].concat(array));
         array.forEach(record => {
+            records.push(record);
             recordsById[record._id] = record;
         })
         return Promise.resolve();
