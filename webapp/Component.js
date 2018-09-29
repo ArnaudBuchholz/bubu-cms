@@ -4,9 +4,16 @@ sap.ui.define([
 	"use strict";
 
 	return UIComponent.extend('bubu-cms.Component', {
+
 		metadata: {
 			manifest: "json"
-		}
+		},
+
+		init: function () {
+           UIComponent.prototype.init.apply(this, arguments);
+           this.getRouter().initialize();
+       }
+
 	});
 
 });
