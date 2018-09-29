@@ -1,5 +1,5 @@
 firstname,lastname,phone,tags
-johnny,rico,(555) 648-1352,starship
-carmen,ibanez,(555) 135-6485,starship
-dizzy,flores,(555) 789-4385,starship
-carl,jenkins,(555) 123-3124,starship
+johnny,rico,(555) 648-1352,starship male
+carmen,ibanez,(555) 135-6485,starship female
+dizzy,flores,(555) 789-4385,starship female
+carl,jenkins,(555) 123-3124,starship male
