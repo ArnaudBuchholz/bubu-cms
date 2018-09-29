@@ -23,6 +23,21 @@ const
                 .then(function () {
                     return db.loadRecords(output.toArray());
                 }));
+    },
+
+    _fillDB = (db) => {
+        var Recipe = require("./Recipe")(db),
+            array = [];
+        for (var idx = 0; idx < 200000; ++idx) {
+            array.push(new Recipe({
+                id: nanoid(),
+                name: "My recipe number #" + (idx + 1),
+                calories: "" + Math.floor(Math.random() * 600),
+                portions: "" + Math.floor(Math.random() * 8),
+                rating: idx % 6
+            }));
+        }
+        return db.loadRecords(array);
     }
 ;
 
@@ -30,4 +45,5 @@ module.exports = db => Promise.all([
     _loadCSV(db, "recipe", require("./Recipe")(db)),
     _loadCSV(db, "contact", require("./Contact")(db)),
     _loadCSV(db, "address", require("./Address")(db))
+    // _fillDB(db)
 ]);
