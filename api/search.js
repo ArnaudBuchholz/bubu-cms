@@ -1,7 +1,9 @@
 "use strict";
 
 const
-    Tag = require("./Tag")
+    Tag = require("./Tag"),
+    tagPrefix = "tag:",
+    tagPrefixLength = tagPrefix.length
 ;
 
 module.exports = (EntityClass, search) => {
@@ -11,12 +13,12 @@ module.exports = (EntityClass, search) => {
             .map(term => term.trim())
             .filter(term => term),
         tags = searchTerms
-            .filter(term => term.charAt(0) === "#")
-            .map(term => Tag.get(term.substr(1)))
+            .filter(term => term.indexOf(tagPrefix) === 0)
+            .map(term => Tag.get(term.substr(tagPrefixLength)))
             .filter(tag => tag)
             .sort((a, b) => a._records.length - b._records.length), // Less references first
         terms = searchTerms
-            .filter(term => term.charAt(0) !== "#")
+            .filter(term => term.indexOf(tagPrefix) !== 0)
     ;
     let
         records;
