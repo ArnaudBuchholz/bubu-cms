@@ -4,6 +4,11 @@
 	controllerName="bubu-cms.controller.Record"
 	displayBlock="true"
 >
-	<Page title="{name}" backgroundDesign="Solid">
+	<Page id="recordPage" title="{name}" backgroundDesign="Solid">
+		<subHeader>
+			<Toolbar>
+				<Button icon="sap-icon://nav-back" />
+			</Toolbar>
+		</subHeader>
 	</Page>
 </mvc:View>
