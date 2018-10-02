@@ -12,6 +12,12 @@ const
     searcher = require("./search"),
     sorter = require("./sort"),
 
+    notFound = next => {
+        var error = new Error("Not found");
+        error.status = 404;
+        next(error);
+    },
+
     notImplemented = next => {
         var error = new Error("Not implemented");
         error.status = 500;
@@ -29,7 +35,21 @@ router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
 
 entities.forEach(EntityClass => {
     const toODataV2 = odata.buildToODataV2(EntityClass);
-    router.get(new RegExp(`\/${EntityClass.name}Set\?.*`), (req, res, next) =>
+
+    router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)`), (req, res, next) =>
+        db.open().then(() => {
+            const
+                record = EntityClass.byId(req.params[0]);
+            if (!record) {
+                return notFound(next);
+            }
+            res.set("Content-Type", "application/json");
+            res.send(JSON.stringify({
+                d: toODataV2(record)
+            }));
+        }));
+
+    router.get(`/${EntityClass.name}Set`, (req, res, next) =>
         db.open().then(() => {
             const
                 params = odata.parseParams(req.url),
