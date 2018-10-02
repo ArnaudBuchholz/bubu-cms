@@ -10,9 +10,11 @@ sap.ui.define([
 		},
 
 		init: function () {
-           UIComponent.prototype.init.apply(this, arguments);
-           this.getRouter().initialize();
-       }
+			UIComponent.prototype.init.apply(this, arguments);
+			this.getModel().metadataLoaded().then(function () {
+				this.getRouter().initialize();
+			}.bind(this));
+		 }
 
 	});
 
