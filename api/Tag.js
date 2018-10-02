@@ -1,7 +1,8 @@
 "use strict";
 
 const
-    Record = require("./Record")
+    Record = require("./Record"),
+    MinDate = new Date(0)
 ;
 
 const
@@ -30,6 +31,8 @@ const
             this._records = [];
             this._id = "#" + name;
             this._name = name;
+            this._created = MinDate;
+            this._modified = MinDate;
             Record.load([this]);
         },
 
