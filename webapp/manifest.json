@@ -51,26 +51,34 @@
 			}
 		},
 		"routing": {
-		   "config": {
-			  "routerClass": "sap.m.routing.Router",
-			  "viewType": "XML",
-			  "viewPath": "bubu-cms.view",
-			  "controlId": "app",
-			  "controlAggregation": "pages",
-			  "transition": "slide",
-			  "async": true
-		   },
-		   "routes": [{
-			  "pattern": "",
-			  "name": "list",
-			  "target": "list"
-		   }],
-		   "targets": {
-			  "list": {
-				 "viewName": "List",
-				 "viewLevel" : 1
-			  }
-		   }
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "bubu-cms.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"transition": "slide",
+				"async": true
+			},
+			"routes": [{
+				"pattern": ":?query:",
+				"name": "list",
+				"target": "list"
+			}, {
+				"pattern": "record/{recordId}",
+  				"name": "record",
+  				"target": "record"
+			}],
+			"targets": {
+				"list": {
+					"viewName": "List",
+					"viewLevel" : 1
+			 	},
+				"record": {
+					"viewName": "Record",
+					"viewLevel" : 2
+			 	}
+			}
 		}
 	}
 }
