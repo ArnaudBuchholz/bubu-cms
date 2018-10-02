@@ -8,8 +8,8 @@
 		<subHeader>
 			<Toolbar>
 				<SearchField id="search" search="onSearch" width="100%" />
-				<MenuButton id="sort" text="{i18n>sort.name}" icon="sap-icon://sort-ascending">
-					<Menu itemSelected="onSort">
+				<MenuButton id="sortButton" text="{i18n>sort.name}" icon="sap-icon://sort-ascending">
+					<Menu id="sortMenu" itemSelected="onSort">
 						<MenuItem id="nameAsc" text="{i18n>sort.name}" icon="sap-icon://sort-ascending" />
 						<MenuItem id="nameDesc" text="{i18n>sort.name}" icon="sap-icon://sort-descending" />
 						<MenuItem id="ratingAsc" text="{i18n>sort.rating}" icon="sap-icon://sort-ascending" />
