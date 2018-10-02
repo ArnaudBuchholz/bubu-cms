@@ -1,10 +1,11 @@
 sap.ui.define([
+	"sap/m/MenuItem",
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/core/routing/HashChanger",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Sorter",
 
-], function(Controller, HashChanger, JSONModel, Sorter) {
+], function(MenuItem, Controller, HashChanger, JSONModel, Sorter) {
 	"use strict";
 
 	return Controller.extend("bubu-cms.controller.List", {
@@ -13,8 +14,53 @@ sap.ui.define([
 			return this.getOwnerComponent().getRouter();
 		},
 
+		_buildSortingMenu: function () {
+			var sortMenu = this.byId("sortMenu"),
+				order = ["name", "rating", "created", "modified"];
+			this.getOwnerComponent().getModel().getServiceMetadata()
+				.dataServices.schema[0].entityType
+				.filter(function (entity) {
+					return entity.name === "Record";
+				})[0].property
+				.filter(function (property) {
+					return property.extensions.some(function (extension) {
+						return extension.name === "sortable" && extension.value === "true";
+					});
+				})
+				.map(function (property) {
+					return property.name;
+				})
+				.sort(function (name1, name2) {
+					var pos1 = order.indexOf(name1),
+						pos2 = order.indexOf(name2);
+					if (pos1 !== -1 && pos2 !== -1) {
+						return pos1 - pos2; // Expected ones are sorted according to the order array
+					}
+					if (pos1 === -1 && pos2 === -1) {
+						return name1.localeCompare(name2); // Non expected are sorted alphabetically...
+					}
+					if (pos1 === -1) {
+						return 1; // ...at the end of the list
+					}
+					return -1;
+				})
+				.forEach(function (name) {
+					sortMenu.addItem(new MenuItem({
+						id: name + "Asc",
+						text: "{i18n>sort." + name + "}",
+						icon: "sap-icon://sort-ascending"
+					}));
+					sortMenu.addItem(new MenuItem({
+						id: name + "Desc",
+						text: "{i18n>sort." + name + "}",
+						icon: "sap-icon://sort-descending"
+					}));
+				});
+		},
+
 		onInit: function () {
 			this._getRouter().getRoute("list").attachPatternMatched(this._onDisplayList, this);
+			this._buildSortingMenu();
 		},
 
 		_queryParameters: {},
