@@ -1,0 +1,9 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	controllerName="bubu-cms.controller.Record"
+	displayBlock="true"
+>
+	<Page title="{name}" backgroundDesign="Solid">
+	</Page>
+</mvc:View>
