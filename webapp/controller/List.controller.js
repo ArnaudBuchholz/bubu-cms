@@ -1,12 +1,48 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
+	"sap/ui/core/routing/HashChanger",
 	"sap/ui/model/json/JSONModel",
-	"sap/ui/model/Sorter"
+	"sap/ui/model/Sorter",
 
-], function(Controller, JSONModel, Sorter) {
+], function(Controller, HashChanger, JSONModel, Sorter) {
 	"use strict";
 
 	return Controller.extend("bubu-cms.controller.List", {
+
+		_getRouter: function () {
+			return this.getOwnerComponent().getRouter();
+		},
+
+		onInit: function () {
+			this._getRouter().getRoute("list").attachPatternMatched(this._onDisplayList, this);
+		},
+
+		_queryParameters: {},
+
+		_onDisplayList: function (event) {
+			var binding = this.byId("records").getBinding("items");
+			this._queryParameters = event.getParameter("arguments")["?query"] || {};
+			if (this._queryParameters.search) {
+				this.byId("search").setValue(this._queryParameters.search);
+				binding.sCustomParams = "search=" + encodeURIComponent(this._queryParameters.search);
+			} else {
+				this.byId("search").setValue("");
+				binding.sCustomParams = "";
+			}
+			var sort = this._queryParameters.sort || "nameAsc",
+				sortParts = /(\w+)(Asc|Desc)/.exec(sort),
+				sortButton = this.byId("sortButton");
+			this.byId("sortMenu").getItems().every(function (menuItem) {
+				if (menuItem.getId().indexOf(sort) !== -1) {
+					sortButton.setIcon(menuItem.getIcon());
+					sortButton.setText(menuItem.getText());
+					return false;
+				}
+				return true;
+			});
+			binding.sort(new Sorter(sortParts[1], sortParts[2] === "Desc"));
+			binding.refresh();
+		},
 
 		getTextIfInI18n: function (resourceBundle, key, params) {
 			if (resourceBundle.hasText(key)) {
@@ -65,32 +101,35 @@ sap.ui.define([
 				+ new Array(6 - value).join("\u2606");
 		},
 
-		onSearch: function(event) {
-			var binding = this.byId("records").getBinding("items"),
-				search = this.byId("search").getValue();
-			if (search) {
-				binding.sCustomParams = "search=" + encodeURIComponent(search);
+		_setQueryParameter: function (name, value) {
+			if (value) {
+				this._queryParameters[name] = value;
 			} else {
-				binding.sCustomParams = "";
+				delete this._queryParameters[name];
 			}
-			binding.refresh();
+			this._getRouter().navTo("list", {
+				query: this._queryParameters
+			}, true);
+		},
+
+		onSearch: function(event) {
+			this._setQueryParameter("search", this.byId("search").getValue());
 		},
 
 		onSort: function (event) {
 			var sortItem = event.getParameter("item"),
-				sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId()),
-				sortMenu = this.byId("sort"),
-				binding = this.byId("records").getBinding("items");
-			sortMenu.setIcon(sortItem.getIcon());
-			sortMenu.setText(sortItem.getText());
-			binding.sort(new Sorter(sort[1], sort[2] === "Desc"));
+				sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId());
+			this._setQueryParameter("sort", sort[0]);
 		},
 
 		onRecordPress: function(event) {
 			var record = event.getSource().getBindingContext().getObject();
 			if (record.type === "tag") {
-				this.byId("search").setValue("#" + record.name);
-				this.onSearch();
+				this._setQueryParameter("search", "tag:" + record.name);
+			} else {
+				this._getRouter().navTo("record", {
+					recordId: record.id
+				});
 			}
 		}
 
