@@ -38,7 +38,7 @@ const
         })],
         _icon: "",
 
-        "[_number]": [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
+        "[_number]": [creatable, updatable, filterable, new gpf.attributes.Serializable({
             name: "number",
             type: gpf.serial.types.string
         })],
@@ -63,7 +63,7 @@ const
         })],
         _modified: null,
 
-        "[_statusText1]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
+        "[_statusText1]": [creatable, filterable, new gpf.attributes.Serializable({
             name: "statusText1",
             type: gpf.serial.types.string
         })],
@@ -75,7 +75,7 @@ const
         })],
         _statusState1: "",
 
-        "[_statusText2]": [creatable, sortable, filterable, new gpf.attributes.Serializable({
+        "[_statusText2]": [creatable, filterable, new gpf.attributes.Serializable({
             name: "statusText2",
             type: gpf.serial.types.string
         })],
@@ -123,6 +123,12 @@ const
                 raw.rating = parseInt(raw.rating, 10);
             }
             gpf.serial.fromRaw(this, raw);
+            if (!this._created) {
+                this._created = new Date();
+            }
+            if (!this._modified) {
+                this._modified = this._created;
+            }
         }
 
     }),
@@ -142,6 +148,7 @@ Object.assign(Record, {
     },
 
     all: () => records,
+    byId: id => recordsById[id],
 
     load: array => {
         array.forEach(record => {
