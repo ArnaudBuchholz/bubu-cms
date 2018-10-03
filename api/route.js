@@ -11,6 +11,8 @@ const
     odata = require("./odata"),
     searcher = require("./search"),
     sorter = require("./sort"),
+    Record = require("./Record"),
+    Tag = require("./Tag"),
 
     notFound = next => {
         var error = new Error("Not found");
@@ -23,6 +25,17 @@ const
         error.status = 500;
         next(error);
     };
+
+router.all('*', function (req, res, next) {
+    var memory = process.memoryUsage();
+    res.set("x-memory-rss", memory.rss);
+    res.set("x-memory-heapTotal", memory.heapTotal);
+    res.set("x-memory-heapUsed", memory.heapUsed);
+    res.set("x-memory-external", memory.external);
+    res.set("x-count-records", Record.all().length);
+    res.set("x-count-tags", Tag.all().length);
+    next(); // pass control to the next handler
+});
 
 router.get(/\/\$metadata.*/, (req, res, next) => {
     res.set("Content-Type", "application/xml");
