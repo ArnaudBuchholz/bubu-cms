@@ -47,6 +47,7 @@ const
 
 Object.assign(Tag, {
 
+    all: () => tags,
     get: tag => tagsByTag[tag.toLowerCase()],
 
     allocate: tag => {
