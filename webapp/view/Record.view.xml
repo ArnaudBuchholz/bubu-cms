@@ -1,14 +1,47 @@
 <mvc:View
+	xmlns="sap.uxap"
+	xmlns:layout="sap.ui.layout"
+	xmlns:m="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns="sap.m"
 	controllerName="bubu-cms.controller.Record"
 	displayBlock="true"
 >
-	<Page id="recordPage" title="{name}" backgroundDesign="Solid">
-		<subHeader>
-			<Toolbar>
-				<Button icon="sap-icon://nav-back" />
-			</Toolbar>
-		</subHeader>
-	</Page>
+	<ObjectPageLayout
+		id="recordPage"
+		enableLazyLoading="false"
+		showTitleInHeaderContent="true"
+		showHeaderContent="true"
+	>
+		<headerTitle>
+			<ObjectPageHeader
+				objectImageURI="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+				objectImageShape="Circle"
+				objectTitle="{name}"
+				isObjectIconAlwaysVisible="false"
+				isObjectTitleAlwaysVisible="false"
+				isObjectSubtitleAlwaysVisible="false"
+			>
+				<actions>
+					<m:Button icon="sap-icon://nav-back" press="onBack">
+						<m:layoutData>
+							<ObjectPageHeaderLayoutData showSeparatorAfter="true" />
+						</m:layoutData>
+					</m:Button>
+					<m:MenuButton text="{i18nattribute.rating}" icon="sap-icon://favorite">
+						<m:Menu id="sortMenu" itemSelected="onRate"  items="{rating>/options}">
+							<m:menuItem icon="{= ${rating>value} === ${rating} ? 'sap-icon://begin' : '' }" text="{path: 'rating>value', formatter: '.renderRating'}" />
+						</m:Menu>
+					</m:MenuButton>
+					<ObjectPageHeaderActionButton icon="sap-icon://touch" text="{i18n>record.touch}" type="Emphasized" tooltip="{i18n>record.touch}" />
+				</actions>
+			</ObjectPageHeader>
+		</headerTitle>
+		<headerContent>
+			<layout:VerticalLayout>
+				<m:ObjectStatus visible="{= ${number} !== '' }" text="{number} {path: 'type', formatter: '.formatNumberUnit'}" />
+				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
+				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
+			</layout:VerticalLayout>
+		</headerContent>
+	</ObjectPageLayout>
 </mvc:View>
