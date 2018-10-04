@@ -1,17 +1,29 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
+	"./BaseController",
+	"sap/ui/model/json/JSONModel"
 
-], function(Controller) {
+], function(BaseController, JSONModel) {
 	"use strict";
 
-	return Controller.extend("bubu-cms.controller.Record", {
-
-		_getRouter: function () {
-			return this.getOwnerComponent().getRouter();
-		},
+	return BaseController.extend("bubu-cms.controller.Record", {
 
 		onInit: function () {
 			this._getRouter().getRoute("record").attachPatternMatched(this._onDisplayRecord, this);
+			this.getView().setModel(new JSONModel({
+				options: [{
+					value: 0
+				}, {
+					value: 1
+				}, {
+					value: 2
+				}, {
+					value: 3
+				}, {
+					value: 4
+				}, {
+					value: 5
+				}]
+			}), "rating");
 		},
 
 		_onDisplayRecord: function (event) {
@@ -39,6 +51,10 @@ sap.ui.define([
 			if (!binding.getBoundContext()) {
 				alert("problem");
 			}
+		},
+
+		onBack: function () {
+			history.back();
 		}
 
 	});
