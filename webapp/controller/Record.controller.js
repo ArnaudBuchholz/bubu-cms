@@ -1,8 +1,9 @@
 sap.ui.define([
 	"./BaseController",
+	"sap/m/Token",
 	"sap/ui/model/json/JSONModel"
 
-], function(BaseController, JSONModel) {
+], function(BaseController, Token, JSONModel) {
 	"use strict";
 
 	return BaseController.extend("bubu-cms.controller.Record", {
@@ -24,6 +25,9 @@ sap.ui.define([
 					value: 5
 				}]
 			}), "rating");
+			this.getView().setModel(new JSONModel({
+				count: 0
+			}), "tags");
 		},
 
 		_onDisplayRecord: function (event) {
@@ -38,19 +42,22 @@ sap.ui.define([
 					change: this._onBindingChanged.bind(this),
 					dataRequested: function () {
 						recordPage.setBusy(true);
-					},
-					dataReceived: function () {
-						recordPage.setBusy(false);
 					}
 				}
 			});
 		},
 
 		_onBindingChanged: function () {
-			var binding = this.getView().getElementBinding();
+			var binding = this.getView().getElementBinding(),
+				tokens = this.byId("tokens"),
+				record;
 			if (!binding.getBoundContext()) {
 				alert("problem");
 			}
+			record = binding.getBoundContext().getObject();
+			this.getView().getModel("tags").setProperty("/count", record.tags.split(" ").length);
+			this.byId("recordPage").setBusy(false);
+			this.byId("content").setContent("<p>" + JSON.stringify(record) + "</p>");
 		},
 
 		onBack: function () {
