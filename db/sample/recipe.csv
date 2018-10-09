@@ -1,5 +1,2 @@
-name,icon,portions,calories,rating,tags
-My desert,/images/desert.jpg,4,1400,4,desert sweet
-My soup,/images/soup.jpg,8,1200,3,diner soup
-My pasta,/images/pasta.jpg,4,1000,2,diner pasta
-My chili bread,/images/chilibread.jpg,4,1400,5,diner fat
+id,name,portions,calories,prep,cook,ready,rating,tags
+lNioy0Yg17Plt7OQeXKfa,Grandma Sherrill's Bagels,24,4320,25,40,100,4,bagel salt
