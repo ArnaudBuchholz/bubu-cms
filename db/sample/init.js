@@ -13,9 +13,10 @@ const
             lineAdapter = new gpf.stream.LineAdapter(),
             csvParser = new gpf.stream.csv.Parser(),
             map = new gpf.stream.Map(function (raw) {
-                return new RecordType(Object.assign({
-                    id: nanoid() // as of now
-                }, raw));
+                if (!raw.id) {
+                    raw.id = nanoid(); // as of now
+                }
+                return new RecordType(raw);
             }),
             output = new gpf.stream.WritableArray();
         return csvFilePromise
