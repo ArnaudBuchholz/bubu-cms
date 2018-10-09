@@ -3,6 +3,7 @@ const
     express = require("express"),
     path = require("path"),
     router = express.Router(),
+    nanoid = require("nanoid"),
 
     config = require("../config"),
     metadata = require("./metadata"),
@@ -35,6 +36,11 @@ router.all('*', function (req, res, next) {
     res.set("x-count-records", Record.all().length);
     res.set("x-count-tags", Tag.all().length);
     next(); // pass control to the next handler
+});
+
+router.get("/id", (req, res, next) => {
+    res.set("Content-Type", "text/plain");
+    res.send(nanoid());
 });
 
 router.get(/\/\$metadata.*/, (req, res, next) => {
