@@ -9,7 +9,7 @@
 	displayBlock="true"
 >
 	<ObjectPageLayout
-		id="recordPage"
+		id="page"
 		enableLazyLoading="false"
 		showTitleInHeaderContent="true"
 		showHeaderContent="true"
@@ -37,10 +37,10 @@
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
-			<ObjectPageSection title="Content">
+			<ObjectPageSection title="Content" id="content">
 				<subSections>
 					<ObjectPageSubSection>
-						<core:HTML id="content" />
+						<core:HTML id="htmlContent" />
 						<m:Title text="Line 1" />
 						<m:Title text="Line 2" />
 						<m:Title text="Line 3" />
