@@ -1,6 +1,7 @@
 <mvc:View
 	xmlns="sap.uxap"
 	xmlns:core="sap.ui.core"
+	xmlns:form="sap.ui.layout.form"
 	xmlns:layout="sap.ui.layout"
 	xmlns:m="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
@@ -12,6 +13,7 @@
 		enableLazyLoading="false"
 		showTitleInHeaderContent="true"
 		showHeaderContent="true"
+		useIconTabBar="true"
 	>
 		<headerTitle>
 			<ObjectPageHeader
@@ -23,15 +25,7 @@
 				isObjectSubtitleAlwaysVisible="false"
 			>
 				<actions>
-					<m:Button icon="sap-icon://nav-back" press="onBack" />
-					<m:MenuButton text="{rating}" icon="sap-icon://favorite">
-						<m:Menu id="sortMenu" itemSelected="onRate" items="{rating>/options}">
-							<m:menuItem icon="{= ${rating>value} === ${rating} ? 'sap-icon://begin' : '' }" text="{path: 'rating>value', formatter: '.renderRating'}" />
-						</m:Menu>
-					</m:MenuButton>
-					<m:MenuButton text="{tags>/count}" icon="sap-icon://{i18n>tag.defaultIcon}">
-					</m:MenuButton>
-					<ObjectPageHeaderActionButton icon="sap-icon://present" text="{i18n>record.touch}" tooltip="{i18n>record.touch}" />
+					<ObjectPageHeaderActionButton icon="sap-icon://nav-back" press="onBack" type="Transparent" />
 				</actions>
 			</ObjectPageHeader>
 		</headerTitle>
@@ -43,10 +37,57 @@
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
-			<ObjectPageSection title="Main view">
+			<ObjectPageSection title="Content">
 				<subSections>
 					<ObjectPageSubSection>
 						<core:HTML id="content" />
+						<m:Title text="Line 1" />
+						<m:Title text="Line 2" />
+						<m:Title text="Line 3" />
+						<m:Title text="Line 4" />
+						<m:Title text="Line 5" />
+						<m:Title text="Line 6" />
+						<m:Title text="Line 7" />
+						<m:Title text="Line 8" />
+						<m:Title text="Line 9" />
+						<m:Title text="Line 10" />
+						<m:Title text="Line 11" />
+						<m:Title text="Line 12" />
+						<m:Title text="Line 13" />
+						<m:Title text="Line 14" />
+						<m:Title text="Line 15" />
+						<m:Title text="Line 16" />
+						<m:Title text="Line 17" />
+						<m:Title text="Line 18" />
+						<m:Title text="Line 19" />
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection title="Properties">
+				<subSections>
+					<ObjectPageSubSection>
+						<form:SimpleForm
+							editable="false"
+						>
+							<form:toolbar>
+								<m:Toolbar>
+									<m:Title text="Record type" level="H4" titleStyle="H4"/>
+									<m:ToolbarSpacer />
+									<m:Button icon="sap-icon://present" text="{i18n>record.touch}" tooltip="{i18n>record.touch}" />
+									<m:MenuButton text="{rating}" icon="sap-icon://favorite">
+										<m:Menu id="sortMenu" itemSelected="onRate" items="{rating>/options}">
+											<m:MenuItem icon="{= ${rating>value} === ${rating} ? 'sap-icon://begin' : '' }" text="{path: 'rating>value', formatter: '.renderRating'}" />
+										</m:Menu>
+									</m:MenuButton>
+									<m:MenuButton text="{tags>/count}" icon="sap-icon://{i18n>tag.defaultIcon}">
+									</m:MenuButton>
+								</m:Toolbar>
+							</form:toolbar>
+							<form:content>
+								<m:Label text="name" />
+								<m:Input value="{name}" />
+							</form:content>
+						</form:SimpleForm>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
