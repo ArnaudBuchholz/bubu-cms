@@ -6,6 +6,9 @@ sap.ui.define([
 ], function(BaseController, Token, JSONModel) {
 	"use strict";
 
+	var URLHelper = sap.m.URLHelper,
+		REGEX_PHONENUMBER = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
+
 	return BaseController.extend("bubu-cms.controller.Record", {
 
 		onInit: function () {
@@ -64,6 +67,21 @@ sap.ui.define([
 
 		onBack: function () {
 			history.back();
+		},
+
+		onProperties: function () {
+			this.byId("page").setSelectedSection(this.byId("properties").getId());
+		},
+
+		onPressStatus: function (event) {
+			var statusText = event.getSource().getText(),
+				phone = REGEX_PHONENUMBER.exec(statusText),
+				country;
+			if (phone) {
+				country = phone[0] || "1";
+				URLHelper.triggerTel("+" + country + phone[2] + phone[3] + phone[4]);
+				return;
+			}
 		}
 
 	});
