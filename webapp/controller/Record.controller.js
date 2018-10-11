@@ -35,20 +35,21 @@ sap.ui.define([
 				sPath = "/" + this.getOwnerComponent().getModel().createKey("RecordSet", {
 					id: recordId
 				}),
-				recordPage = this.byId("recordPage");
+				page = this.byId("page");
 			this.getView().bindElement({
 				path: sPath,
 				events: {
 					change: this._onBindingChanged.bind(this),
 					dataRequested: function () {
-						recordPage.setBusy(true);
+						page.setBusy(true);
 					}
 				}
 			});
 		},
 
 		_onBindingChanged: function () {
-			var binding = this.getView().getElementBinding(),
+			var page = this.byId("page"),
+				binding = this.getView().getElementBinding(),
 				tokens = this.byId("tokens"),
 				record;
 			if (!binding.getBoundContext()) {
@@ -56,8 +57,9 @@ sap.ui.define([
 			}
 			record = binding.getBoundContext().getObject();
 			this.getView().getModel("tags").setProperty("/count", record.tags.split(" ").length);
-			this.byId("recordPage").setBusy(false);
-			this.byId("content").setContent("<p>" + JSON.stringify(record).split(",").join("\n") + "</p>");
+			this.byId("htmlContent").setContent("<p>" + JSON.stringify(record).split(",").join("\n") + "</p>");
+			page.setSelectedSection(this.byId("content").getId());
+			page.setBusy(false);
 		},
 
 		onBack: function () {
