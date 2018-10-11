@@ -57,7 +57,7 @@ sap.ui.define([
 			record = binding.getBoundContext().getObject();
 			this.getView().getModel("tags").setProperty("/count", record.tags.split(" ").length);
 			this.byId("recordPage").setBusy(false);
-			this.byId("content").setContent("<p>" + JSON.stringify(record) + "</p>");
+			this.byId("content").setContent("<p>" + JSON.stringify(record).split(",").join("\n") + "</p>");
 		},
 
 		onBack: function () {
