@@ -14,31 +14,25 @@ const
         return url;
     };
 
-module.exports = subPath => {
+module.exports = subFolder => {
     const router = express.Router();
 
     router.get(/.*\.(css|woff2?)$/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-themelib_sap_belize", subPath, req.url));
+        res.sendFile(path.join(basePath, "openui5-themelib_sap_belize", subFolder, req.url));
     });
 
-    router.get(/sap\/m\/.*/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-sap.m", subPath, trimDbg(req.url)));
+    fs.readdirSync(basePath).forEach(folder => {
+        if (-1 !== folder.indexOf("themelib")) {
+            return;
+        }
+        const relativePath = folder.substr(8/*openui5-*/);
+        router.get(`/${relativePath.replace(/\./g, "/")}/*`, (req, res, next) => {
+            res.sendFile(path.join(basePath, folder, subFolder, trimDbg(req.url)));
+        });
     });
 
-    router.get(/sap\/ui\/layout\/.*/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-sap.ui.layout", subPath, trimDbg(req.url)));
-    });
-
-    router.get(/sap\/ui\/unified\/.*/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-sap.ui.unified", subPath, trimDbg(req.url)));
-    });
-
-    router.get(/sap\/uxap\/.*/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-sap.uxap", subPath, trimDbg(req.url)));
-    });
-
-    router.get(/.*/, (req, res, next) => {
-        res.sendFile(path.join(basePath, "openui5-sap.ui.core", subPath, trimDbg(req.url)));
+    router.get("*", (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.ui.core", subFolder, trimDbg(req.url)));
     });
 
     return router;
