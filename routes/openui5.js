@@ -1,7 +1,6 @@
 "use strict";
 const
     express = require("express"),
-    router = express.Router(),
     path = require("path"),
     fs = require("fs"),
     basePath = path.join(__dirname, "/../bower_components"),
@@ -15,28 +14,32 @@ const
         return url;
     };
 
-router.get(/.*\.(css|woff2?)$/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-themelib_sap_belize", "resources", req.url));
-});
+module.exports = subPath => {
+    const router = express.Router();
 
-router.get(/sap\/m\/.*/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-sap.m", "resources", trimDbg(req.url)));
-});
+    router.get(/.*\.(css|woff2?)$/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-themelib_sap_belize", subPath, req.url));
+    });
 
-router.get(/sap\/ui\/layout\/.*/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-sap.ui.layout", "resources", trimDbg(req.url)));
-});
+    router.get(/sap\/m\/.*/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.m", subPath, trimDbg(req.url)));
+    });
 
-router.get(/sap\/ui\/unified\/.*/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-sap.ui.unified", "resources", trimDbg(req.url)));
-});
+    router.get(/sap\/ui\/layout\/.*/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.ui.layout", subPath, trimDbg(req.url)));
+    });
 
-router.get(/sap\/uxap\/.*/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-sap.uxap", "resources", trimDbg(req.url)));
-});
+    router.get(/sap\/ui\/unified\/.*/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.ui.unified", subPath, trimDbg(req.url)));
+    });
 
-router.get(/.*/, (req, res, next) => {
-    res.sendFile(path.join(basePath, "openui5-sap.ui.core", "resources", trimDbg(req.url)));
-});
+    router.get(/sap\/uxap\/.*/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.uxap", subPath, trimDbg(req.url)));
+    });
 
-module.exports = router;
+    router.get(/.*/, (req, res, next) => {
+        res.sendFile(path.join(basePath, "openui5-sap.ui.core", subPath, trimDbg(req.url)));
+    });
+
+    return router;
+};
