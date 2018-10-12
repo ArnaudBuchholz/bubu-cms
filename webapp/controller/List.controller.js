@@ -8,6 +8,14 @@ sap.ui.define([
 ], function(BaseController, MenuItem, HashChanger, JSONModel, Sorter) {
 	"use strict";
 
+	function escapeSearch (search) {
+		return encodeURIComponent(search.replace(/\#/g, "__tag__"));
+	}
+
+	function unescapeSearch (search) {
+		return decodeURIComponent(search).replace(/__tag__/g, "#");
+	}
+
 	return BaseController.extend("bubu-cms.controller.List", {
 
 		_buildSortingMenu: function () {
@@ -65,8 +73,9 @@ sap.ui.define([
 			var binding = this.byId("records").getBinding("items");
 			this._queryParameters = event.getParameter("arguments")["?query"] || {};
 			if (this._queryParameters.search) {
-				this.byId("search").setValue(this._queryParameters.search);
-				binding.sCustomParams = "search=" + encodeURIComponent(this._queryParameters.search);
+				var unescapedSearch = unescapeSearch(this._queryParameters.search);
+				this.byId("search").setValue(unescapedSearch);
+				binding.sCustomParams = "search=" + encodeURIComponent(unescapedSearch);
 			} else {
 				this.byId("search").setValue("");
 				binding.sCustomParams = "";
@@ -98,7 +107,7 @@ sap.ui.define([
 		},
 
 		onSearch: function(event) {
-			this._setQueryParameter("search", this.byId("search").getValue());
+			this._setQueryParameter("search", escapeSearch(this.byId("search").getValue()));
 		},
 
 		onSort: function (event) {
@@ -110,7 +119,7 @@ sap.ui.define([
 		onRecordPress: function(event) {
 			var record = event.getSource().getBindingContext().getObject();
 			if (record.type === "tag") {
-				this._setQueryParameter("search", "tag:" + record.name);
+				this._setQueryParameter("search", escapeSearch("#" + record.name));
 			} else {
 				this._getRouter().navTo("record", {
 					recordId: record.id
