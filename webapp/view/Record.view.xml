@@ -14,57 +14,44 @@
 		showTitleInHeaderContent="true"
 		showHeaderContent="true"
 		useIconTabBar="true"
+		headerContentPinnable="false"
+		toggleHeaderOnTitleClick="false"
 	>
 		<headerTitle>
-			<ObjectPageDynamicHeaderTitle>
-				<breadcrumbs>
-					<m:Breadcrumbs>
-						<m:Link text='Page 1'/>
-						<m:Link text='Page 2'/>
-						<m:Link text='Page 3'/>
-						<m:Link text='Page 4'/>
-						<m:Link text='Page 5'/>
-					</m:Breadcrumbs>
-				</breadcrumbs>
+			<ObjectPageDynamicHeaderTitle areaShrinkRatio="0:1:1">
 				<expandedHeading>
 					<m:ObjectHeader
-						wrapping="true" class="sapUiTinyMarginTop"
 						title="{name}"
 						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+						iconDensityAware="false"
+						width="100%"
 					/>
 				</expandedHeading>
 				<snappedHeading>
 					<m:ObjectHeader
-						wrapping="true" class="sapUiTinyMarginTop"
 						title="{name}"
 						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+						iconDensityAware="false"
+						width="100%"
 					/>
 				</snappedHeading>
 				<navigationActions>
 					<ObjectPageHeaderActionButton icon="sap-icon://nav-back" press="onBack" type="Transparent" />
+					<ObjectPageHeaderActionButton icon="sap-icon://present" type="Transparent" />
 				</navigationActions>
 			</ObjectPageDynamicHeaderTitle>
-<!--
-			<ObjectPageHeader
-				objectImageURI="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
-				objectImageShape="Circle"
-				showTitleSelector="true"
-				objectTitle="{name}"
-				isObjectIconAlwaysVisible="true"
-				isObjectTitleAlwaysVisible="true"
-				isObjectSubtitleAlwaysVisible="false"
-				titleSelectorPress="onProperties"
-			>
-				<actions>
-				</actions>
-			</ObjectPageHeader>
--->
 		</headerTitle>
 		<headerContent>
 			<layout:VerticalLayout>
 				<m:ObjectStatus visible="{= ${number} !== '' }" text="{number} {path: 'type', formatter: '.formatNumberUnit'}"/>
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
+				<m:RatingIndicator maxValue="5" class="sapUiSmallMarginBottom" value="{rating}" iconSize="32px" tooltip="Rating Tooltip" />
+				<m:MultiInput id="tags" showValueHelp="true" tokens="{tags>/list}">
+					<m:tokens>
+						<m:Token editable="{tags>editable}" key="{tags>id}" text="#{tags>id}" />
+					</m:tokens>
+				</m:MultiInput>
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
@@ -101,35 +88,6 @@
 						<m:Title text="Line 27" />
 						<m:Title text="Line 28" />
 						<m:Title text="Line 29" />
-					</ObjectPageSubSection>
-				</subSections>
-			</ObjectPageSection>
-			<ObjectPageSection title="Properties" id="properties">
-				<subSections>
-					<ObjectPageSubSection>
-						<m:RatingIndicator id="RI_L" maxValue="5" class="sapUiSmallMarginBottom" value="4" iconSize="32px" tooltip="Rating Tooltip" />
-						<form:SimpleForm
-							editable="false"
-						>
-							<form:toolbar>
-								<m:Toolbar>
-									<m:Title text="Record type" level="H4" titleStyle="H4"/>
-									<m:ToolbarSpacer />
-									<m:Button icon="sap-icon://present" text="{i18n>record.touch}" tooltip="{i18n>record.touch}" />
-									<m:MenuButton text="{rating}" icon="sap-icon://favorite">
-										<m:Menu id="sortMenu" itemSelected="onRate" items="{rating>/options}">
-											<m:MenuItem icon="{= ${rating>value} === ${rating} ? 'sap-icon://begin' : '' }" text="{path: 'rating>value', formatter: '.renderRating'}" />
-										</m:Menu>
-									</m:MenuButton>
-									<m:MenuButton text="{tags>/count}" icon="sap-icon://{i18n>tag.defaultIcon}">
-									</m:MenuButton>
-								</m:Toolbar>
-							</form:toolbar>
-							<form:content>
-								<m:Label text="name" />
-								<m:Input value="{name}" />
-							</form:content>
-						</form:SimpleForm>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
