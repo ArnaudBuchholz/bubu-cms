@@ -1,11 +1,12 @@
 "use strict";
 
-const
-    Record = require("./Record"),
-    MinDate = new Date(0)
-;
+let
+    tag;
 
 const
+    Record = require("./Record"),
+    MinDate = new Date(0),
+
     Tag = gpf.define({
         $class: "Tag",
         $extend: Record,
@@ -34,6 +35,9 @@ const
             this._created = MinDate;
             this._modified = MinDate;
             Record.load([this]);
+            if (tag) {
+                tag.usedBy(this);
+            }
         },
 
         toString: function () {
@@ -62,6 +66,8 @@ Object.assign(Tag, {
     }
 
 });
+
+tag = Tag.allocate("tag");
 
 // X-dependency
 Record.Tag = Tag;
