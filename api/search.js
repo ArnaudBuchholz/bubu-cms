@@ -2,7 +2,7 @@
 
 const
     Tag = require("./Tag"),
-    tagPrefix = "tag:",
+    tagPrefix = "#",
     tagPrefixLength = tagPrefix.length
 ;
 
