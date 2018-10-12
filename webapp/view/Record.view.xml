@@ -16,7 +16,7 @@
 		useIconTabBar="true"
 	>
 		<headerTitle>
-			<ObjectPageDynamicHeaderTitle primaryArea="Left">
+			<ObjectPageDynamicHeaderTitle>
 				<breadcrumbs>
 					<m:Breadcrumbs>
 						<m:Link text='Page 1'/>
@@ -27,10 +27,18 @@
 					</m:Breadcrumbs>
 				</breadcrumbs>
 				<expandedHeading>
-					<m:Title text="{name}" wrapping="true" class="sapUiTinyMarginTop" />
+					<m:ObjectHeader
+						wrapping="true" class="sapUiTinyMarginTop"
+						title="{name}"
+						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+					/>
 				</expandedHeading>
 				<snappedHeading>
-					<m:Title text="{name}" wrapping="true" class="sapUiTinyMarginTop" />
+					<m:ObjectHeader
+						wrapping="true" class="sapUiTinyMarginTop"
+						title="{name}"
+						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+					/>
 				</snappedHeading>
 				<navigationActions>
 					<ObjectPageHeaderActionButton icon="sap-icon://nav-back" press="onBack" type="Transparent" />
@@ -99,6 +107,7 @@
 			<ObjectPageSection title="Properties" id="properties">
 				<subSections>
 					<ObjectPageSubSection>
+						<m:RatingIndicator id="RI_L" maxValue="5" class="sapUiSmallMarginBottom" value="4" iconSize="32px" tooltip="Rating Tooltip" />
 						<form:SimpleForm
 							editable="false"
 						>
