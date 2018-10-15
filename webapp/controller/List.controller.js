@@ -112,7 +112,15 @@ sap.ui.define([
 		},
 
 		onSuggest: function (event) {
-			var searchField = event.getSource();
+			var searchField = event.getSource(),
+				query = searchField.getValue().split(" ").pop(),
+				binding = searchField.getBinding("suggestionItems"),
+				search = "#tag";
+			if (query.charAt(0) === "#") {
+				search += " " + query.substr(1);
+			}
+			binding.sCustomParams = "search=" + encodeURIComponent(search);
+			binding.refresh();
 			searchField.suggest();
 		},
 
