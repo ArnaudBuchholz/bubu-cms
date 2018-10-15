@@ -5,6 +5,6 @@
 	displayBlock="true"
 >
 	<Shell>
-		<App id="app" />
+		<App id="app" autoFocus="false" />
 	</Shell>
 </mvc:View>
