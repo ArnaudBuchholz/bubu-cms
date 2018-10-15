@@ -51,6 +51,7 @@
 				<ObjectListItem
 					title="{name}"
 					icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+					iconDensityAware="false"					
 					number="{number}"
 					numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
 					press="onRecordPress"
