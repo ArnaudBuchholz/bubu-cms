@@ -7,7 +7,25 @@
 	<Page title="{db.i18n>db.title}" backgroundDesign="Solid">
 		<subHeader>
 			<Toolbar>
-				<SearchField id="search" search="onSearch" width="100%" />
+				<SearchField
+					id="search"
+					search="onSearch"
+					width="100%"
+					enableSuggestions="true"
+					suggestionItems="{
+						path: '/RecordSet',
+						parameters: {
+							custom: {
+								search: '#tag'
+							}
+						}
+					}"
+					suggest="onSuggest"
+				>
+					<suggestionItems>
+						<SuggestionItem text="#{name}" description="{number}" key="{id}" />
+					</suggestionItems>
+				</SearchField>
 				<MenuButton id="sortButton" text="{i18n>sort.name}" icon="sap-icon://sort-ascending">
 					<Menu id="sortMenu" itemSelected="onSort" />
 				</MenuButton>
