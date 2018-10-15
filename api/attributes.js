@@ -27,6 +27,34 @@ attributes.Base = gpf.define({
     });
 });
 
+attributes.NavigationProperty = gpf.define({
+    $extend: attributes.Base,
+    $class: "NavigationProperty",
+    $attributes: [new gpf.attributes.UniqueAttribute],
+
+    _fromEntity: null,
+
+    fromEntity: function () {
+        return this._fromEntity;
+    },
+
+    _toEntity: null,
+
+    toEntity: function () {
+        return this._toEntity;
+    },
+
+    // Not supposed to rely on it :-(
+    _check: function (member, classDefinition) {
+
+    },
+
+    constructor: function (ToEntity) {
+        this._toEntity = ToEntity;
+    }
+
+});
+
 attributes.serializableProperties = EntityClass => {
     const serializable = gpf.attributes.get(EntityClass, gpf.attributes.Serializable);
     return Object.keys(serializable).reduce((properties, name) => {
