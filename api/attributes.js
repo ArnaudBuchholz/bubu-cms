@@ -32,21 +32,14 @@ attributes.NavigationProperty = gpf.define({
     $class: "NavigationProperty",
     $attributes: [new gpf.attributes.UniqueAttribute],
 
-    _fromEntity: null,
-
     fromEntity: function () {
-        return this._fromEntity;
+        return this.getClassConstructor();
     },
 
     _toEntity: null,
 
     toEntity: function () {
         return this._toEntity;
-    },
-
-    // Not supposed to rely on it :-(
-    _check: function (member, classDefinition) {
-
     },
 
     constructor: function (ToEntity) {
