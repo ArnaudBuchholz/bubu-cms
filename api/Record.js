@@ -7,6 +7,8 @@ const
     filterable = new attributes.Filterable(),
     updatable = new attributes.Updatable(),
     creatable = new attributes.Creatable(),
+    NavigationProperty = attributes.NavigationProperty,
+    Content = require("./Content.js"),
 
     Record = gpf.define({
         $class: "Record",
@@ -129,6 +131,11 @@ const
             if (!this._modified) {
                 this._modified = this._created;
             }
+        },
+
+        "[getContent]": [new NavigationProperty(Content)],
+        getContent: function () {
+            return Promise.resolve([]);
         }
 
     }),
