@@ -65,6 +65,7 @@ sap.ui.define([
 		onInit: function () {
 			this._getRouter().getRoute("list").attachPatternMatched(this._onDisplayList, this);
 			this._buildSortingMenu();
+			this.byId("records").focus();
 		},
 
 		_queryParameters: {},
@@ -108,6 +109,11 @@ sap.ui.define([
 
 		onSearch: function(event) {
 			this._setQueryParameter("search", escapeSearch(this.byId("search").getValue()));
+		},
+
+		onSuggest: function (event) {
+			var searchField = event.getSource();
+			searchField.suggest();
 		},
 
 		onSort: function (event) {
