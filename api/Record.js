@@ -133,7 +133,9 @@ const
             }
         },
 
-        "[getContent]": [new NavigationProperty(Content)],
+        "[getContent]": [new NavigationProperty().to(Content).on({
+            id: "recordId"
+        })],
         getContent: function () {
             return Promise.resolve([]);
         }
