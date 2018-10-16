@@ -6,6 +6,8 @@ const
     EDM_NAMESPACE = "http://schemas.microsoft.com/ado/2008/09/edm",
     SAP_NAMESPACE = "http://www.sap.com/Protocols/SAPData",
 
+    SCHEMA_NAMESPACE = "BUBU_CMS",
+
     TYPES_MAPPING = {},
 
     gpf = require("gpf-js/source"),
@@ -39,13 +41,14 @@ module.exports = () => {
             "m:DataServiceVersion": "2.0"
         })
         .startElement("Schema", {
-            Namespace: "BUBU_CMS"
+            Namespace: SCHEMA_NAMESPACE
             // "xml:lang": "en"
         })
         .then(() => gpf.forEachAsync(entities, EntityClass => {
             const
                 serialProps = gpf.serial.get(EntityClass),
-                flags = gpf.attributes.get(EntityClass, attributes.Base);
+                flags = gpf.attributes.get(EntityClass, attributes.Base),
+                navigationProperties = attributes.navigationProperties(EntityClass);
             return promisifiedWriter
                 .startElement("EntityType", {
                     Name: EntityClass.name
@@ -76,20 +79,92 @@ module.exports = () => {
                         })
                         .endElement() // Property
                 ))
+                .then(() => gpf.forEachAsync(navigationProperties, property =>
+                    promisifiedWriter
+                        .startElement("NavigationProperty", {
+                            name: property.getName(),
+                            Relationship: `${SCHEMA_NAMESPACE}.${property.from().name}to${property.to().name}`,
+                            FromRole: `FromRole_${property.from().name}to${property.to().name}`,
+                            ToRole: `ToRole_${property.from().name}to${property.to().name}`,
+                        })
+                        .endElement() // NavigationProperty
+                ))
                 .endElement() // EntityType
+                .then(() => gpf.forEachAsync(navigationProperties, property =>
+                    promisifiedWriter
+                        .startElement("Association", {
+                            Name: `${property.from().name}to${property.to().name}`,
+                            "sap:content-version": 1
+                        })
+                        .startElement("End", {
+                            Type: `${SCHEMA_NAMESPACE}.${property.from().name}`,
+                            Multiplicity: 1,
+                            Role: `FromRole_${property.from().name}to${property.to().name}`
+                        })
+                        .endElement() // End
+                        .startElement("End", {
+                            Type: `${SCHEMA_NAMESPACE}.${property.to().name}`,
+                            Multiplicity: "*",
+                            Role: `ToRole_${property.from().name}to${property.to().name}`
+                        })
+                        .endElement() // End
+                        .startElement("ReferentialConstraint")
+                        .startElement("Principal", {
+                            Role: `FromRole_${property.from().name}to${property.to().name}`
+                        })
+                        .startElement("PropertyRef", {
+                            Name: property.getPrincipal()
+                        })
+                        .endElement() // PropertyRef
+                        .endElement() // Principal
+                        .startElement("Dependent", {
+                            Role: `ToRole_${property.from().name}to${property.to().name}`
+                        })
+                        .startElement("PropertyRef", {
+                            Name: property.getDependent()
+                        })
+                        .endElement() // PropertyRef
+                        .endElement() // Dependent
+                        .endElement() // ReferentialConstraint
+                        .endElement() // Association
+                ));
         }))
         .startElement("EntityContainer", {
-            Name: "BUBU_CMS_Entities",
+            Name: `${SCHEMA_NAMESPACE}_Entities`,
             "m:IsDefaultEntityContainer": true
         })
-        .then(() => gpf.forEachAsync(entities, EntityClass =>
-            promisifiedWriter
-                .startElement("EntitySet", {
-                    Name: `${EntityClass.name}Set`,
-                    EntityType: `BUBU_CMS.${EntityClass.name}`
-                })
-                .endElement() // EntitySet
-        ))
+        .then(() => gpf.forEachAsync(entities, EntityClass => {
+            const
+                navigationProperties = attributes.navigationProperties(EntityClass);
+            return promisifiedWriter
+                    .startElement("EntitySet", {
+                        Name: `${EntityClass.name}Set`,
+                        EntityType: `${SCHEMA_NAMESPACE}.${EntityClass.name}`
+                    })
+                    .endElement() // EntitySet
+                    .then(() => gpf.forEachAsync(navigationProperties, property =>
+                        promisifiedWriter
+                            .startElement("AssociationSet", {
+                                Name: `${property.from().name}to${property.to().name}Set`,
+                                Association: `${SCHEMA_NAMESPACE}.${property.from().name}to${property.to().name}`,
+                                "sap:creatable": false,
+                                "sap:updatable": false,
+                                "sap:deletable": false,
+                                "sap:content-version": 1
+                            })
+                            .startElement("End", {
+                                EntitySet: `${property.from().name}Set`,
+                                Role: `FromRole_${property.from().name}to${property.to().name}`
+                            })
+                            .endElement() // End
+                            .startElement("End", {
+                                EntitySet: `${property.to().name}Set`,
+                                Role: `ToRole_${property.from().name}to${property.to().name}`
+                            })
+                            .endElement() // End
+                            .endElement() // AssociationSet
+                    ));
+        }))
         .endElement() // EntityContainer
         .endElement() // Schema
         .endElement() // edmx:DataServices
