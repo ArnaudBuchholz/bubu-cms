@@ -32,18 +32,39 @@ attributes.NavigationProperty = gpf.define({
     $class: "NavigationProperty",
     $attributes: [new gpf.attributes.UniqueAttribute],
 
-    fromEntity: function () {
+    from: function () {
         return this.getClassConstructor();
     },
 
-    _toEntity: null,
+    _to: null,
 
-    toEntity: function () {
-        return this._toEntity;
+    to: function (Entity) {
+        if (!Entity) {
+            return this._to;
+        }
+        this._to = Entity;
+        return this;
     },
 
-    constructor: function (ToEntity) {
-        this._toEntity = ToEntity;
+    _principal: "",
+    _dependent: "",
+
+    getPrincipal: function () {
+        return this._principal;
+    },
+
+    getDependent: function () {
+        return this._dependent;
+    },
+
+    on: function (on) {
+        this._principal = Object.keys(on)[0];
+        this._dependent = on[this._principal];
+        return this;
+    },
+
+    getName: function () {
+        return "to" + this._to.name;
     }
 
 });
@@ -54,6 +75,11 @@ attributes.serializableProperties = EntityClass => {
         properties[name] = serializable[name][0].getProperty();
         return properties;
     }, {});
+};
+
+attributes.navigationProperties = EntityClass => {
+    const dictionary = gpf.attributes.get(EntityClass, attributes.NavigationProperty);
+    return Object.keys(dictionary).map(name => dictionary[name][0]);
 };
 
 module.exports = attributes;
