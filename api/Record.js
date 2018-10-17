@@ -1,14 +1,14 @@
 "use strict";
 
 const
-    attributes = require("./attributes.js"),
+    attributes = require("./attributes"),
     key = new attributes.Key(),
     sortable = new attributes.Sortable(),
     filterable = new attributes.Filterable(),
     updatable = new attributes.Updatable(),
     creatable = new attributes.Creatable(),
     NavigationProperty = attributes.NavigationProperty,
-    Content = require("./Content.js"),
+    Content = require("./Content"),
 
     Record = gpf.define({
         $class: "Record",
@@ -158,6 +158,7 @@ Object.assign(Record, {
 
     all: () => records,
     byId: id => recordsById[id],
+    searchable: true,
 
     load: array => {
         array.forEach(record => {
