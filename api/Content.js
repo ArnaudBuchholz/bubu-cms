@@ -26,7 +26,11 @@ const
             type: gpf.serial.types.string,
             required: true
         })],
-        _data: ""
+        _data: "",
+
+        constructor: function (recordId) {
+            this._recordId = recordId;
+        }
 
     });
 
