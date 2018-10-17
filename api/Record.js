@@ -138,6 +138,10 @@ const
         })],
         getContent: function () {
             return Promise.resolve([]);
+        },
+
+        _allocateContent: function (properties) {
+            return Object.assign(new Content(this._id), properties);
         }
 
     }),
