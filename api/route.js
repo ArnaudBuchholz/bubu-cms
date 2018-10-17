@@ -76,19 +76,6 @@ entities.forEach(EntityClass => {
         navigationProperties = attributes.navigationProperties(EntityClass);
     EntityClass.toODataV2 = toODataV2;
 
-    router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)`), (req, res, next) =>
-        db.open().then(() => {
-            const
-                record = EntityClass.byId(req.params[0]);
-            if (!record) {
-                return notFound(next);
-            }
-            res.set("Content-Type", "application/json");
-            res.send(JSON.stringify({
-                d: toODataV2(record)
-            }));
-        }));
-
     navigationProperties.forEach(property => {
         router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)\\/${property.getName()}`), (req, res, next) =>
             db.open().then(() => {
@@ -102,6 +89,19 @@ entities.forEach(EntityClass => {
                     .catch(reason => fail(500, reason.toString, next));
             }));
     });
+
+    router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)`), (req, res, next) =>
+        db.open().then(() => {
+            const
+                record = EntityClass.byId(req.params[0]);
+            if (!record) {
+                return notFound(next);
+            }
+            res.set("Content-Type", "application/json");
+            res.send(JSON.stringify({
+                d: toODataV2(record)
+            }));
+        }));
 
     router.get(`/${EntityClass.name}Set`, (req, res, next) =>
         db.open().then(() => {
