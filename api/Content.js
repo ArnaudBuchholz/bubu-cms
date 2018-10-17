@@ -30,4 +30,7 @@ const
 
     });
 
+Content.byId = () => null;
+Content.all = () => [];
+
 module.exports = Content;
