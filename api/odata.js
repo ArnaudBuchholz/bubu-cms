@@ -36,7 +36,7 @@ module.exports = {
                 return value;
             });
             raw.__metadata = {
-                uri: `${EntityClass.name}Set(${raw[keyProperty]})`,
+                uri: `${EntityClass.name}Set('${raw[keyProperty]}')`,
                 type: `BUBU_CMS.${EntityClass.name}`
             };
             return raw;
