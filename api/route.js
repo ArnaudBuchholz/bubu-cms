@@ -6,6 +6,7 @@ const
     nanoid = require("nanoid"),
 
     config = require("../config"),
+    attributes = require("./attributes"),
     metadata = require("./metadata"),
     entities = require("./entities"),
     db = require("./db"),
@@ -15,17 +16,34 @@ const
     Record = require("./Record"),
     Tag = require("./Tag"),
 
-    notFound = next => {
-        var error = new Error("Not found");
-        error.status = 404;
+    fail = (status, text, next) => {
+        var error = new Error(text);
+        error.status = status;
         next(error);
     },
 
-    notImplemented = next => {
-        var error = new Error("Not implemented");
-        error.status = 500;
-        next(error);
-    };
+    notFound = next => fail(404, "Not found", next),
+    notImplemented = next => fail(500, "Not implemented", next),
+
+    sendRecords = (EntityClass, records, req, res, next) => {
+        const
+            params = odata.parseParams(req.url),
+            response = {d: {}};
+        if (params.$orderby) {
+            records.sort(sorter(EntityClass, params.$orderby));
+        }
+        if (params.$inlinecount === "allpages") {
+            response.d.__count = records.length;
+        }
+        if (params.$top || params.$skip) {
+            records = records.slice(params.$skip, params.$skip + params.$top);
+        }
+        response.d.results = records.map(EntityClass.toODataV2);
+        res.set("Content-Type", "application/json");
+        res.send(JSON.stringify(response));
+    },
+
+    odataSerializers = {};
 
 router.all('*', function (req, res, next) {
     var memory = process.memoryUsage();
@@ -53,7 +71,10 @@ router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
 });
 
 entities.forEach(EntityClass => {
-    const toODataV2 = odata.buildToODataV2(EntityClass);
+    const
+        toODataV2 = odata.buildToODataV2(EntityClass),
+        navigationProperties = attributes.navigationProperties(EntityClass);
+    EntityClass.toODataV2 = toODataV2;
 
     router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)`), (req, res, next) =>
         db.open().then(() => {
@@ -68,30 +89,32 @@ entities.forEach(EntityClass => {
             }));
         }));
 
+    navigationProperties.forEach(property => {
+        router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)\\/${property.getName()}`), (req, res, next) =>
+            db.open().then(() => {
+                const
+                    record = EntityClass.byId(req.params[0]);
+                if (!record) {
+                    return notFound(next);
+                }
+                record[property.getMemberName()]()
+                    .then(records => sendRecords(EntityClass, records, req, res, next))
+                    .catch(reason => fail(500, reason.toString, next));
+            }));
+    });
+
     router.get(`/${EntityClass.name}Set`, (req, res, next) =>
         db.open().then(() => {
             const
-                params = odata.parseParams(req.url),
-                response = {d: {}};
+                params = odata.parseParams(req.url);
             let
                 records;
-            if (params.search) {
+            if (EntityClass.searchable && params.search) {
                 records = searcher(EntityClass, params.search);
             } else {
                 records = EntityClass.all();
             }
-            if (params.$orderby) {
-                records.sort(sorter(EntityClass, params.$orderby));
-            }
-            if (params.$inlinecount === "allpages") {
-                response.d.__count = records.length;
-            }
-            if (params.$top || params.$skip) {
-                records = records.slice(params.$skip, params.$skip + params.$top);
-            }
-            response.d.results = records.map(toODataV2);
-            res.set("Content-Type", "application/json");
-            res.send(JSON.stringify(response));
+            sendRecords(EntityClass, records, req, res, next)
         }));
 });
 
