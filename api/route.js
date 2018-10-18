@@ -11,8 +11,6 @@ const
     entities = require("./entities"),
     db = require("./db"),
     odata = require("./odata"),
-    searcher = require("./search"),
-    sorter = require("./sort"),
     Record = require("./Record"),
     Tag = require("./Tag"),
 
@@ -23,38 +21,7 @@ const
     },
 
     notFound = next => fail(404, "Not found", next),
-    notImplemented = next => fail(500, "Not implemented", next),
-
-    sendRecords = (EntityClass, records, req, res, next) => {
-        const
-            params = odata.parseParams(req.url),
-            response = {d: {}};
-        if (params.$orderby) {
-            records.sort(sorter(EntityClass, params.$orderby));
-        }
-        if (params.$inlinecount === "allpages") {
-            response.d.__count = records.length;
-        }
-        if (params.$top || params.$skip) {
-            records = records.slice(params.$skip, params.$skip + params.$top);
-        }
-        response.d.results = records.map(EntityClass.toODataV2);
-        res.set("Content-Type", "application/json");
-        res.send(JSON.stringify(response));
-    },
-
-    odataSerializers = {};
-
-router.all('*', function (req, res, next) {
-    var memory = process.memoryUsage();
-    res.set("x-memory-rss", memory.rss);
-    res.set("x-memory-heapTotal", memory.heapTotal);
-    res.set("x-memory-heapUsed", memory.heapUsed);
-    res.set("x-memory-external", memory.external);
-    res.set("x-count-records", Record.all().length);
-    res.set("x-count-tags", Tag.all().length);
-    next(); // pass control to the next handler
-});
+    notImplemented = next => fail(500, "Not implemented", next);
 
 router.get("/id", (req, res, next) => {
     res.set("Content-Type", "text/plain");
@@ -70,11 +37,23 @@ router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
     res.sendFile(path.join(__dirname, "../db", config.db, req.url.substr(1)));
 });
 
+router.get("*", (req, res, next) => {
+    // Performance values
+    var memory = process.memoryUsage();
+    "rss,heapTotal,heapUsed,external"
+        .split(",")
+        .forEach(type => res.set(`x-memory-${type.toLowerCase()}`, memory[type]));
+    [Record,Tag]
+        .forEach(Type => res.set(`x-count-${Type.name.toLowerCase()}`, Type.all().length));
+    // ODATA handler
+    req.odata = odata.parse(req);
+    next(); // pass control to the next handler
+});
+
 entities.forEach(EntityClass => {
     const
-        toODataV2 = odata.buildToODataV2(EntityClass),
         navigationProperties = attributes.navigationProperties(EntityClass);
-    EntityClass.toODataV2 = toODataV2;
+    EntityClass.toJSON = odata.buildToJSON(EntityClass);
 
     navigationProperties.forEach(property => {
         router.get(new RegExp(`\/${EntityClass.name}Set\\('([^']+)'\\)\\/${property.getName()}`), (req, res, next) =>
@@ -85,7 +64,7 @@ entities.forEach(EntityClass => {
                     return notFound(next);
                 }
                 record[property.getMemberName()]()
-                    .then(records => sendRecords(EntityClass, records, req, res, next))
+                    .then(records => req.odata.send(property.to(), records, res))
                     .catch(reason => fail(500, reason.toString, next));
             }));
     });
@@ -97,24 +76,19 @@ entities.forEach(EntityClass => {
             if (!record) {
                 return notFound(next);
             }
-            res.set("Content-Type", "application/json");
-            res.send(JSON.stringify({
-                d: toODataV2(record)
-            }));
+            req.odata.send(EntityClass, record, res);
         }));
 
     router.get(`/${EntityClass.name}Set`, (req, res, next) =>
         db.open().then(() => {
-            const
-                params = odata.parseParams(req.url);
             let
                 records;
-            if (EntityClass.searchable && params.search) {
+            if (EntityClass.searchable && req.params.search) {
                 records = searcher(EntityClass, params.search);
             } else {
                 records = EntityClass.all();
             }
-            sendRecords(EntityClass, records, req, res, next)
+            req.odata.send(EntityClass, records, res);
         }));
 });
 
