@@ -3,6 +3,9 @@
 const
     gpf = global.gpf || require("gpf-js/source"),
     attributes = require("./attributes"),
+    searcher = require("./search"),
+    sorter = require("./sort"),
+
     mapOfODataParamTypes = {
         "undefined": () => {},
         "number": (aggregated, key, value) => {
@@ -16,7 +19,7 @@ const
 
 module.exports = {
 
-    buildToODataV2: EntityClass => {
+    buildToJSON: EntityClass => {
         const
             keys = gpf.attributes.get(EntityClass, attributes.Key),
             serialProps = gpf.serial.get(EntityClass),
@@ -43,8 +46,8 @@ module.exports = {
         };
     },
 
-    parseParams: url => url
-        .substr(url.indexOf("?") + 1)
+    parse: req => Object.assign(req.url
+        .substr(req.url.indexOf("?") + 1)
         .split("&")
         .reduce((aggregated, param) => {
             const
@@ -59,6 +62,31 @@ module.exports = {
             $inlinecount: "",
             $orderby: "",
             search: ""
+        }), {
+            send: function (EntityClass, records, res) {
+                res.set("Content-Type", "application/json");
+                if (Array.isArray(records)) {
+                    const
+                        recordSet = {d: {}};
+                    if (this.$orderby) {
+                        records.sort(sorter(EntityClass, this.$orderby));
+                    }
+                    if (this.$inlinecount === "allpages") {
+                        recordSet.d.__count = records.length;
+                    }
+                    if (this.$top || this.$skip) {
+                        records = records.slice(this.$skip, this.$skip + this.$top);
+                    }
+                    recordSet.d.results = records.map(EntityClass.toJSON);
+                    res.send(JSON.stringify(recordSet));
+
+                } else {
+                    res.send(JSON.stringify({
+                        d: EntityClass.toJSON(records)
+                    }));
+
+                }
+            }
         })
 
 };
