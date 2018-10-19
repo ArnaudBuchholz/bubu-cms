@@ -83,9 +83,9 @@ module.exports = () => {
                     promisifiedWriter
                         .startElement("NavigationProperty", {
                             name: property.getName(),
-                            Relationship: `${SCHEMA_NAMESPACE}.${property.from().name}to${property.to().name}`,
-                            FromRole: `FromRole_${property.from().name}to${property.to().name}`,
-                            ToRole: `ToRole_${property.from().name}to${property.to().name}`,
+                            Relationship: `${SCHEMA_NAMESPACE}.${property.getRelationshipName()}`,
+                            FromRole: property.getFromRoleName(),
+                            ToRole: property.getToRoleName()
                         })
                         .endElement() // NavigationProperty
                 ))
@@ -93,24 +93,24 @@ module.exports = () => {
                 .then(() => gpf.forEachAsync(navigationProperties, property =>
                     promisifiedWriter
                         .startElement("Association", {
-                            Name: `${property.from().name}to${property.to().name}`,
+                            Name: property.getRelationshipName(),
                             "sap:content-version": 1
                         })
                         .startElement("End", {
                             Type: `${SCHEMA_NAMESPACE}.${property.from().name}`,
                             Multiplicity: 1,
-                            Role: `FromRole_${property.from().name}to${property.to().name}`
+                            Role: property.getFromRoleName()
                         })
                         .endElement() // End
                         .startElement("End", {
                             Type: `${SCHEMA_NAMESPACE}.${property.to().name}`,
                             Multiplicity: "*",
-                            Role: `ToRole_${property.from().name}to${property.to().name}`
+                            Role: property.getToRoleName()
                         })
                         .endElement() // End
                         .startElement("ReferentialConstraint")
                         .startElement("Principal", {
-                            Role: `FromRole_${property.from().name}to${property.to().name}`
+                            Role: property.getFromRoleName()
                         })
                         .startElement("PropertyRef", {
                             Name: property.getPrincipal()
@@ -118,7 +118,7 @@ module.exports = () => {
                         .endElement() // PropertyRef
                         .endElement() // Principal
                         .startElement("Dependent", {
-                            Role: `ToRole_${property.from().name}to${property.to().name}`
+                            Role: property.getToRoleName()
                         })
                         .startElement("PropertyRef", {
                             Name: property.getDependent()
@@ -145,8 +145,8 @@ module.exports = () => {
                     .then(() => gpf.forEachAsync(navigationProperties, property =>
                         promisifiedWriter
                             .startElement("AssociationSet", {
-                                Name: `${property.from().name}to${property.to().name}Set`,
-                                Association: `${SCHEMA_NAMESPACE}.${property.from().name}to${property.to().name}`,
+                                Name: `${property.getRelationshipName()}Set`,
+                                Association: `${SCHEMA_NAMESPACE}.${property.getRelationshipName()}`,
                                 "sap:creatable": false,
                                 "sap:updatable": false,
                                 "sap:deletable": false,
@@ -154,12 +154,12 @@ module.exports = () => {
                             })
                             .startElement("End", {
                                 EntitySet: `${property.from().name}Set`,
-                                Role: `FromRole_${property.from().name}to${property.to().name}`
+                                Role: property.getFromRoleName()
                             })
                             .endElement() // End
                             .startElement("End", {
                                 EntitySet: `${property.to().name}Set`,
-                                Role: `ToRole_${property.from().name}to${property.to().name}`
+                                Role: property.getToRoleName()
                             })
                             .endElement() // End
                             .endElement() // AssociationSet
