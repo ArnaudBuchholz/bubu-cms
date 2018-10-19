@@ -47,11 +47,12 @@ attributes.NavigationProperty = gpf.define({
     },
 
     _principal: "",
-    _dependent: "",
 
     getPrincipal: function () {
         return this._principal;
     },
+
+    _dependent: "",
 
     getDependent: function () {
         return this._dependent;
@@ -64,7 +65,19 @@ attributes.NavigationProperty = gpf.define({
     },
 
     getName: function () {
-        return "to" + this._to.name;
+        return `to${this._to.name}`;
+    },
+
+    getRelationshipName: function () {
+        return `${this.from().name}to${this.to().name}`;
+    },
+
+    getFromRoleName: function () {
+        return `FromRole_${this.from().name}to${this.to().name}`;
+    },
+
+    getToRoleName: function () {
+        return `ToRole_${this.from().name}to${this.to().name}`;
     }
 
 });
