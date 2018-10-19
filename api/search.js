@@ -21,19 +21,20 @@ module.exports = (EntityClass, search) => {
             .filter(term => term.indexOf(tagPrefix) !== 0)
     ;
     let
-        records;
+        asyncRecords;
     if (tags.length) {
         // AND
-        records = tags[0].records(EntityClass);
+        let recordsByTags = tags[0].records(EntityClass); // synchronous
         tags.slice(1).forEach(tag => {
-            records = records.filter(record => record.hasTag(tag));
+            recordsByTags = recordsByTags.filter(record => record.hasTag(tag));
         });
+        asyncRecords = Promise.resolve(recordsByTags)
     } else {
-        records = EntityClass.all();
+        asyncRecords = EntityClass.all();
     }
-    if (terms.length) {
-        // OR
-        records = records.filter(record => terms.some(term => record.search(term)));
-    }
-    return records;
+    return asyncRecords
+        .then(records => terms.length
+            ? records = records.filter(record => terms.some(term => record.search(term))) // OR
+            : records
+        );
 }
