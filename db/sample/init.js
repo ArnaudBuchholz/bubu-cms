@@ -45,6 +45,7 @@ const
 module.exports = db => Promise.all([
     _loadCSV(db, "recipe", require("./Recipe")(db)),
     _loadCSV(db, "contact", require("./Contact")(db)),
-    _loadCSV(db, "address", require("./Address")(db))
+    _loadCSV(db, "address", require("./Address")(db)),
+    require("./Pokemon")(db)
     // _fillDB(db)
 ]);
