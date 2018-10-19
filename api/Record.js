@@ -160,8 +160,8 @@ Object.assign(Record, {
         warning: "Warning"
     },
 
-    all: () => records,
-    byId: id => recordsById[id],
+    all: () => Promise.resolve(records),
+    byId: ids => Promise.resolve(recordsById[ids[0]]),
     searchable: true,
 
     load: array => {
