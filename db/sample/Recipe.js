@@ -1,5 +1,11 @@
 "use strict";
 
+const
+    fs = require("fs"),
+    path = require("path"),
+    showdown  = require('showdown'),
+    md = new showdown.Converter();
+
 module.exports = db => gpf.define({
     $class: "Recipe",
     $extend: db.Record,
@@ -19,11 +25,15 @@ module.exports = db => gpf.define({
     },
 
     getContent: function () {
-        return Promise.resolve([
-            this._allocateContent({
-                _type: "text/html",
-                _data: `<h1>${this._name}</h1>`
-            })
-        ]);
+        return new Promise((resolve, reject) => {
+            fs.readFile(path.join(__dirname, "recipe", `${this._id}.md`), (err, content) => err
+                ? reject(err)
+                : resolve(content.toString())
+            );
+        }).then(content => [this._allocateContent({
+            _type: "text/html",
+            _data: md.makeHtml(content)
+        })]);
     }
+
 });
