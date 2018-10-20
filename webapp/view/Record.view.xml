@@ -55,39 +55,10 @@
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
-			<ObjectPageSection title="Content" id="content">
+			<ObjectPageSection id="htmlContent" visible="true">
 				<subSections>
 					<ObjectPageSubSection>
-						<core:HTML id="htmlContent" />
-						<m:Title text="Line 1" />
-						<m:Title text="Line 2" />
-						<m:Title text="Line 3" />
-						<m:Title text="Line 4" />
-						<m:Title text="Line 5" />
-						<m:Title text="Line 6" />
-						<m:Title text="Line 7" />
-						<m:Title text="Line 8" />
-						<m:Title text="Line 9" />
-						<m:Title text="Line 10" />
-						<m:Title text="Line 11" />
-						<m:Title text="Line 12" />
-						<m:Title text="Line 13" />
-						<m:Title text="Line 14" />
-						<m:Title text="Line 15" />
-						<m:Title text="Line 16" />
-						<m:Title text="Line 17" />
-						<m:Title text="Line 18" />
-						<m:Title text="Line 19" />
-						<m:Title text="Line 20" />
-						<m:Title text="Line 21" />
-						<m:Title text="Line 22" />
-						<m:Title text="Line 23" />
-						<m:Title text="Line 24" />
-						<m:Title text="Line 25" />
-						<m:Title text="Line 26" />
-						<m:Title text="Line 27" />
-						<m:Title text="Line 28" />
-						<m:Title text="Line 29" />
+						<core:HTML  />
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
