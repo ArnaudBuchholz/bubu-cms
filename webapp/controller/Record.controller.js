@@ -23,6 +23,9 @@ sap.ui.define([
 				page = this.byId("page");
 			this.getView().bindElement({
 				path: sPath,
+				parameters: {
+					expand: "toContent"
+				},
 				events: {
 					change: this._onBindingChanged.bind(this),
 					dataRequested: function () {
@@ -40,7 +43,6 @@ sap.ui.define([
 				alert("problem");
 			}
 			record = binding.getBoundContext().getObject();
-			this.byId("htmlContent").setContent("<p>" + JSON.stringify(record).split(",").join("\n") + "</p>");
 			page.setModel(new JSONModel({
 				list: record.tags.split(" ").map(function (tag) {
 					return {
@@ -49,7 +51,7 @@ sap.ui.define([
 					};
 				})
 			}), "tags");
-			page.setSelectedSection(this.byId("content").getId());
+			page.setSelectedSection(this.byId("htmlContent").getId());
 			page.setBusy(false);
 		},
 
