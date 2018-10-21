@@ -37,13 +37,21 @@ attributes.NavigationProperty = gpf.define({
     },
 
     _to: null,
+    _multiplicity: "*",
 
-    to: function (Entity) {
+    to: function (Entity, multiplicity) {
         if (!Entity) {
             return this._to;
         }
         this._to = Entity;
+        if (multiplicity) {
+            this._multiplicity = multiplicity;
+        }
         return this;
+    },
+
+    getMultiplicity: function () {
+        return this._multiplicity;
     },
 
     _principal: "",
