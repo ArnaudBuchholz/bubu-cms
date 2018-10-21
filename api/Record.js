@@ -133,11 +133,14 @@ const
             }
         },
 
-        "[getContent]": [new NavigationProperty().to(Content).on({
+        "[getContent]": [new NavigationProperty().to(Content, 1).on({
             id: "recordId"
         })],
         getContent: function () {
-            return Promise.resolve([]);
+            return Promise.resolve(this._allocateContent({
+                _type: "text/plain",
+                _data: ""
+            }));
         },
 
         _allocateContent: function (properties) {
