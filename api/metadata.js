@@ -104,7 +104,7 @@ module.exports = () => {
                         .endElement() // End
                         .startElement("End", {
                             Type: `${SCHEMA_NAMESPACE}.${property.to().name}`,
-                            Multiplicity: "*",
+                            Multiplicity: property.getMultiplicity(),
                             Role: property.getToRoleName()
                         })
                         .endElement() // End
