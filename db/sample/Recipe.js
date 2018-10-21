@@ -30,10 +30,10 @@ module.exports = db => gpf.define({
                 ? reject(err)
                 : resolve(content.toString())
             );
-        }).then(content => [this._allocateContent({
+        }).then(content => this._allocateContent({
             _type: "text/html",
             _data: md.makeHtml(content)
-        })]);
+        }));
     }
 
 });
