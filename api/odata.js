@@ -29,10 +29,23 @@ const
         "string": value => `'${value}'`
     },
 
+    prepare = EntityClass => {
+        EntityClass.serialProperties = gpf.serial.get(EntityClass);
+        EntityClass.navigationProperties = attributes.navigationProperties(EntityClass);
+        EntityClass.keys = Object.keys(gpf.attributes.get(EntityClass, attributes.Key));
+        EntityClass.toJSON = buildToJSON(EntityClass);
+        if (!EntityClass.byId) {
+            EntityClass.byId = () => Promise.resolve(null);
+        }
+        if (!EntityClass.all) {
+            EntityClass.all = () => Promise.resolve([]);
+        }
+    },
+
     buildToJSON = EntityClass => {
         const
-            keys = Object.keys(gpf.attributes.get(EntityClass, attributes.Key)),
-            serialProps = gpf.serial.get(EntityClass);
+            keys = EntityClass.keys,
+            serialProps = EntityClass.serialProperties;
         return entity => {
             const
                 raw = gpf.serial.toRaw(entity, function (value, property) {
@@ -84,8 +97,26 @@ const
             $skip: 0,
             $inlinecount: "",
             $orderby: "",
-            search: ""
+            search: "",
+            $expand: ""
         }), {
+            _expand: function (EntityClass, records) {
+                if (!this.$expand) {
+                    return Promise.resolve(records)
+                }
+                const
+                    expandNames = this.$expand.split(","),
+                    expandedProperties = EntityClass.navigationProperties
+                        .filter(navigationProperty => expandNames.includes(navigationProperty.getName())),
+                    promises = []
+                ;
+                records.forEach(record => expandedProperties.forEach(navigationProperty => {
+
+                }));
+                return Promise.all(promises)
+                    .then(() => records);
+            },
+
             send: function (EntityClass, records, res) {
                 res.set("Content-Type", "application/json");
                 if (Array.isArray(records)) {
@@ -100,27 +131,21 @@ const
                     if (this.$top || this.$skip) {
                         records = records.slice(this.$skip, this.$skip + this.$top);
                     }
-                    recordSet.d.results = records.map(EntityClass.toJSON);
-                    res.send(JSON.stringify(recordSet));
+                    this._expand(EntityClass, records)
+                        .then(expandedRecords => {
+                            recordSet.d.results = finalRecords.map(EntityClass.toJSON);
+                            res.send(JSON.stringify(recordSet));
+                        });
 
                 } else {
-                    res.send(JSON.stringify({
-                        d: EntityClass.toJSON(records)
-                    }));
-
+                    this._expand(EntityClass, [records])
+                        .then(expandedRecords => res.send(JSON.stringify({
+                                d: EntityClass.toJSON(expandedRecords[0])
+                            }))
+                        );
                 }
             }
         }),
-
-    prepare = EntityClass => {
-        EntityClass.toJSON = buildToJSON(EntityClass);
-        if (!EntityClass.byId) {
-            EntityClass.byId = () => Promise.resolve(null);
-        }
-        if (!EntityClass.all) {
-            EntityClass.all = () => Promise.resolve([]);
-        }
-    },
 
     fail = (status, text, next) => {
         var error = new Error(text);
@@ -149,8 +174,8 @@ module.exports = {
         prepare(EntityClass);
 
         const
-            serialProps = gpf.serial.get(EntityClass),
-            keys = Object.keys(gpf.attributes.get(EntityClass, attributes.Key));
+            serialProps = EntityClass.serialProperties,
+            keys = EntityClass.keys;
         let
             keysMatcher;
 
@@ -163,7 +188,7 @@ module.exports = {
                 .join(",");
         }
 
-        attributes.navigationProperties(EntityClass).forEach(property => {
+        EntityClass.navigationProperties.forEach(property => {
             router.get(new RegExp(`\/${EntityClass.name}Set\\(${keysMatcher}\\)\\/${property.getName()}`), (req, res, next) =>
                 db.open()
                     .then(() => EntityClass.byId(req.params))
