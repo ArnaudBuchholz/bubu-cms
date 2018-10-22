@@ -133,12 +133,12 @@ const
             }
         },
 
-        "[getContent]": [new NavigationProperty().to(Content, 1).on({
+        "[getContent]": [new NavigationProperty().to(Content, "0..1").on({
             id: "recordId"
         })],
         getContent: function () {
             return Promise.resolve(this._allocateContent({
-                _type: "text/plain",
+                _type: "plain",
                 _data: ""
             }));
         },
