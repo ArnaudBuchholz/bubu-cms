@@ -56,9 +56,10 @@
 		</headerContent>
 		<sections>
 			<ObjectPageSection id="htmlContent" visible="true">
+				<!-- {= ${toContent/type} === 'html' }" > -->
 				<subSections>
 					<ObjectPageSubSection>
-						<core:HTML  />
+						<core:HTML content="{toContent/data}" />
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
