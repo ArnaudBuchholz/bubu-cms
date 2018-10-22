@@ -31,7 +31,7 @@ module.exports = db => gpf.define({
                 : resolve(content.toString())
             );
         }).then(content => this._allocateContent({
-            _type: "text/html",
+            _type: "html",
             _data: md.makeHtml(content)
         }));
     }
