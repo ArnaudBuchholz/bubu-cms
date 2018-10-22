@@ -48,7 +48,7 @@ const
             serialProps = EntityClass.serialProperties;
         return entity => {
             const
-                raw = gpf.serial.toRaw(entity, function (value, property) {
+                raw = gpf.serial.toRaw(entity, (value, property) => {
                     if (gpf.serial.types.datetime === property.type) {
                         if (value) {
                             return "/Date(" + value.getTime() + ")/";
@@ -74,6 +74,20 @@ const
                         : `${keyInfo.name}=${keyInfo.value}`
                     )
                     .join(",");
+            EntityClass.navigationProperties.forEach(property => {
+                const
+                    name = property.getName(),
+                    expanded = entity[name];
+                if (expanded) {
+                    if (Array.isArray(expanded.result)) {
+                        raw[name] = {
+                            results: expanded.result.map(expanded.EntityClass.toJSON)
+                        }
+                    } else {
+                        raw[name] = expanded.EntityClass.toJSON(expanded.result);
+                    }
+                }
+            });
             raw.__metadata = {
                 uri: `${EntityClass.name}Set(${uriKey})`,
                 type: `BUBU_CMS.${EntityClass.name}`
@@ -110,8 +124,17 @@ const
                         .filter(navigationProperty => expandNames.includes(navigationProperty.getName())),
                     promises = []
                 ;
-                records.forEach(record => expandedProperties.forEach(navigationProperty => {
-
+                records.forEach((record, idx) => expandedProperties.forEach(navigationProperty => {
+                    promises.push(record[navigationProperty.getMemberName()]()
+                        .then(function (subRecords) {
+                            const expandedProperty = {};
+                            expandedProperty[navigationProperty.getName()] = {
+                                EntityClass: navigationProperty.to(),
+                                result: subRecords
+                            }
+                            records[idx] = Object.assign(Object.create(records[idx]), expandedProperty);
+                        })
+                    )
                 }));
                 return Promise.all(promises)
                     .then(() => records);
@@ -133,7 +156,7 @@ const
                     }
                     this._expand(EntityClass, records)
                         .then(expandedRecords => {
-                            recordSet.d.results = finalRecords.map(EntityClass.toJSON);
+                            recordSet.d.results = expandedRecords.map(EntityClass.toJSON);
                             res.send(JSON.stringify(recordSet));
                         });
 
