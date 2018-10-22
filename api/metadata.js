@@ -82,7 +82,7 @@ module.exports = () => {
                 .then(() => gpf.forEachAsync(navigationProperties, property =>
                     promisifiedWriter
                         .startElement("NavigationProperty", {
-                            name: property.getName(),
+                            Name: property.getName(),
                             Relationship: `${SCHEMA_NAMESPACE}.${property.getRelationshipName()}`,
                             FromRole: property.getFromRoleName(),
                             ToRole: property.getToRoleName()
@@ -98,7 +98,7 @@ module.exports = () => {
                         })
                         .startElement("End", {
                             Type: `${SCHEMA_NAMESPACE}.${property.from().name}`,
-                            Multiplicity: 1,
+                            Multiplicity: "0..1",
                             Role: property.getFromRoleName()
                         })
                         .endElement() // End
