@@ -1,5 +1,5 @@
 {
-  "name": "obubu-cms",
+  "name": "bubu-cms",
   "private": true,
   "dependencies": {
     "openui5-sap.f": "openui5/packaged-sap.f",
