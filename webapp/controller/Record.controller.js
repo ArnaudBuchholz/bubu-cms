@@ -1,79 +1,84 @@
+/* global sap, history, alert */
 sap.ui.define([
-	"./BaseController",
-	"sap/m/Token",
-	"sap/ui/model/json/JSONModel"
+  './BaseController',
+  'sap/m/Token',
+  'sap/ui/model/json/JSONModel'
 
-], function(BaseController, Token, JSONModel) {
-	"use strict";
+], function (BaseController, Token, JSONModel) {
+  'use strict'
 
-	var URLHelper = sap.m.URLHelper,
-		REGEX_PHONENUMBER = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
+  var URLHelper = sap.m.URLHelper
+  var REGEX_PHONENUMBER = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/
 
-	return BaseController.extend("bubu-cms.controller.Record", {
+  return BaseController.extend('bubu-cms.controller.Record', {
 
-		onInit: function () {
-			this._getRouter().getRoute("record").attachPatternMatched(this._onDisplayRecord, this);
-		},
+    onInit: function () {
+      this._getRouter().getRoute('record').attachPatternMatched(this._onDisplayRecord, this)
+    },
 
-		_onDisplayRecord: function (event) {
-			var recordId = event.getParameter("arguments").recordId,
-				sPath = "/" + this.getOwnerComponent().getModel().createKey("RecordSet", {
-					id: recordId
-				}),
-				page = this.byId("page");
-			this.getView().bindElement({
-				path: sPath,
-				parameters: {
-					expand: "toContent"
-				},
-				events: {
-					change: this._onBindingChanged.bind(this),
-					dataRequested: function () {
-						page.setBusy(true);
-					}
-				}
-			});
-		},
+    _onDisplayRecord: function (event) {
+      var recordId = event.getParameter('arguments').recordId
 
-		_onBindingChanged: function () {
-			var page = this.byId("page"),
-				binding = this.getView().getElementBinding(),
-				record;
-			if (!binding.getBoundContext()) {
-				alert("problem");
-			}
-			record = binding.getBoundContext().getObject();
-			page.setModel(new JSONModel({
-				list: record.tags.split(" ").map(function (tag) {
-					return {
-						editable: tag !== record.type,
-						id: tag
-					};
-				})
-			}), "tags");
-			page.setSelectedSection(this.byId("htmlContent").getId());
-			page.setBusy(false);
-		},
+      var sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
+        id: recordId
+      })
 
-		onBack: function () {
-			history.back();
-		},
+      var page = this.byId('page')
+      this.getView().bindElement({
+        path: sPath,
+        parameters: {
+          expand: 'toContent'
+        },
+        events: {
+          change: this._onBindingChanged.bind(this),
+          dataRequested: function () {
+            page.setBusy(true)
+          }
+        }
+      })
+    },
 
-		onProperties: function () {
-			this.byId("page").setSelectedSection(this.byId("properties").getId());
-		},
+    _onBindingChanged: function () {
+      var page = this.byId('page')
 
-		onPressStatus: function (event) {
-			var statusText = event.getSource().getText(),
-				phone = REGEX_PHONENUMBER.exec(statusText),
-				country;
-			if (phone) {
-				country = phone[0] || "1";
-				URLHelper.triggerTel("+" + country + phone[2] + phone[3] + phone[4]);
-				return;
-			}
-		}
+      var binding = this.getView().getElementBinding()
 
-	});
+      var record
+      if (!binding.getBoundContext()) {
+        alert('problem')
+      }
+      record = binding.getBoundContext().getObject()
+      page.setModel(new JSONModel({
+        list: record.tags.split(' ').map(function (tag) {
+          return {
+            editable: tag !== record.type,
+            id: tag
+          }
+        })
+      }), 'tags')
+      page.setSelectedSection(this.byId('htmlContent').getId())
+      page.setBusy(false)
+    },
 
-});
+    onBack: function () {
+      history.back()
+    },
+
+    onProperties: function () {
+      this.byId('page').setSelectedSection(this.byId('properties').getId())
+    },
+
+    onPressStatus: function (event) {
+      var statusText = event.getSource().getText()
+
+      var phone = REGEX_PHONENUMBER.exec(statusText)
+
+      var country
+      if (phone) {
+        country = phone[0] || '1'
+        URLHelper.triggerTel('+' + country + phone[2] + phone[3] + phone[4])
+      }
+    }
+
+  })
+})
