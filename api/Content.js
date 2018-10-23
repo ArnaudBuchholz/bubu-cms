@@ -1,37 +1,37 @@
-"use strict";
+'use strict'
 
-const
-    attributes = require("./attributes.js"),
-    key = new attributes.Key(),
+const gpf = global.gpf || require('gpf-js/source')
+const attributes = require('./attributes.js')
+const key = new attributes.Key()
 
-    Content = gpf.define({
-        $class: "Content",
+const Content = gpf.define({
+  $class: 'Content',
 
-        "[_recordId]": [key, new gpf.attributes.Serializable({
-            name: "recordId",
-            type: gpf.serial.types.string,
-            required: true
-        })],
-        _recordId: "",
+  '[_recordId]': [key, new gpf.attributes.Serializable({
+    name: 'recordId',
+    type: gpf.serial.types.string,
+    required: true
+  })],
+  _recordId: '',
 
-        "[_type]": [key, new gpf.attributes.Serializable({
-            name: "type",
-            type: gpf.serial.types.string,
-            required: true
-        })],
-        _type: "",
+  '[_type]': [key, new gpf.attributes.Serializable({
+    name: 'type',
+    type: gpf.serial.types.string,
+    required: true
+  })],
+  _type: '',
 
-        "[_data]": [new gpf.attributes.Serializable({
-            name: "data",
-            type: gpf.serial.types.string,
-            required: true
-        })],
-        _data: "",
+  '[_data]': [new gpf.attributes.Serializable({
+    name: 'data',
+    type: gpf.serial.types.string,
+    required: true
+  })],
+  _data: '',
 
-        constructor: function (recordId) {
-            this._recordId = recordId;
-        }
+  constructor: function (recordId) {
+    this._recordId = recordId
+  }
 
-    });
+})
 
-module.exports = Content;
+module.exports = Content
