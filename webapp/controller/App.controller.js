@@ -1,11 +1,11 @@
+/* global sap */
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
+  'sap/ui/core/mvc/Controller'
 
-], function(Controller) {
-	"use strict";
+], function (Controller) {
+  'use strict'
 
-	return Controller.extend("bubu-cms.controller.App", {
+  return Controller.extend('bubu-cms.controller.App', {
 
-	});
-
-});
+  })
+})
