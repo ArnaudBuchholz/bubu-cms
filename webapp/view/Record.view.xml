@@ -55,11 +55,11 @@
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
-			<ObjectPageSection id="htmlContent" visible="true">
+			<ObjectPageSection id="htmlSection" visible="true">
 				<!-- {= ${toContent/type} === 'html' }" > -->
 				<subSections>
 					<ObjectPageSubSection>
-						<core:HTML content="{toContent/data}" />
+						<core:HTML id="htmlContent" content="{toContent/data}" />
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
