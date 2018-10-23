@@ -56,7 +56,8 @@ sap.ui.define([
           }
         })
       }), 'tags')
-      page.setSelectedSection(this.byId('htmlContent').getId())
+      page.setSelectedSection(this.byId('htmlSection').getId())
+      this.byId('htmlContent').invalidate()
       page.setBusy(false)
     },
 
