@@ -1,6 +1,6 @@
-"use strict";
+'use strict'
 
 module.exports = [
-    require("./Record"),
-    require("./Content")
-];
+  require('./Record'),
+  require('./Content')
+]
