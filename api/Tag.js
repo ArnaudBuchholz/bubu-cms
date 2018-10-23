@@ -1,75 +1,75 @@
-"use strict";
+'use strict'
 
-let
-    tag;
+let tag
 
-const
-    Record = require("./Record"),
-    MinDate = new Date(0),
+const gpf = global.gpf || require('gpf-js/source')
+const Record = require('./Record')
+const MinDate = new Date(0)
 
-    Tag = gpf.define({
-        $class: "Tag",
-        $extend: Record,
+const Tag = gpf.define({
+  $class: 'Tag',
+  $extend: Record,
 
-        _type: "tag",
-        _records: [],
-        _number: "0",
+  _type: 'tag',
+  _records: [],
+  _number: '0',
 
-        usedBy: function (record) {
-            this._records.push(record);
-            this._number = this._records.length.toString();
-        },
+  usedBy: function (record) {
+    this._records.push(record)
+    this._number = this._records.length.toString()
+  },
 
-        records: function (RecordType) {
-            if (RecordType) {
-                return this._records.filter(record => record instanceof RecordType);
-            } else {
-                return this._records;
-            }
-        },
+  records: function (RecordType) {
+    if (RecordType) {
+      return this._records.filter(record => record instanceof RecordType)
+    } else {
+      return this._records
+    }
+  },
 
-        constructor: function (name) {
-            this._records = [];
-            this._id = "#" + name;
-            this._name = name;
-            this._created = MinDate;
-            this._modified = MinDate;
-            Record.load([this]);
-            if (tag) {
-                tag.usedBy(this);
-            }
-        },
+  constructor: function (name) {
+    this._records = []
+    this._id = '#' + name
+    this._name = name
+    this._created = MinDate
+    this._modified = MinDate
+    Record.load([this])
+    if (tag) {
+      tag.usedBy(this)
+    }
+  },
 
-        toString: function () {
-            return this._name;
-        }
+  toString: function () {
+    return this._name
+  }
 
-    }),
+})
 
-    tags = [],
-    tagsByTag = {};
+const tags = []
+
+const tagsByTag = {}
 
 Object.assign(Tag, {
 
-    all: () => tags,
-    get: tag => tagsByTag[tag.toLowerCase()],
+  all: () => tags,
+  get: tag => tagsByTag[tag.toLowerCase()],
 
-    allocate: tag => {
-        const loweredTag = tag.toLowerCase();
-        let tagRecord = tagsByTag[loweredTag];
-        if (!tagRecord) {
-            tagRecord = new Tag(loweredTag);
-            tags.push(tagRecord);
-            tagsByTag[loweredTag] = tagRecord;
-        }
-        return tagRecord;
+  allocate: tag => {
+    const loweredTag = tag.toLowerCase()
+    let tagRecord = tagsByTag[loweredTag]
+    if (!tagRecord) {
+      tagRecord = new Tag(loweredTag)
+      tags.push(tagRecord)
+      tagsByTag[loweredTag] = tagRecord
     }
+    return tagRecord
+  }
 
-});
+})
 
-tag = Tag.allocate("tag");
+tag = Tag.allocate('tag')
 
 // X-dependency
-Record.Tag = Tag;
+Record.Tag = Tag
 
-module.exports = Tag;
+module.exports = Tag
