@@ -59,7 +59,7 @@
 				<!-- {= ${toContent/type} === 'html' }" > -->
 				<subSections>
 					<ObjectPageSubSection>
-						<core:HTML id="htmlContent" content="{toContent/data}" />
+						<core:HTML id="htmlContent" content="{toContent/data}" preferDOM="false"/>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
