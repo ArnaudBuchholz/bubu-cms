@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "node ./node_modules/standard/bin/cmd --fix",
-    "postinstall": "bower install"
+    "postinstall": "ui5 build --a"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,14 @@
   },
   "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
   "dependencies": {
+    "@openui5/sap.f": "^1.60.2",
+    "@openui5/sap.m": "^1.60.2",
+    "@openui5/sap.ui.core": "^1.60.2",
+    "@openui5/sap.ui.layout": "^1.60.2",
+    "@openui5/sap.ui.unified": "^1.60.2",
+    "@openui5/sap.uxap": "^1.60.2",
+    "@openui5/themelib_sap_belize": "^1.60.2",
+    "@ui5/cli": "^0.2.7",
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
