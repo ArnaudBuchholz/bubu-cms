@@ -17,6 +17,10 @@ bower_components/
 
 .idea
 
+# OpenUI5 dist
+
+dist/
+
 # Temporary files
 
 tmp/
