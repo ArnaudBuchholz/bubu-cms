@@ -32,7 +32,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
     "express": "^4.16.3",
-    "gpf-js": "~0.2.7",
+    "gpf-js": "^0.2.8",
     "grunt": "^1.0.3",
     "morgan": "^1.9.0",
     "nanoid": "^1.2.3",
