@@ -41,5 +41,16 @@
   },
   "devDependencies": {
     "standard": "^12.0.1"
+  },
+  "ui5": {
+    "dependencies": [
+      "@openui5/sap.f",
+      "@openui5/sap.m",
+      "@openui5/sap.ui.core",
+      "@openui5/sap.ui.layout",
+      "@openui5/sap.ui.unified",
+      "@openui5/sap.uxap",
+      "@openui5/themelib_sap_belize"
+    ]
   }
 }
