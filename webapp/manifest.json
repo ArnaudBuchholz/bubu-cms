@@ -15,10 +15,13 @@
 	"sap.ui5": {
 		"dependencies": {
 			"libs": {
+				"sap.m": {
+					"lazy": false
+				},
 				"sap.ui.core": {
 					"lazy": false
 				},
-				"sap.m": {
+				"sap.ui.unified": {
 					"lazy": false
 				}
 			}
