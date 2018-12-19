@@ -1,0 +1,19 @@
+*Extracted from [Beignes sucrés](https://www.recettesquebecoises.com/recette/18649-beignes-sucres)*
+￼
+# Ingrédients
+* 2 Tasses, 500 ml de farine
+* 1 tasse, 250 ml de lait
+* 3/4 tasse, 200 ml de sucre en poudre
+* 2 c à soupe, 30 ml de levure chimique
+* 1 c à thé, 5 ml de sel
+* 1 oeuf
+* 1/2 tasse, 125 ml de beurre
+* Huile pour la friture
+* Canelle
+* Sucre en poudre, pour décorer
+
+# Préparation
+Mélanger le sel, la levure, le sucre et la farine. Creuser un trou au milieu, ajouter le beurre, l'oeuf, le lait et pétrir jusqu'à l'obtention d'une pâte.
+Former des petites boules et les aplatir à la main. Faire ensuite un petit trou au milieu de chaque boule pour faire des beignes. Les frire jusqu'à ce qu'ils soient bien dorés.
+Les égoutter à l'aide de papier absorbant. Mélanger le sucre en poudre et la cannelle et en saupoudrer les beignets. Servir bien chaud.
+​
