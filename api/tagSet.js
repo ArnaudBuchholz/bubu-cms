@@ -16,8 +16,14 @@ class TagSet extends Set {
     return Promise.resolve(tagsById(id.toLowerCase()))
   }
 
-  function query (sort, search) {
-    return Promise.resolve([]) // Not implemented
+  function search () {
+    return Promise.resolve(tags)
+  }
+
+  function sort (searchResult) {
+    return searchResult.sort((tag1, tag2) => {
+      return tag1.name.localeCompare(tag2.name)
+    })
   }
 
   function allocate () {
