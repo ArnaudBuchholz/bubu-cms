@@ -1,16 +1,12 @@
 'use strict'
 
-const config = require('../config')
 const Record = require('./Record')
 
-let opened
-
-module.exports = {
-
-  open: () => {
-    if (!opened) {
+class Database {
+  open () {
+    if (!this.opened) {
       try {
-        opened = require(`../db/${config.db}/init`)({
+        this.opened = require(`../db/${this._name}/init`)({
           Record: Record,
           loadRecords: array => Record.load(array)
         })
@@ -18,7 +14,19 @@ module.exports = {
         console.error(e)
       }
     }
-    return opened
+    return this.opened
   }
 
+  constructor (name) {
+    this._name = name
+  }
+}
+
+const databases = {}
+
+module.exports = name => {
+  if (!databases[name]) {
+    databases[name] = new Database(name)
+  }
+  return databases[name]
 }
