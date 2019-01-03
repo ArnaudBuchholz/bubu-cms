@@ -1,180 +1,98 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
-const attributes = require('./attributes')
-const key = new attributes.Key()
-const sortable = new attributes.Sortable()
-const filterable = new attributes.Filterable()
-const updatable = new attributes.Updatable()
-const creatable = new attributes.Creatable()
-const NavigationProperty = attributes.NavigationProperty
-const Content = require('./Content')
+const recordSet = require('./recordSet')
+const tagSet = require('./tagSet')
 
-const Record = gpf.define({
-  $class: 'Record',
+class Record {
 
-  '[_id]': [key, new gpf.attributes.Serializable({
-    name: 'id',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _id: '',
+  get id () {
+    return this._id
+  }
 
-  '[_type]': [new gpf.attributes.Serializable({
-    name: 'type',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _type: '',
+  get type () {
+    return this._type
+  }
 
-  '[_name]': [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
-    name: 'name',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _name: '',
+  get name () {
+    return this._name
+  }
 
-  '[_icon]': [creatable, updatable, new gpf.attributes.Serializable({
-    name: 'icon',
-    type: gpf.serial.types.string
-  })],
-  _icon: '',
+  get icon () {
+    return this._icon
+  }
 
-  '[_number]': [creatable, updatable, filterable, new gpf.attributes.Serializable({
-    name: 'number',
-    type: gpf.serial.types.string
-  })],
-  _number: '',
+  get number () {
+    return this._number
+  }
 
-  '[_rating]': [creatable, updatable, sortable, filterable, new gpf.attributes.Serializable({
-    name: 'rating',
-    type: gpf.serial.types.integer
-  })],
-  _rating: 0,
+  get rating () {
+    return this._rating || 0
+  }
 
-  '[_created]': [creatable, sortable, filterable, new gpf.attributes.Serializable({
-    name: 'created',
-    type: gpf.serial.types.datetime,
-    required: true
-  })],
-  _created: null,
+  get created () {
+    return this._created
+  }
 
-  '[_modified]': [creatable, sortable, filterable, new gpf.attributes.Serializable({
-    name: 'modified',
-    type: gpf.serial.types.datetime
-  })],
-  _modified: null,
+  get modified () {
+    return this._modified
+  }
 
-  '[_statusText1]': [creatable, filterable, new gpf.attributes.Serializable({
-    name: 'statusText1',
-    type: gpf.serial.types.string
-  })],
-  _statusText1: '',
+  get statusText1 () {
+    return this._statusText1
+  }
 
-  '[_statusState1]': [new gpf.attributes.Serializable({
-    name: 'statusState1',
-    type: gpf.serial.types.string
-  })],
-  _statusState1: '',
+  get statusState1 () {
+    return this._statusState1
+  }
 
-  '[_statusText2]': [creatable, filterable, new gpf.attributes.Serializable({
-    name: 'statusText2',
-    type: gpf.serial.types.string
-  })],
-  _statusText2: '',
+  get statusText2 () {
+    return this._statusText2
+  }
 
-  '[_statusState2]': [new gpf.attributes.Serializable({
-    name: 'statusState2',
-    type: gpf.serial.types.string
-  })],
-  _statusState2: '',
+  get statusState2 () {
+    return this._statusState2
+  }
 
-  '[_tags]': [new gpf.attributes.Serializable({
-    name: 'tags',
-    type: gpf.serial.types.string
-  })],
-  _tags: [],
+  get tags () {
+    return this._tags
+  }
 
   addTag: function (tag) {
-    const tagRecord = Record.Tag.allocate(tag)
+    const tagRecord = tagSet.allocate(tag)
     this._tags.push(tagRecord)
-    tagRecord.usedBy(this)
+    tagRecord.add(this)
     return tagRecord
-  },
+  }
 
-  hasTag: function (tag) {
-    return this._tags.indexOf(tag) !== -1
-  },
-
-  search: function (term) {
+  function search (term) {
     return [
-      this._name,
-      this._statusText1,
-      this._statusText2
-    ].some(value => value.indexOf(term) !== -1)
-  },
+      this.name,
+      this.statusText1,
+      this.statusText2
+    ].some(value => value.includes(term))
+  }
 
-  constructor: function (raw) {
-    this._tags = []
-    this._type = this.addTag(this.constructor.name)._name
-    if (raw.tags) {
-      raw.tags.split(' ').forEach(tag => this.addTag(tag))
-      delete raw.tags
-    }
-    if (typeof raw.rating === 'string') {
-      raw.rating = parseInt(raw.rating, 10)
-    }
-    gpf.serial.fromRaw(this, raw)
-    if (!this._created) {
-      this._created = new Date()
-    }
-    if (!this._modified) {
-      this._modified = this._created
-    }
-  },
-
-  '[getContent]': [new NavigationProperty().to(Content, '0..1').on({
-    id: 'recordId'
-  })],
   getContent: function () {
     return Promise.resolve(this._allocateContent({
       _type: 'plain',
       _data: ''
     }))
-  },
-
-  _allocateContent: function (properties) {
-    return Object.assign(new Content(this._id), properties)
   }
 
-})
-
-const records = []
-
-const recordsById = {}
-
-Object.assign(Record, {
-
-  STATE: {
-    hide: '',
-    error: 'Error',
-    show: 'None',
-    success: 'Success',
-    warning: 'Warning'
-  },
-
-  all: () => Promise.resolve(records),
-  byId: ids => Promise.resolve(recordsById[ids[0]]),
-  searchable: true,
-
-  load: array => {
-    array.forEach(record => {
-      records.push(record)
-      recordsById[record._id] = record
-    })
-    return Promise.resolve()
+  constructor () {
+    this._tags = []
+    this._type = this.addTag(this.constructor.name).name
+    recordSet.add(this)
   }
 
-})
+}
 
-module.exports = Record
+gpf.define.import(Record, {
+
+  id: [new gpf.attributes.Serializable({
+    name: 'id',
+    type: gpf.serial.types.string,
+    required: true
+  })],
+
+})
