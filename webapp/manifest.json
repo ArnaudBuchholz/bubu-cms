@@ -4,7 +4,7 @@
 		"type": "application",
 		"dataSources": {
 			"mainService": {
-				"uri": "/api/",
+				"uri": "/api/odata/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0"
