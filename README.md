@@ -1,25 +1,23 @@
 # bubu-cms
-Small, simple &amp; flat CMS for bubu's family
+Small, simple &amp; standalone CMS for my family
+
+# Purpose
+
+My family owns lots of data (recipes, movies, contacts...) and we wanted a common way to access it without the pain
+of installing lots of software.
+
+The purpose is to offer a simple interface to browse and display data.
 
 # Main concepts
 
-Our family has lots of data (recipes, contacts, appointments) and we wanted a common way to access it without the pain
-of installing lots of software.
+## interface
 
-# Plan
+The main interface is a list of record offering sorting & searching options. When a list item is selected, the record
+details are displayed.
 
-STEP 1: backup all recipes and provide an interface to access them
-    Search by 'title'
-STEP 2: adds tags to documents to categorize them
+## Backend
 
-Web structure:
+The backend exposes records with a set of predefined properties (name, icon, number, rating...). Each record can be
+qualified with tags (which are exposed separately) and may have a content (initially, HTML).
 
-/api/ => API
-/ui/ => WEB UI
-
-Routes:
-/list/
-/view/<id>
-
-Constraints:
-flat files, limited storage
+Databases are loaded once for all in memory and can be composed of flat files (CSV, JSON) or even generated content.
