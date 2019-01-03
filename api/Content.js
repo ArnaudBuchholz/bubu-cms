@@ -1,20 +1,18 @@
 'use strict'
 
 const gpf = global.gpf || require('gpf-js/source')
-const attributes = require('./attributes.js')
-const key = new attributes.Key()
 
 const Content = gpf.define({
   $class: 'Content',
 
-  '[_recordId]': [key, new gpf.attributes.Serializable({
+  '[_recordId]': [new gpf.attributes.Serializable({
     name: 'recordId',
     type: gpf.serial.types.string,
     required: true
   })],
   _recordId: '',
 
-  '[_type]': [key, new gpf.attributes.Serializable({
+  '[_type]': [new gpf.attributes.Serializable({
     name: 'type',
     type: gpf.serial.types.string,
     required: true
