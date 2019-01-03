@@ -14,7 +14,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 
-app.use('/resources', express.static(path.join(__dirname, "dist/resources")))
+app.use('/resources', express.static(path.join(__dirname, 'dist/resources')))
 app.use(express.static(path.join(__dirname, 'webapp')))
 app.use('/api', api)
 app.use('/images', express.static(path.join(__dirname, `db/${config.db}/images`)))
