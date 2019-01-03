@@ -1,5 +1,6 @@
 'use strict'
 
 module.exports = {
-  db: 'sample'
+  defaultDB: 'sample',
+  httpPort: 3000
 }
