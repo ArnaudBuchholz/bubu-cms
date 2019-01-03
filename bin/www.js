@@ -1,9 +1,10 @@
 'use strict'
 
 const app = require('../app')
-const debug = require('debug')('foo:server')
+const debug = require('debug')('bubu-cms')
 const http = require('http')
-const port = 3000
+const config = require('../config')
+const port = config.httpPort || 3000
 
 app.set('port', port)
 
