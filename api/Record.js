@@ -4,7 +4,6 @@ const recordSet = require('./recordSet')
 const tagSet = require('./tagSet')
 
 class Record {
-
   get id () {
     return this._id
   }
@@ -57,14 +56,14 @@ class Record {
     return this._tags
   }
 
-  addTag: function (tag) {
+  addTag (tag) {
     const tagRecord = tagSet.allocate(tag)
     this._tags.push(tagRecord)
     tagRecord.add(this)
     return tagRecord
   }
 
-  function search (term) {
+  search (term) {
     return [
       this.name,
       this.statusText1,
@@ -72,7 +71,7 @@ class Record {
     ].some(value => value.includes(term))
   }
 
-  getContent: function () {
+  getContent () {
     return Promise.resolve(this._allocateContent({
       _type: 'plain',
       _data: ''
@@ -84,15 +83,6 @@ class Record {
     this._type = this.addTag(this.constructor.name).name
     recordSet.add(this)
   }
-
 }
 
-gpf.define.import(Record, {
-
-  id: [new gpf.attributes.Serializable({
-    name: 'id',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-
-})
+module.exports = Record
