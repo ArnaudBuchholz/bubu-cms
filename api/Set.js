@@ -32,7 +32,7 @@ class Set {
   }
 
   query (search = '', sort = { field: 'name', ascending: true }) {
-    return this._search(search).then(searchResult => this._sort(searchResult, sort))
+    return this.search(search).then(searchResult => this.sort(searchResult, sort))
   }
 }
 
