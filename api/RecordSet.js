@@ -9,21 +9,20 @@ const records = []
 const recordsById = {}
 
 class RecordSet extends Set {
-
-  function add (record) {
+  add (record) {
     records.push(record)
     recordsById[record.id] = record
   }
 
-  function all () {
+  all () {
     return Promise.resolve(records)
   }
 
-  function byId (id) {
+  byId (id) {
     return Promise.resolve(recordsById[id])
   }
 
-  function search (criteria) {
+  search (criteria) {
     const
       searchTerms = criteria
         .split(' ')
@@ -55,11 +54,6 @@ class RecordSet extends Set {
     }
     return Promise.resolve(searchResult)
   }
-
-  function sort (searchResult) {
-
-  }
-
 }
 
 module.exports = new RecordSet()
