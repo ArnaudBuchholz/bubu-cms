@@ -1,7 +1,6 @@
 'use strict'
 
 class Tag {
-
   get name () {
     return this._name
   }
@@ -14,11 +13,11 @@ class Tag {
     return this._records
   }
 
-  add: function (record) {
+  add (record) {
     this._records.push(record)
-  },
+  }
 
-  remove: function (record) {
+  remove (record) {
     this._records = this._records.filter(candidate => candidate !== record)
   }
 
@@ -26,5 +25,6 @@ class Tag {
     this._name = name
     this._records = []
   }
-
 }
+
+module.exports = Tag
