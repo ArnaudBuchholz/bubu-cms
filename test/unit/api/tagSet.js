@@ -2,7 +2,7 @@ const assert = require('assert')
 const Tag = require('../../../api/Tag')
 const TagSet = require('../../../api/TagSet')
 
-describe('/api/tagSet.js', () => {
+describe('/api/TagSet.js', () => {
   describe('allocate', () => {
     let tagSet
     let testTag
