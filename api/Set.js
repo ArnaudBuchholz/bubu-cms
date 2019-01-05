@@ -1,6 +1,10 @@
 'use strict'
 
 class Set {
+  get database () {
+    return this._database
+  }
+
   all () {
     return Promise.resolve([])
   }
@@ -33,6 +37,10 @@ class Set {
 
   query (search = '', sort = { field: 'name', ascending: true }) {
     return this.search(search).then(searchResult => this.sort(searchResult, sort))
+  }
+
+  constructor (database) {
+    this._database = database
   }
 }
 
