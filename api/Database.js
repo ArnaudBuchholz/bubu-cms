@@ -1,10 +1,10 @@
 'use strict'
 
+const Record = require('./Record')
 const RecordSet = require('./RecordSet')
 const TagSet = require('./TagSet')
 
 class Database {
-
   get records () {
     return this._recordSet
   }
@@ -29,8 +29,8 @@ class Database {
 
   constructor (name) {
     this._name = name
-    this._recordSet = new RecordSet()
-    this._tagSet = new TagSet()
+    this._recordSet = new RecordSet(this)
+    this._tagSet = new TagSet(this)
   }
 }
 
