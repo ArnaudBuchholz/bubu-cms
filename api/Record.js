@@ -1,9 +1,10 @@
 'use strict'
 
-const recordSet = require('./recordSet')
-const tagSet = require('./tagSet')
-
 class Record {
+  get database () {
+    return this._database
+  }
+
   get id () {
     return this._id
   }
@@ -57,7 +58,7 @@ class Record {
   }
 
   addTag (tag) {
-    const tagRecord = tagSet.allocate(tag)
+    const tagRecord = this._database.tags.allocate(tag)
     this._tags.push(tagRecord)
     tagRecord.add(this)
     return tagRecord
@@ -78,10 +79,11 @@ class Record {
     }))
   }
 
-  constructor () {
+  constructor (database) {
+    this._database = database
     this._tags = []
     this._type = this.addTag(this.constructor.name).name
-    recordSet.add(this)
+    this._database.records.add(this)
   }
 }
 
