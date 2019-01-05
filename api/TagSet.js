@@ -27,8 +27,8 @@ class TagSet extends Set {
     return tagRecord
   }
 
-  constructor () {
-    super()
+  constructor (database) {
+    super(database)
     this._tags = []
     this._tagsById = {}
   }
