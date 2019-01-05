@@ -23,7 +23,7 @@ const checkNames = (result, expected) => {
   names.forEach((name, index) => assert(name === expected[index]))
 }
 
-describe('Set.js', () => {
+describe('/api/Set.js', () => {
   describe('Generic sort function', () => {
     it('sorts by name ascending by default', () => {
       var set = new Set()
