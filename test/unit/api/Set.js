@@ -1,3 +1,5 @@
+'use strict'
+
 const assert = require('assert')
 const Set = require('../../../api/Set')
 
