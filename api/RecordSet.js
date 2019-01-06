@@ -1,7 +1,6 @@
 'use strict'
 
 const Set = require('./Set')
-const tagSet = require('./tagSet')
 const tagPrefix = '#'
 const tagPrefixLength = tagPrefix.length
 
