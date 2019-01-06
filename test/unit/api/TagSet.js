@@ -1,3 +1,5 @@
+'use strict'
+
 const assert = require('assert')
 const Tag = require('../../../api/Tag')
 const TagSet = require('../../../api/TagSet')
