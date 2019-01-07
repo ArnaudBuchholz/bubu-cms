@@ -72,7 +72,7 @@ class Record {
     ].some(value => value.includes(term))
   }
 
-  getContent () {
+  get content () {
     return Promise.resolve(this._allocateContent({
       _type: 'plain',
       _data: ''
