@@ -29,12 +29,26 @@ class Record {
     return this._rating || 0
   }
 
+  set rating (value) {
+    if (typeof value !== 'number' || value < 0 || value > 5) {
+      throw new Error('Invalid value')
+    }
+    this._rating = value
+  }
+
   get created () {
     return this._created
   }
 
   get modified () {
     return this._modified
+  }
+
+  set modified (value) {
+    if (!(value instanceof Date)) {
+      throw new Error('Invalid value')
+    }
+    this._modified = value
   }
 
   get statusText1 () {
