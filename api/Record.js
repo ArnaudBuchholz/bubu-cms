@@ -83,7 +83,7 @@ class Record {
       this.name,
       this.statusText1,
       this.statusText2
-    ].some(value => value.includes(term))
+    ].some(value => (value || '').includes(term))
   }
 
   get content () {
