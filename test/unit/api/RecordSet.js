@@ -5,9 +5,7 @@ const Database = require('../../../api/Database')
 const Record = require('../../../api/Record')
 
 const checkNames = (result, expected) => {
-  const names = result.map(item => item.name)
-  assert(names.length === expected.length)
-  names.forEach((name, index) => assert(name === expected[index]))
+  assert.strictEqual(result.map(item => item.name).join(''), expected)
 }
 
 describe('/api/RecordSet.js', () => {
@@ -25,15 +23,37 @@ describe('/api/RecordSet.js', () => {
     beforeEach(() => {
       db = new Database('test');
       [{
-        name: 'a'
+        name: 'a',
+        tags: ['vowel', 'accent-placeholder']
       }, {
         name: 'b'
+      }, {
+        name: 'c',
+        tags: ['accent-placeholder']
+      }, {
+        name: 'd'
+      }, {
+        name: 'e',
+        tags: ['vowel', 'accent-placeholder']
       }].forEach(data => new MyRecord(db, data))
     })
-    it('retreives records', () => {
+    it('retreives records by name', () => {
       return db.records.query('a')
         .then(records => {
           checkNames(records, 'a')
+        })
+    })
+    it('retreives records by tags (type)', () => {
+      return db.records.query('#myrecord')
+        .then(records => {
+          checkNames(records, 'abcde')
+        })
+    })
+    it('retreives records by tags (multiple)', () => {
+      debugger
+      return db.records.query('#myrecord #accent-placeholder')
+        .then(records => {
+          checkNames(records, 'ace')
         })
     })
   })
