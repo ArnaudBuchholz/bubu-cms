@@ -20,9 +20,7 @@ const unsortedArray = [{
 }]
 
 const checkNames = (result, expected) => {
-  const names = result.map(item => item.name)
-  assert(names.length === expected.length)
-  names.forEach((name, index) => assert(name === expected[index]))
+  assert.strictEqual(result.map(item => item.name).join(''), expected)
 }
 
 describe('/api/Set.js', () => {
