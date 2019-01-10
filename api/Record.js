@@ -78,6 +78,10 @@ class Record {
     return tagRecord
   }
 
+  hasTag (tag) {
+    return this._tags.includes(tag)
+  }
+
   search (term) {
     return [
       this.name,
