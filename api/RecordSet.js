@@ -18,7 +18,7 @@ class RecordSet extends Set {
     return Promise.resolve(this._recordsById[id])
   }
 
-  search (criteria) {
+  async search (criteria) {
     const
       searchTerms = criteria
         .split(' ')
@@ -27,7 +27,7 @@ class RecordSet extends Set {
 
     const tags = searchTerms
       .filter(term => term.indexOf(tagPrefix) === 0)
-      .map(term => this.database.tags.byId(term.substr(tagPrefixLength)))
+      .map(term => /* await */ this.database.tags.byId(term.substr(tagPrefixLength)))
       .filter(tag => tag)
       .sort((tag1, tag2) => tag1.count - tag2.count)
     // Less references first
@@ -43,12 +43,12 @@ class RecordSet extends Set {
         searchResult = searchResult.filter(record => record.hasTag(tag))
       })
     } else {
-      searchResult = this.database.records
+      searchResult = await this.database.records.all()
     }
     if (terms.length) {
       searchResult = searchResult.filter(record => terms.some(term => record.search(term))) // OR
     }
-    return Promise.resolve(searchResult)
+    return searchResult
   }
 
   constructor (database) {
