@@ -24,6 +24,7 @@ describe('/api/RecordSet.js', () => {
       db = new Database('test');
       [{
         name: 'a',
+        statusText1: 'A',
         tags: ['vowel', 'accent-placeholder']
       }, {
         name: 'b'
@@ -34,6 +35,7 @@ describe('/api/RecordSet.js', () => {
         name: 'd'
       }, {
         name: 'e',
+        statusText2: 'egg',
         tags: ['vowel', 'accent-placeholder']
       }].forEach(data => new MyRecord(db, data))
     })
@@ -50,10 +52,21 @@ describe('/api/RecordSet.js', () => {
         })
     })
     it('retreives records by tags (multiple)', () => {
-      debugger
       return db.records.query('#myrecord #accent-placeholder')
         .then(records => {
           checkNames(records, 'ace')
+        })
+    })
+    it('retreives records by tags and one search term', () => {
+      return db.records.query('#myrecord #accent-placeholder egg')
+        .then(records => {
+          checkNames(records, 'e')
+        })
+    })
+    it('retreives records by tags and multiple search terms (OR)', () => {
+      return db.records.query('#myrecord #accent-placeholder egg A')
+        .then(records => {
+          checkNames(records, 'ae')
         })
     })
   })
