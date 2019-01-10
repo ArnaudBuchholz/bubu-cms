@@ -13,8 +13,8 @@ class Set {
     return Promise.resolve()
   }
 
-  search (criteria) {
-    return Promise.resolve([])
+  async search (criteria) {
+    return []
   }
 
   sort (searchResult, { field, ascending }) {
