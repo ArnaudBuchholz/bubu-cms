@@ -12,8 +12,8 @@ class TagSet extends Set {
     return Promise.resolve(this._tagsById[id.toLowerCase()])
   }
 
-  search () {
-    return Promise.resolve(this._tags)
+  async search () {
+    return this._tags
   }
 
   allocate (tag) {
