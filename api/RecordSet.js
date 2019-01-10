@@ -18,6 +18,13 @@ class RecordSet extends Set {
     return Promise.resolve(this._recordsById[id])
   }
 
+  _getTags (searchTerms) {
+    return Promise.all(searchTerms
+      .filter(term => term.indexOf(tagPrefix) === 0)
+      .map(term => this.database.tags.byId(term.substr(tagPrefixLength)))
+    )
+  }
+
   async search (criteria) {
     const
       searchTerms = criteria
@@ -25,12 +32,10 @@ class RecordSet extends Set {
         .map(term => term.trim())
         .filter(term => term)
 
-    const tags = searchTerms
-      .filter(term => term.indexOf(tagPrefix) === 0)
-      .map(term => /* await */ this.database.tags.byId(term.substr(tagPrefixLength)))
+    const tags = (await this._getTags(searchTerms))
       .filter(tag => tag)
+      // Less references first
       .sort((tag1, tag2) => tag1.count - tag2.count)
-    // Less references first
 
     const terms = searchTerms
       .filter(term => term.indexOf(tagPrefix) !== 0)
