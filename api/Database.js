@@ -5,6 +5,18 @@ const RecordSet = require('./RecordSet')
 const TagSet = require('./TagSet')
 
 class Database {
+  get Record () {
+    if (!this._Record) {
+      const database = this
+      this._Record = class DBRecord extends Record {
+        constructor () {
+          super(database)
+        }
+      }
+    }
+    return this._Record
+  }
+
   get records () {
     return this._recordSet
   }
@@ -16,10 +28,7 @@ class Database {
   open () {
     if (!this.opened) {
       try {
-        this.opened = require(`../db/${this._name}/init`)({
-          database: this,
-          Record: Record
-        })
+        this.opened = require(`../db/${this._name}/init`)(this)
       } catch (e) {
         console.error(e)
       }
