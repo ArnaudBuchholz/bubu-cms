@@ -2,16 +2,16 @@
 
 const assert = require('assert')
 const Database = require('../../../api/Database')
-const Record = require('../../../api/Record')
 
 describe('/api/Record.js', () => {
   describe('creation', () => {
-    class MyRecord extends Record {}
+    let MyRecord
     let db
     let record
     beforeEach(() => {
       db = new Database('test')
-      record = new MyRecord(db)
+      MyRecord = class MyRecord extends db.Record {}
+      record = new MyRecord()
     })
     it('allocates the type tag', () => {
       assert(record.type === 'myrecord')
