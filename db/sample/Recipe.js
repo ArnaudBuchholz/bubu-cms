@@ -10,8 +10,8 @@ module.exports = db => gpf.define({
   $class: 'Recipe',
   $extend: db.Record,
 
-  _statusState1: db.Record.STATE.show,
-  _statusState2: db.Record.STATE.show,
+  _statusState1: db.Record.StatusState.show,
+  _statusState2: db.Record.StatusState.show,
 
   constructor: function (raw) {
     const
