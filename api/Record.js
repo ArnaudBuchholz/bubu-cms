@@ -105,4 +105,14 @@ class Record {
   }
 }
 
+Record.StatusState = {
+  hide: '',
+  error: 'Error',
+  show: 'None',
+  success: 'Success',
+  warning: 'Warning'
+}
+
+Object.freeze(Record.StatusState)
+
 module.exports = Record
