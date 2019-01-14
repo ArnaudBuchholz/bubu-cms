@@ -9,7 +9,6 @@ async function fromCSV (name, RecordType) {
   const lineAdapter = new gpf.stream.LineAdapter()
   const csvParser = new gpf.stream.csv.Parser()
   const createRecord = new gpf.stream.Map(function (raw) {
-    debugger
     return new RecordType(raw)
   })
   return gpf.stream.pipe(csvFile, lineAdapter, csvParser, createRecord)
