@@ -1,31 +1,18 @@
 'use strict'
 
 const gpf = global.gpf || require('gpf-js/source')
-const nanoid = require('nanoid')
 const path = require('path')
 
-const _loadCSV = (db, name, RecordType) => {
-  const
-    csvFilePromise = gpf.fs.getFileStorage()
-      .openTextStream(path.join(__dirname, `${name}.csv`), gpf.fs.openFor.reading)
-
+async function fromCSV (name, RecordType) {
+  const csvFile = await gpf.fs.getFileStorage()
+    .openTextStream(path.join(__dirname, `${name}.csv`), gpf.fs.openFor.reading)
   const lineAdapter = new gpf.stream.LineAdapter()
-
   const csvParser = new gpf.stream.csv.Parser()
-
-  const map = new gpf.stream.Map(function (raw) {
-    if (!raw.id) {
-      raw.id = nanoid() // as of now
-    }
+  const createRecord = new gpf.stream.Map(function (raw) {
+    debugger
     return new RecordType(raw)
   })
-
-  const output = new gpf.stream.WritableArray()
-  return csvFilePromise
-    .then(csvFile => gpf.stream.pipe(csvFile, lineAdapter, csvParser, map, output)
-      .then(function () {
-        return db.loadRecords(output.toArray())
-      }))
+  return gpf.stream.pipe(csvFile, lineAdapter, csvParser, createRecord)
 }
 
 // const _fillDB = (db) => {
@@ -45,9 +32,9 @@ const _loadCSV = (db, name, RecordType) => {
 // }
 
 module.exports = db => Promise.all([
-  _loadCSV(db, 'recipe', require('./Recipe')(db)),
-  _loadCSV(db, 'contact', require('./Contact')(db)),
-  _loadCSV(db, 'address', require('./Address')(db))
+  fromCSV('recipe', require('./Recipe')(db))
+  // _loadCSV(db, 'contact', require('./Contact')(db)),
+  // _loadCSV(db, 'address', require('./Address')(db))
   // require("./Pokemon")(db)
   // _fillDB(db)
 ])
