@@ -1,6 +1,6 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
+const gpf = require('gpf-js')
 const attributes = require('./odata/attributes')
 const key = new attributes.Key()
 const sortable = new attributes.Sortable()
