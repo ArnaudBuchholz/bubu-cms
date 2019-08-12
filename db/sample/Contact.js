@@ -1,6 +1,6 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
+const gpf = require('gpf-js')
 const capitalize = str => str.charAt(0).toUpperCase() + str.substr(1)
 
 module.exports = db => gpf.define({
