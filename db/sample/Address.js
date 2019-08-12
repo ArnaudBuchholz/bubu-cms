@@ -1,6 +1,6 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
+const gpf = require('gpf-js')
 
 module.exports = db => gpf.define({
   $class: 'Address',
