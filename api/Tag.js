@@ -1,5 +1,10 @@
 'use strict'
 
+const gpf = require('gpf-js')
+const attribute = gpf.attributes.decorator
+const Id = require('./Id')
+const Searchable = require('./Searchable')
+
 class Tag {
   get name () {
     return this._name
@@ -26,5 +31,10 @@ class Tag {
     this._records = []
   }
 }
+
+attribute(new Id())(Tag, 'name')
+attribute(new Searchable())(Tag, 'name')
+attribute(new gpf.attributes.Serializable())(Tag, 'name')
+attribute(new gpf.attributes.Serializable())(Tag, 'count')
 
 module.exports = Tag
