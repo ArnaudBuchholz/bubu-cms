@@ -1,6 +1,6 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
+const gpf = require('gpf-js')
 const fs = require('fs')
 const path = require('path')
 const showdown = require('showdown')
