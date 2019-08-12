@@ -1,6 +1,6 @@
 'use strict'
 
-const gpf = global.gpf || require('gpf-js/source')
+const gpf = require('gpf-js')
 const path = require('path')
 
 async function fromCSV (name, RecordType) {
