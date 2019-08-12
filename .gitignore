@@ -10,13 +10,6 @@ Desktop.ini
 node_modules/
 npm-debug.log
 
-# Bower
-bower_components/
-
-# Editors
-
-.idea
-
 # OpenUI5 dist
 
 dist/
@@ -25,3 +18,4 @@ dist/
 
 tmp/
 debug.log
+.env
