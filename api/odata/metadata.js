@@ -7,6 +7,10 @@ const SAP_NAMESPACE = 'http://www.sap.com/Protocols/SAPData'
 const SCHEMA_NAMESPACE = 'BUBU_CMS'
 const TYPES_MAPPING = {}
 
+const Id = require('../Id')
+const Filterable = require('../Filterable')
+const Sortable = require('../Sortable')
+
 const attributes = require('./attributes')
 const entities = require('./entities')
 const gpf = require('gpf-js')
@@ -41,20 +45,20 @@ promisifiedWriter
     // "xml:lang": "en"
   })
   .then(() => gpf.forEachAsync(entities, EntityClass => {
-    const
-      serialProps = gpf.serial.get(EntityClass)
+    const serialProps = gpf.serial.get(EntityClass)
+    const sortable = gpf.attributes.get(EntityClass, Sortable)
+    const filterable = gpf.attributes.get(EntityClass, Filterable)
 
     const flags = gpf.attributes.get(EntityClass, attributes.Base)
-
     const navigationProperties = attributes.navigationProperties(EntityClass)
+
     return promisifiedWriter
       .startElement('EntityType', {
         Name: EntityClass.name
       })
       .startElement('Key')
       .then(() => {
-        const
-          keys = gpf.attributes.get(EntityClass, attributes.Key)
+        const keys = gpf.attributes.get(EntityClass, Id)
         return gpf.forEachAsync(Object.keys(keys), member => {
           return promisifiedWriter
             .startElement('PropertyRef', {
@@ -64,19 +68,20 @@ promisifiedWriter
         })
       })
       .endElement() // Key
-      .then(() => gpf.forEachAsync(Object.keys(serialProps), member =>
+      .then(() => gpf.forEachAsync(Object.keys(serialProps), member => {
+        const serial = serialProps[member]
         promisifiedWriter
           .startElement('Property', {
-            Name: serialProps[member].name,
-            Type: TYPES_MAPPING[serialProps[member].type],
-            Nullable: !serialProps[member].required,
-            'sap:creatable': has(flags, member, attributes.Creatable),
-            'sap:updatable': has(flags, member, attributes.Updatable),
-            'sap:sortable': has(flags, member, attributes.Sortable),
-            'sap:filterable': has(flags, member, attributes.Filterable)
+            Name: serial.name,
+            Type: TYPES_MAPPING[serial.type],
+            Nullable: !serial.required,
+            'sap:creatable': false,
+            'sap:updatable': !serial.readOnly,
+            'sap:sortable': Object.prototype.hasOwnProperty.call(sortable, member),
+            'sap:filterable': Object.prototype.hasOwnProperty.call(filterable, member)
           })
           .endElement() // Property
-      ))
+      }))
       .then(() => gpf.forEachAsync(navigationProperties, property =>
         promisifiedWriter
           .startElement('NavigationProperty', {
