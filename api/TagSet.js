@@ -34,4 +34,6 @@ class TagSet extends Set {
   }
 }
 
+Tag.Set = TagSet
+
 module.exports = TagSet
