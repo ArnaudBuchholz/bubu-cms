@@ -63,4 +63,6 @@ class RecordSet extends Set {
   }
 }
 
+Record.Set = RecordSet
+
 module.exports = RecordSet
