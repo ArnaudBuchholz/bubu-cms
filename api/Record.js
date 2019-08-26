@@ -1,5 +1,11 @@
 'use strict'
 
+const gpf = require('gpf-js')
+const attribute = gpf.attributes.decorator
+const Id = require('./Id')
+const Searchable = require('./Searchable')
+const Sortable = require('./Sortable')
+
 class Record {
   get database () {
     return this._database
@@ -114,5 +120,20 @@ Record.StatusState = {
 }
 
 Object.freeze(Record.StatusState)
+
+attribute(new Id())(Record, 'id')
+attribute(new Searchable())(Record, 'name')
+attribute(new gpf.attributes.Serializable())(Record, 'id')
+attribute(new gpf.attributes.Serializable())(Record, 'type')
+attribute(new gpf.attributes.Serializable())(Record, 'name')
+attribute(new gpf.attributes.Serializable())(Record, 'icon')
+attribute(new gpf.attributes.Serializable())(Record, 'number')
+attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer }))(Record, 'rating')
+attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime }))(Record, 'created')
+attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime, readOnly: true }))(Record, 'modified')
+attribute(new gpf.attributes.Serializable())(Record, 'statusText1')
+attribute(new gpf.attributes.Serializable())(Record, 'statusState1')
+attribute(new gpf.attributes.Serializable())(Record, 'statusText2')
+attribute(new gpf.attributes.Serializable())(Record, 'statusState2')
 
 module.exports = Record
