@@ -76,7 +76,7 @@ promisifiedWriter
             Type: TYPES_MAPPING[serial.type],
             Nullable: !serial.required,
             'sap:creatable': false,
-            'sap:updatable': !serial.readOnly,
+            'sap:updatable': serial.readOnly === false,
             'sap:sortable': Object.prototype.hasOwnProperty.call(sortable, member),
             'sap:filterable': Object.prototype.hasOwnProperty.call(filterable, member)
           })
