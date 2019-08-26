@@ -29,15 +29,16 @@ const configuration = {
   }, {
     match: /\/test-resources\/(.*)/,
     url: `${process.env.BUBU_CMS_UI5_DIST}/test-resources/$1`
-  }]
-  .concat(require('./api/odata/route'))
-  .concat([{
+  }, {
+    match: /^\/api\/odata\/(.*)/,
+    custom: require('./api/odata/route')
+  }, {
     match: /^\/$/,
     file: path.join(__dirname, 'webapp/index.html')
   }, {
     match: /(.*)/,
     file: path.join(__dirname, 'webapp', '$1')
-  }])
+  }]
 }
 
 log(reserve(configuration))
