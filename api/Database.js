@@ -1,5 +1,6 @@
 'use strict'
 
+require('colors')
 const Record = require('./Record')
 const RecordSet = require('./RecordSet')
 const TagSet = require('./TagSet')
@@ -31,8 +32,10 @@ class Database {
   open () {
     if (!this.opened) {
       try {
+        console.log('CMSDB'.magenta, 'opening database \''.gray + this._name.green + '\''.gray)
         this.opened = require(`../db/${this._name}/init`)(this)
       } catch (e) {
+        console.log('DB'.magenta, e.toString().red)
         console.error(e)
       }
     }
