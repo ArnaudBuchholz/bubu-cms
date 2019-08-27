@@ -3,8 +3,8 @@
 const gpf = require('gpf-js')
 const fs = require('fs')
 const path = require('path')
-const showdown = require('showdown')
-const md = new showdown.Converter()
+// const showdown = require('showdown')
+// const md = new showdown.Converter()
 
 module.exports = db => gpf.define({
   $class: 'Recipe',
@@ -33,7 +33,7 @@ module.exports = db => gpf.define({
       )
     }).then(content => this._allocateContent({
       _type: 'html',
-      _data: md.makeHtml(content)
+      _data: '<h1>POUET<h1>' // md.makeHtml(content)
     }))
   }
 
