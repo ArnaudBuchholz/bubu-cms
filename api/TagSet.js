@@ -4,12 +4,12 @@ const Set = require('./Set')
 const Tag = require('./Tag')
 
 class TagSet extends Set {
-  all () {
-    return Promise.resolve(this._tags)
+  async all () {
+    return this._tags
   }
 
-  byId (id) {
-    return Promise.resolve(this._tagsById[id.toLowerCase()])
+  async byId (id) {
+    return this._tagsById[id.toLowerCase()]
   }
 
   async search () {
