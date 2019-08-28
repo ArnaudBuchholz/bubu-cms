@@ -32,10 +32,14 @@ class Database {
   open () {
     if (!this.opened) {
       try {
-        console.log('CMSDB'.magenta, 'opening database \''.gray + this._name.green + '\''.gray)
+        console.log('DATAB'.magenta, 'Opening database \''.gray + this._name.green + '\''.gray)
         this.opened = require(`../db/${this._name}/init`)(this)
+          .then(() => this.records.all())
+          .then(records => console.log('DATAB'.magenta, '  Records count:'.gray, records.length.toString().green))
+          .then(() => this.tags.all())
+          .then(tags => console.log('DATAB'.magenta, '  Tags count:'.gray, tags.length.toString().green))
       } catch (e) {
-        console.log('DB'.magenta, e.toString().red)
+        console.log('DATAB'.magenta, e.toString().red)
         console.error(e)
       }
     }
