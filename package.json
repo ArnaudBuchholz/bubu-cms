@@ -6,6 +6,7 @@
   "directories": {},
   "scripts": {
     "start": "node .",
+    "lint": "standard --fix",
     "test": "standard --fix & mocha test/unit/**/*.js",
     "test-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha test/unit/**/*.js",
     "build": "ui5 build --a"
