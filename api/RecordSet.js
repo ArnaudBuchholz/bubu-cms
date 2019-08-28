@@ -12,19 +12,18 @@ class RecordSet extends Set {
     this._recordsById[record.id] = record
   }
 
-  all () {
-    return Promise.resolve(this._records)
+  async all () {
+    return this._records
   }
 
-  byId (id) {
-    return Promise.resolve(this._recordsById[id])
+  async byId (id) {
+    return this._recordsById[id]
   }
 
-  _getTags (searchTerms) {
-    return Promise.all(searchTerms
+  async _getTags (searchTerms) {
+    return searchTerms
       .filter(term => term.indexOf(tagPrefix) === 0)
       .map(term => this.database.tags.byId(term.substr(tagPrefixLength)))
-    )
   }
 
   async search (criteria) {
