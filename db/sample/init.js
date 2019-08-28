@@ -31,7 +31,8 @@ async function fromCSV (name, RecordType) {
 // }
 
 module.exports = db => Promise.all([
-  fromCSV('recipe', require('./Recipe')(db))
+  fromCSV('movies', require('./Movie')(db))
+  // fromCSV('recipe', require('./Recipe')(db))
   // _loadCSV(db, 'contact', require('./Contact')(db)),
   // _loadCSV(db, 'address', require('./Address')(db))
   // require("./Pokemon")(db)
