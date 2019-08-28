@@ -26,7 +26,6 @@ const writer = new gpf.xml.Writer()
 const output = new gpf.stream.WritableString()
 const metadata = gpf.stream.pipe(writer, output).then(() => output.toString())
 const promisifiedWriter = xmlContentHandler(writer)
-const has = (flags, member, Attribute) => (flags[member] || []).some(attribute => attribute instanceof Attribute)
 
 promisifiedWriter
   .startDocument()
@@ -49,7 +48,6 @@ promisifiedWriter
     const sortable = gpf.attributes.get(EntityClass, Sortable)
     const filterable = gpf.attributes.get(EntityClass, Filterable)
 
-    const flags = gpf.attributes.get(EntityClass, attributes.Base)
     const navigationProperties = attributes.navigationProperties(EntityClass)
 
     return promisifiedWriter
@@ -70,7 +68,7 @@ promisifiedWriter
       .endElement() // Key
       .then(() => gpf.forEachAsync(Object.keys(serialProps), member => {
         const serial = serialProps[member]
-        promisifiedWriter
+        return promisifiedWriter
           .startElement('Property', {
             Name: serial.name,
             Type: TYPES_MAPPING[serial.type],
