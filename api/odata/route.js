@@ -2,18 +2,21 @@
 
 require('url')
 
+const mime = require('mime')
 const entities = require('./entities')
 const metadata = require('./metadata')
 const databases = require('../databases')
 
-const sets = {}
+const jsonContentType = mime.getType('json')
 
-entities.forEach(entity => {
-  const Set = entity.Set
-  if (Set) {
-    sets[entity.name] = Set
-  }
-})
+async function getEntitySet (set, url, response) {
+  response.writeHead(200, {
+    'Content-Type': jsonContentType
+  })
+  response.end(JSON.stringify({
+    d: []
+  }))
+}
 
 module.exports = async (request, response, relativeUrl) => {
   if (relativeUrl.startsWith('$metadata')) {
@@ -24,7 +27,14 @@ module.exports = async (request, response, relativeUrl) => {
   await database.open()
 
   const url = new URL(relativeUrl, 'http://localhost/')
-  console.log(request.method, url)
+  if (request.method ==='GET') {
+    if (url.pathname === '/RecordSet') {
+      return getEntitySet(database.records, url, response)
+    }
+    if (url.pathname === '/TagSet') {
+      return getEntitySet(database.tags, url, response)
+    }
+  }
 
   return 404
 }
