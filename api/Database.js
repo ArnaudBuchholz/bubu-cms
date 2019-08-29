@@ -31,21 +31,19 @@ class Database {
     return this._tagSet
   }
 
+  get path () {
+    return this._path
+  }
+
   open () {
     if (!this.opened) {
       try {
-        let dbPath
-        if (path.isAbsolute(this._name)) {
-            dbPath = this._name
-        } else {
-            dbPath = path.join(__dirname, `../db/${this._name}`)
-        }
-        console.log('DATAB'.magenta, 'Opening database \''.gray + dbPath.green + '\'...'.gray)
+        console.log('DATAB'.magenta, 'Opening database \''.gray + this.path.green + '\'...'.gray)
         const start = process.hrtime()
         const memoryBefore = traceMemory()
-        this.opened = require(`${dbPath}/init`)(this)
+        this.opened = require(`${this.path}/init`)(this)
           .then(() => {
-            console.log('DATAB'.magenta, 'Database \''.gray + dbPath.green + '\' opened.'.gray)
+            console.log('DATAB'.magenta, 'Database \''.gray + this.path.green + '\' opened.'.gray)
             const duration = process.hrtime(start)
             console.log('DATAB'.magenta, '  Duration (ms) :'.gray, (duration[0] * 1000 + duration[1] / 1000000).toString().green)
           })
@@ -64,6 +62,11 @@ class Database {
 
   constructor (name) {
     this._name = name
+    if (path.isAbsolute(name)) {
+      this._path = name
+    } else {
+      this._path = path.join(__dirname, `../db/${name}`)
+    }
     this._recordSet = new RecordSet(this)
     this._tagSet = new TagSet(this)
   }
