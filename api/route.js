@@ -1,41 +1,32 @@
 'use strict'
 
-const express = require('express')
-const path = require('path')
-const router = express.Router()
+const mime = require('mime')
 const nanoid = require('nanoid')
-const config = require('../config')
-// const odata = require('./odata/route')
-const db = require('./db')
+const databases = require('./databases')
 
-router.get('/id', (req, res, next) => {
-  res.set('Content-Type', 'text/plain')
-  res.send(nanoid())
-})
+const textContentType = mime.getType('text')
 
-router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
-  res.sendFile(path.join(__dirname, '../db', config.db, req.url.substr(1)))
-})
-
-router.all('*', (req, res, next) => {
-  // Performance values
+module.exports = async (request, response, relativeUrl) => {
   const memory = process.memoryUsage()
   'rss,heapTotal,heapUsed,external'
     .split(',')
-    .forEach(type => res.set(`x-memory-${type.toLowerCase()}`, memory[type]))
-  // database selector
-  const urlDb = /(?:\?|&)db=([^&]+)(?:$|&)/.exec(req.url)[1]
-  req.db = db(urlDb || config.defaultDB)
-  next() // pass control to the next handler
-})
+    .forEach(type => response.setHeader(`x-memory-${type.toLowerCase()}`, memory[type]))
 
-// router.use('/odata', odata)
+  if (relativeUrl === 'id') {
+    response.writeHead(200, {
+      'Content-Type': textContentType
+    })
+    response.end(nanoid())
+    return
+  }
 
-// Default
-router.get('*', (req, res, next) => {
-  var error = new Error('Not implemented')
-  error.status = 500
-  next(error)
-})
+/*
+  router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
+    res.sendFile(path.join(__dirname, '../db', config.db, req.url.substr(1)))
+  })
+*/
 
-module.exports = router
+  const databaseName = request.headers.db || process.env.BUBU_CMS_DB_NAME || 'sample'
+  request.database = databases(databaseName)
+  await request.database.open()
+}
