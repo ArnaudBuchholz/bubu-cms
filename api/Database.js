@@ -1,9 +1,11 @@
 'use strict'
 
 require('colors')
+const path = require('path')
 const Record = require('./Record')
 const RecordSet = require('./RecordSet')
 const TagSet = require('./TagSet')
+const traceMemory = require('./traces').memory
 
 class Database {
   get Record () {
@@ -32,12 +34,26 @@ class Database {
   open () {
     if (!this.opened) {
       try {
-        console.log('DATAB'.magenta, 'Opening database \''.gray + this._name.green + '\''.gray)
-        this.opened = require(`../db/${this._name}/init`)(this)
+        let dbPath
+        if (path.isAbsolute(this._name)) {
+            dbPath = this._name
+        } else {
+            dbPath = path.join(__dirname, `../db/${this._name}`)
+        }
+        console.log('DATAB'.magenta, 'Opening database \''.gray + dbPath.green + '\'...'.gray)
+        const start = process.hrtime()
+        const memoryBefore = traceMemory()
+        this.opened = require(`${dbPath}/init`)(this)
+          .then(() => {
+            console.log('DATAB'.magenta, 'Database \''.gray + dbPath.green + '\' opened.'.gray)
+            const duration = process.hrtime(start)
+            console.log('DATAB'.magenta, '  Duration (ms) :'.gray, (duration[0] * 1000 + duration[1] / 1000000).toString().green)
+          })
           .then(() => this.records.all())
-          .then(records => console.log('DATAB'.magenta, '  Records count:'.gray, records.length.toString().green))
+          .then(records => console.log('DATAB'.magenta, '  Records count :'.gray, records.length.toString().green))
           .then(() => this.tags.all())
-          .then(tags => console.log('DATAB'.magenta, '  Tags count:'.gray, tags.length.toString().green))
+          .then(tags => console.log('DATAB'.magenta, '  Tags count    :'.gray, tags.length.toString().green))
+          .then(() => traceMemory(memoryBefore))
       } catch (e) {
         console.log('DATAB'.magenta, e.toString().red)
         console.error(e)
