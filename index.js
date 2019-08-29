@@ -30,6 +30,9 @@ const configuration = {
     match: /\/test-resources\/(.*)/,
     url: `${process.env.BUBU_CMS_UI5_DIST}/test-resources/$1`
   }, {
+    match: /^\/api\/(.*)/,
+    custom: require('./api/route')
+  }, {
     match: /^\/api\/odata\/(.*)/,
     custom: require('./api/odata/route')
   }, {
