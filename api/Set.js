@@ -1,5 +1,7 @@
 'use strict'
 
+const compare = require('./compare')
+
 class Set {
   get database () {
     return this._database
@@ -17,26 +19,13 @@ class Set {
     return []
   }
 
-  sort (searchResult, { field, ascending }) {
-    return searchResult.sort((item1, item2) => {
-      const value1 = item1[field] || ''
-      const typeofValue1 = typeof value1
-      const value2 = item2[field] || ''
-      let sign
-      if (ascending) {
-        sign = 1
-      } else {
-        sign = -1
-      }
-      if (typeof value1 === typeof value2 && (typeofValue1 instanceof Date || typeofValue1 === 'number')) {
-        return sign * (value1 - value2)
-      }
-      return sign * value1.toString().localeCompare(value2.toString())
-    })
+  sort (items, field, ascending) {
+    const sign = ascending ? 1 : -1
+    return items.sort((item1, item2) => sign * compare(item1[field], item2[field]))
   }
 
-  query (search = '', sort = { field: 'name', ascending: true }) {
-    return this.search(search).then(searchResult => this.sort(searchResult, sort))
+  query (search = '', sort = 'name', ascending = true) {
+    return this.search(search).then(items => this.sort(items, sort, ascending))
   }
 
   constructor (database) {
