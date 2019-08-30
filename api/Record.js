@@ -88,12 +88,17 @@ class Record {
     return this._tags.includes(tag)
   }
 
+  _getSearchableProperties () {
+    const MyClass = this.constructor
+    if (!MyClass._searchableProperties) {
+      MyClass._searchableProperties = Object.keys(gpf.attributes.get(MyClass, Searchable))
+    }
+  }
+
   search (term) {
-    return [
-      this.name,
-      this.statusText1,
-      this.statusText2
-    ].some(value => (value || '').includes(term))
+    return _getSearchableProperties()
+      .map(property => this.property)
+      .some(value => (value.toString() || '').includes(term))
   }
 
   get content () {
