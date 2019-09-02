@@ -19,12 +19,11 @@ describe('/api/Record.js', () => {
       return db.tags.byId('myrecord')
         .then(tag => assert(tag.count === 1))
     })
-    it('adds record to the database', () => {
-      return db.records.all()
-        .then(records => {
-          assert(records.length === 1)
-          assert(records[0] === record)
-        })
-    })
+    it('adds record to the database', () => db.records.all()
+      .then(records => {
+        assert(records.length === 1)
+        assert(records[0] === record)
+      })
+    )
   })
 })
