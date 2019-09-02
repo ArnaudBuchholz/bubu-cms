@@ -16,7 +16,7 @@ class Set {
   }
 
   async search (criteria) {
-    return []
+    return Promise.reject(new Error('abstract'))
   }
 
   sort (items, field, ascending) {
