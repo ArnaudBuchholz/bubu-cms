@@ -2,6 +2,7 @@
 
 require('colors')
 require('dotenv').config()
+require('./gpf-src')
 
 'BUBU_CMS_UI5_DIST'.split(',').forEach(requiredEnv => {
   if (!process.env[requiredEnv]) {
@@ -9,13 +10,6 @@ require('dotenv').config()
     process.exit(-1)
   }
 })
-
-if (process.env.BUBU_CMS_GPF_SRC) {
-  global.gpfSourcesPath = '../gpf-js/src/'
-  require('../gpf-js/src/boot')
-  console.log(`GPF-JS version ${global.gpf.version()}`.gray)
-  require('mock-require')('gpf-js', global.gpf)
-}
 
 const log = require('reserve/log')
 const path = require('path')
