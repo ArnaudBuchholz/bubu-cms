@@ -31,29 +31,29 @@ describe('/api/Set.js', () => {
       return set.query()
         .then(result => checkNames(result, 'abc'))
     })
-    it('supports descending sorting', () => {
+    it('supports descending sort', () => {
       var set = new Set()
       set.search = () => Promise.resolve(unsortedArray)
-      return set.query('', { field: 'name', ascending: false })
+      return set.query('', 'name', false)
         .then(result => checkNames(result, 'cba'))
     })
     it('supports optional fields (with integers)', () => {
       var set = new Set()
       set.search = () => Promise.resolve(unsortedArray)
-      return set.query('', { field: 'optional', ascending: true })
+      return set.query('', 'optional', true)
         // empty value is always smaller
         .then(result => checkNames(result, 'acb'))
     })
     it('supports mixed types', () => {
       var set = new Set()
       set.search = () => Promise.resolve(unsortedArray)
-      return set.query('', { field: 'mixed', ascending: true })
+      return set.query('', 'mixed', true)
         .then(result => checkNames(result, 'cab'))
     })
     it('supports date types', () => {
       var set = new Set()
       set.search = () => Promise.resolve(unsortedArray)
-      return set.query('', { field: 'date', ascending: false })
+      return set.query('', 'date', false)
         .then(result => checkNames(result, 'abc'))
     })
   })
