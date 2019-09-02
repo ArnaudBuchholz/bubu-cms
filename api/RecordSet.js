@@ -21,9 +21,10 @@ class RecordSet extends Set {
   }
 
   async _getTags (searchTerms) {
-    return searchTerms
-      .filter(term => term.indexOf(tagPrefix) === 0)
+    return Promise.all(searchTerms
+      .filter(term => term.startsWith(tagPrefix))
       .map(term => this.database.tags.byId(term.substr(tagPrefixLength)))
+    )
   }
 
   async search (criteria) {
