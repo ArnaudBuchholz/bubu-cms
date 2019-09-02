@@ -10,11 +10,10 @@ describe('/api/Database.js', () => {
       db = new Database('sample')
       return db.open()
     })
-    it('loads record in the database', () => {
-      return db.records.all()
-        .then(records => {
-          assert.notStrictEqual(records.length, 0)
-        })
-    })
+    it('loads record in the database', () => db.records.all()
+      .then(records => {
+        assert.notStrictEqual(records.length, 0)
+      })
+    )
   })
 })
