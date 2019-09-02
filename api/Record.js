@@ -93,11 +93,13 @@ class Record {
     if (!MyClass._searchableProperties) {
       MyClass._searchableProperties = Object.keys(gpf.attributes.get(MyClass, Searchable))
     }
+    return MyClass._searchableProperties
   }
 
   search (term) {
-    return _getSearchableProperties()
-      .map(property => this.property)
+    return this._getSearchableProperties()
+      .map(property => this[property])
+      .filter(value => !!value)
       .some(value => (value.toString() || '').includes(term))
   }
 
