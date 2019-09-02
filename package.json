@@ -9,7 +9,7 @@
     "lint": "standard --fix",
     "test": "standard --fix & mocha",
     "mocha": "mocha --verbose",
-    "test-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
+    "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
     "build": "ui5 build --a"
   },
   "repository": {
@@ -47,7 +47,10 @@
   },
   "mocha": {
     "spec": [
-      "test/unit/api/compare.js"
+      "./test/unit/api/*.js"
+    ],
+    "require": [
+      "./gpf-src.js"
     ]
   }
 }
