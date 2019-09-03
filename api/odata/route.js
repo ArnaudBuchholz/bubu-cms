@@ -4,6 +4,7 @@ require('url')
 
 const mime = require('mime')
 const metadata = require('./metadata')
+require('./toJSON')
 
 const jsonContentType = mime.getType('json')
 
@@ -11,9 +12,9 @@ async function getEntitySet (set, url, response) {
   response.writeHead(200, {
     'Content-Type': jsonContentType
   })
-  // var all = await set.all()
+  var all = await set.all()
   response.end(JSON.stringify({
-    d: []
+    d: all.map(entity => entity.toJSON())
   }))
 }
 
