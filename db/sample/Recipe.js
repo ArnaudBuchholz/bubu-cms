@@ -10,14 +10,12 @@ module.exports = db => gpf.define({
   $class: 'Recipe',
   $extend: db.Record,
 
-  _statusState1: db.Record.StatusState.show,
-  _statusState2: db.Record.StatusState.show,
-
   constructor: function (raw) {
     const
       calories = parseInt(raw.calories, 10)
 
     const portions = parseInt(raw.portions, 10)
+    this._name = raw.name
     this._number = Math.floor(calories / portions)
     this._icon = `/images/recipe/${raw.id}.jpg`
     this._statusText1 = portions.toString()
