@@ -47,7 +47,8 @@
   },
   "mocha": {
     "spec": [
-      "./test/unit/api/*.js"
+      "./test/unit/api/*.js",
+      "./test/unit/api/odata/*.js"
     ],
     "require": [
       "./gpf-src.js"
