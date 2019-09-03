@@ -5,7 +5,7 @@ module.exports = {
   memory: (reference = {}) => {
     const usage = process.memoryUsage()
     console.log('MEMRY'.magenta, 'Memory report @'.gray, new Date().toISOString().magenta)
-      'rss,heapTotal,heapUsed,external'.split(',').forEach(type => {
+    'rss,heapTotal,heapUsed,external'.split(',').forEach(type => {
       const value = usage[type]
       const last = reference[type]
       let label
