@@ -6,9 +6,17 @@ const Id = require('./Id')
 const Searchable = require('./Searchable')
 const Sortable = require('./Sortable')
 
+const nanoFormat = require('nanoid/format')
+const nanoUrl = require('nanoid/url')
+
 class Record {
   get database () {
     return this._database
+  }
+
+  _buildId (key) {
+    const id = `${this.constructor.name}#${key}`
+    return nanoFormat(() => id.split('').map(char => char.charCodeAt(0)), nanoUrl, id.length)
   }
 
   get id () {
@@ -127,6 +135,11 @@ Record.StatusState = {
 }
 
 Object.freeze(Record.StatusState)
+
+Object.assign(Record.prototype, {
+  _statusState1: Record.StatusState.show,
+  _statusState2: Record.StatusState.show
+})
 
 attribute(new Id())(Record, 'id')
 attribute(new gpf.attributes.Serializable())(Record, 'id')
