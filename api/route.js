@@ -20,7 +20,7 @@ module.exports = async (request, response, relativeUrl) => {
     return
   }
 
-/*
+  /*
   router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
     res.sendFile(path.join(__dirname, '../db', config.db, req.url.substr(1)))
   })
