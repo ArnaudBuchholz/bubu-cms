@@ -7,25 +7,25 @@ const searcher = require('./search')
 const sorter = require('./sort')
 
 const mapOfODataParamTypes = {
-  'undefined': () => {},
-  'number': (aggregated, key, value) => {
+  undefined: () => {},
+  number: (aggregated, key, value) => {
     aggregated[key] = parseInt(value, 10)
   },
-  'string': (aggregated, key, value) => {
+  string: (aggregated, key, value) => {
     aggregated[key] = value
   }
 }
 
 const mapOfSerialTypeMatcher = {
-  'undefined': '',
-  'number': '([0-9]+)',
-  'string': "'([^']+)'"
+  undefined: '',
+  number: '([0-9]+)',
+  string: "'([^']+)'"
 }
 
 const mapOfSerialTypeToJSON = {
-  'undefined': () => '',
-  'number': value => value,
-  'string': value => `'${value}'`
+  undefined: () => '',
+  number: value => value,
+  string: value => `'${value}'`
 }
 
 const prepare = EntityClass => {
