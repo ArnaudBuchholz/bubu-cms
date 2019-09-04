@@ -3,6 +3,7 @@
 const gpf = require('gpf-js')
 const Id = require('../Id')
 const Record = require('../Record')
+const Tag = require('../Tag')
 
 const mapOfSerialTypeToJSON = {
   undefined: () => '',
@@ -19,7 +20,7 @@ function getKeys (record) {
   return EntityClass._keys
 }
 
-Record.prototype.toJSON = function () {
+function toJSON () {
   const json = gpf.serial.toRaw(this, (value, property) => {
     if (gpf.serial.types.datetime === property.type) {
       if (value) {
@@ -53,3 +54,6 @@ Record.prototype.toJSON = function () {
 
   return json
 }
+
+Record.prototype.toJSON = toJSON
+Tag.prototype.toJSON = toJSON
