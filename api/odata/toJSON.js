@@ -29,7 +29,7 @@ function toJSON () {
       return null
     }
     if (property.name === 'tags') {
-      return value.join(' ')
+      return value.map(tag => tag.name).join(' ')
     }
     return value
   })
