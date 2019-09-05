@@ -22,7 +22,7 @@ describe('/api/odata/toJSON.js', () => {
   describe('Record.toJSON()', () => {
     it('exposes toJSON', () => assert(typeof record.toJSON === 'function'))
     it('generates a valid ODATA json for record', () => {
-      const json = record.toJSON();
+      const json = record.toJSON()
       assert.strictEqual(json.name, 'test')
       assert.strictEqual(json.__metadata.uri, `MyRecordSet('1')`)
     })
@@ -36,7 +36,7 @@ describe('/api/odata/toJSON.js', () => {
     })
     it('exposes toJSON', () => assert(typeof tag.toJSON === 'function'))
     it('generates a valid ODATA json for tag', async () => {
-      const json = tag.toJSON();
+      const json = tag.toJSON()
       assert.ok(!!json.name)
       assert.notStrictEqual(json.count, 0)
       assert.strictEqual(json.__metadata.uri, `TagSet('${json.name}')`)
