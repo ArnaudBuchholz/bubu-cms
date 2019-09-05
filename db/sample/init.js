@@ -8,10 +8,12 @@ async function fromCSV (name, RecordType) {
     .openTextStream(path.join(__dirname, `${name}.csv`), gpf.fs.openFor.reading)
   const lineAdapter = new gpf.stream.LineAdapter()
   const csvParser = new gpf.stream.csv.Parser()
-  const createRecord = new gpf.stream.Map(function (raw) {
-    return new RecordType(raw)
-  })
-  return gpf.stream.pipe(csvFile, lineAdapter, csvParser, createRecord)
+  const factory = {
+    write: async function (raw) {
+      return new RecordType(raw)
+    }
+  }
+  return gpf.stream.pipe(csvFile, lineAdapter, csvParser, factory)
 }
 
 // const _fillDB = (db) => {
