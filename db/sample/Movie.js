@@ -5,8 +5,9 @@ module.exports = db => {
       super()
       this._name = raw.title
       this._id = this._buildId(raw.imdbid)
+      this._number = `${raw.book} / ${raw.page}`
       this._statusText1 = raw.year
-      this._statusText2 = `${raw.book} / ${raw.page}`
+      this._statusText2 = raw.genre
       raw.genre.split(' ')
         .forEach(genre => this.addTag(genre))
       raw.actors.split(';')
