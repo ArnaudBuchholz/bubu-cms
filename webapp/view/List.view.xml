@@ -60,7 +60,7 @@
 					</secondStatus>
 					<attributes>
 						<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" visible="{= ${rating} > 0 }" />
-						<ObjectAttribute title="{i18n>attribute.tags}" text="{tags}" visible="{= !!${tags} }"/>
+						<ObjectAttribute title="{i18n>attribute.tags}" text="{= ${tags}.split(' ').slice(1).join(' ') }" visible="{= !!${tags} }"/>
 					</attributes>
 <!--
 					<markers>
