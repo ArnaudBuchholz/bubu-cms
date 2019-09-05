@@ -19,6 +19,7 @@ describe('/api/RecordSet.js', () => {
       class MyRecord extends db.Record {
         constructor (data) {
           super()
+          this._id = data.name
           'name,statusText1,statusText2'.split(',').forEach(property => {
             this[`_${property}`] = data[property]
           })
@@ -48,6 +49,11 @@ describe('/api/RecordSet.js', () => {
       }]
       records.forEach(data => new MyRecord(data))
     })
+    it('retreives records by id', () => db.records.byId('a')
+      .then(record => {
+        checkNames([record], 'a')
+      })
+    )
     it('retreives records by name', () => db.records.query('a')
       .then(records => {
         checkNames(records, 'a')
