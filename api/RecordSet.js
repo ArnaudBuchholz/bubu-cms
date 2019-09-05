@@ -9,7 +9,11 @@ const tagPrefixLength = tagPrefix.length
 class RecordSet extends Set {
   add (record) {
     this._records.push(record)
-    this._recordsById[record.id] = record
+    if (record.id) {
+      this._recordsById[record.id] = record
+    } else {
+      this._hasNonIndexedRecords = true
+    }
   }
 
   async all () {
@@ -17,6 +21,12 @@ class RecordSet extends Set {
   }
 
   async byId (id) {
+    if (this._hasNonIndexedRecords) {
+      this._records.forEach(record => {
+        this._recordsById[record.id] = record
+      })
+      delete this._hasNonIndexedRecords
+    }
     return this._recordsById[id]
   }
 
