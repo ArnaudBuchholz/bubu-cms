@@ -16,8 +16,9 @@ class Database {
           super(database)
         }
       }
-      Object.keys(this._Record).forEach(staticProperty => {
-        this._Record[staticProperty] = this._Record[this._Record]
+      // Forward record static properties
+      Object.keys(Record).forEach(staticProperty => {
+        this._Record[staticProperty] = Record[staticProperty]
       })
     }
     return this._Record
