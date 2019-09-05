@@ -158,5 +158,6 @@ attribute(new gpf.attributes.Serializable())(Record, 'statusText1')
 attribute(new gpf.attributes.Serializable())(Record, 'statusState1')
 attribute(new gpf.attributes.Serializable())(Record, 'statusText2')
 attribute(new gpf.attributes.Serializable())(Record, 'statusState2')
+attribute(new gpf.attributes.Serializable())(Record, 'tags')
 
 module.exports = Record
