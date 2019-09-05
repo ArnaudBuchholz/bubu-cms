@@ -14,8 +14,28 @@ async function getEntitySet (set, url, response) {
   })
   var all = await set.all()
   response.end(JSON.stringify({
-    d: all.map(entity => entity.toJSON())
+    d: {
+      results: all.map(entity => entity.toJSON())
+    }
   }))
+}
+
+async function getEntity (entity, url, response) {
+  response.writeHead(200, {
+    'Content-Type': jsonContentType
+  })
+  response.end(JSON.stringify({
+    d: entity.toJSON()
+  }))
+}
+
+function getSet (database, setName) {
+  if (setName === 'Record') {
+    return database.records
+  }
+  if (setName === 'Tag') {
+    return database.tags
+  }
 }
 
 module.exports = async (request, response, relativeUrl) => {
@@ -25,12 +45,12 @@ module.exports = async (request, response, relativeUrl) => {
 
   const url = new URL(relativeUrl, 'http://localhost/')
   if (request.method === 'GET') {
-    if (url.pathname === '/RecordSet') {
-      return getEntitySet(request.database.records, url, response)
+    const match = /(Record|Tag)Set(?:\('([^']+)'\))?/.exec(url.pathname)
+    const set = getSet(request.database, match[1])
+    if (match[2]) {
+      return getEntity(await set.byId(match[2]), url, response)
     }
-    if (url.pathname === '/TagSet') {
-      return getEntitySet(request.database.tags, url, response)
-    }
+    return getEntitySet(set, url, response)
   }
 
   return 404
