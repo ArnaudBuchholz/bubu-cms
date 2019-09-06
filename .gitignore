@@ -19,3 +19,4 @@ dist/
 tmp/
 debug.log
 .env
+db/sample/tmp/
