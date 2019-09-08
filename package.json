@@ -10,7 +10,8 @@
     "test": "standard --fix & mocha",
     "mocha": "mocha --verbose",
     "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
-    "build": "ui5 build --a"
+    "build": "ui5 build --a",
+    "raw_movie": "reserve --config ./db/sample/raw_movie/reserve.json"
   },
   "repository": {
     "type": "git",
