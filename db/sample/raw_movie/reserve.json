@@ -2,7 +2,7 @@
   "port": 3001,
   "mappings": [{
     "match": "/gpf.js",
-    "file": "../../../node_modules/gpf-js/build/gpf.js"
+    "file": "../../../node_modules/gpf-js/build/gpf-debug.js"
   }, {
     "match": "/(.*)",
     "file": "./$1"
