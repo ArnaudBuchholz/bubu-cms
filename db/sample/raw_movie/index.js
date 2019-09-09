@@ -1,5 +1,14 @@
 'use strict'
 
+const tags = {
+  tr: 0,
+  td: 0
+}
+
+Object.keys(tags).forEach(tag => {
+  tags[tag] = gpf.web.createTagFunction(tag)
+})
+
 gpf.http.get('raw_movies.csv')
   .then(response => response.responseText)
   .then(csv => {
@@ -11,5 +20,10 @@ gpf.http.get('raw_movies.csv')
       .then(() => output.toArray())
   })
   .then(movies => {
-    alert(movies.length)
+    const tbody = document.getElementById('movies')
+    movies.forEach((movie, index) => {
+      if (movie.title) {
+        tags.tr({ id: index }, tags.td(movie.title)).appendTo(tbody)
+      }
+    })
   })
