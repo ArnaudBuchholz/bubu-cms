@@ -16,7 +16,9 @@ gpf.http.get('raw_movies.csv')
     const lineAdapter = new gpf.stream.LineAdapter()
     const csvParser = new gpf.stream.csv.Parser()
     const output = new gpf.stream.WritableArray()
-    return gpf.stream.pipe(input, lineAdapter, csvParser, output)
+    return gpf.stream.pipe(input, lineAdapter, csvParser, {
+      write: async data => console.log(data)
+    } /* output*/)
       .then(() => output.toArray())
   })
   .then(movies => {
