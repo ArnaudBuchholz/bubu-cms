@@ -4,6 +4,9 @@
     "match": "/gpf.js",
     "file": "../../../node_modules/gpf-js/build/gpf-debug.js"
   }, {
+    "match": "/gpf-src/(.*)",
+    "file": "../../../../gpf-js/src/$1"
+  }, {
     "match": "/(.*)",
     "file": "./$1"
   }]
