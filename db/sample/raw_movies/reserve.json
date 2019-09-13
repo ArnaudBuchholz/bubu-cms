@@ -1,11 +1,20 @@
 {
   "port": 3001,
   "mappings": [{
-    "match": "/gpf.js",
+    "match": "^/gpf.js",
     "file": "../../../node_modules/gpf-js/build/gpf-debug.js"
   }, {
-    "match": "/gpf-src/(.*)",
+    "match": "^/gpf-src/(.*)",
     "file": "../../../../gpf-js/src/$1"
+  }, {
+    "match": "^/jquery.js",
+    "url": "https://code.jquery.com/jquery-3.3.1.min.js"
+  }, {
+    "match": "^/bootstrap.js",
+    "url": "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.bundle.min.js"
+  }, {
+    "match": "^/bootstrap.css",
+    "url": "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
   }, {
     "match": "/(.*)",
     "file": "./$1"
