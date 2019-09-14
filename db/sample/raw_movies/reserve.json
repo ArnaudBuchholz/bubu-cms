@@ -1,6 +1,12 @@
 {
   "port": 3001,
   "mappings": [{
+    "match": "^/imdb-title/(.*)",
+    "url": "https://www.imdb.com/title/$1/"
+  }, {
+    "match": "^/imdb-query/(.)(.*)",
+    "url": "https://sg.media-imdb.com/suggests/$1/$1$2.json"
+  }, {
     "match": "^/gpf.js",
     "file": "../../../node_modules/gpf-js/build/gpf-debug.js"
   }, {
