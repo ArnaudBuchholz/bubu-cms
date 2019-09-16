@@ -27,6 +27,11 @@ function resolve (movies, index, imdbId) {
   getButton(index).innerHTML = VIEW
 }
 
+function notimdb (movies, index) {
+  movies[index].imdb = `noimdb${index}`
+  getButton(index).style = 'display: none;'
+}
+
 function search (movies, index, row) {
   const title = movies[index].title.toLowerCase().replace(/:|%/g, ' ')
   if (!title) {
@@ -62,8 +67,8 @@ function search (movies, index, row) {
         }, suggestion.l))
           .concat([
             tags.div({className: 'dropdown-divider'}),
-            tags.a({className: 'dropdown-item', href: '#'}, 'resolve'),
-            tags.a({className: 'dropdown-item', href: '#'}, 'not an imbd movie'),
+            tags.a({className: 'dropdown-item', href: '#', id: `resolve-${index}`}, 'resolve'),
+            tags.a({className: 'dropdown-item', href: '#', id: `notimdb-${index}`}, 'not an imbd movie'),
           ])
       ).appendTo(imdbCell)
       button.classList.add('dropdown-toggle')
@@ -109,8 +114,11 @@ gpf.http.get('raw_movies.csv')
       }
     })
     tbody.addEventListener('click', event => {
-      if (event.target.tagName.toLowerCase() === 'button') {
+      const targetName = event.target.tagName.toLowerCase()
+      if (targetName === 'button') {
         click(movies, event.target.closest('tr'))
+      } else if (targetName === 'a' && event.target.id) {
+        // if ()
       }
     })
     gpf.forEachAsync(movies, (movie, index) => search(movies, index, getRow(index)))
