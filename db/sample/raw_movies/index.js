@@ -10,26 +10,36 @@ const tags = {
 
 const VIEW = 'View'
 
+function getCachedImdb (movies, index) {
+  return JSON.parse(localStorage.getItem(index.toString()))
+}
+
+function cacheImdb (movies, index, movie) {
+  localStorage.setItem(index.toString(), JSON.stringify(movie))
+}
+
 Object.keys(tags).forEach(tag => {
   tags[tag] = gpf.web.createTagFunction(tag)
 })
 
-function getRow (index) {
+function row (index) {
   return document.getElementById(`row-${index}`)
 }
 
-function getButton (index) {
+function button (index) {
   return document.getElementById(`btn-${index}`)
 }
 
-function resolve (movies, index, imdbId) {
+function setAsImdb (movies, index, imdbId) {
   movies[index].imdb = imdbId
-  getButton(index).innerHTML = VIEW
+  cacheImdb(movies, index, movies[index])
+  button(index).innerHTML = VIEW
 }
 
-function notimdb (movies, index) {
+function setAsNotImdb (movies, index) {
   movies[index].imdb = `noimdb${index}`
-  getButton(index).style = 'display: none;'
+  cacheImdb(movies, index, movies[index])
+  button(index).style = 'display: none;'
 }
 
 function search (movies, index, row) {
@@ -51,11 +61,11 @@ function search (movies, index, row) {
         return false
       }
       if (suggestions.length === 1) {
-        return resolve(movies, index, suggestions[0].id)
+        return setAsImdb(movies, index, suggestions[0].id)
       }
       const exactTitles = suggestions.filter(suggestion => suggestion.l.toLowerCase() === title)
       if (exactTitles.length === 1) {
-        return resolve(movies, index, exactTitles[0].id)
+        return setAsImdb(movies, index, exactTitles[0].id)
       }
       const imdbCell = row.querySelectorAll('td')[1]
       const button = imdbCell.querySelector('button')
@@ -67,8 +77,8 @@ function search (movies, index, row) {
         }, suggestion.l))
           .concat([
             tags.div({className: 'dropdown-divider'}),
-            tags.a({className: 'dropdown-item', href: '#', id: `resolve-${index}`}, 'resolve'),
-            tags.a({className: 'dropdown-item', href: '#', id: `notimdb-${index}`}, 'not an imbd movie'),
+            tags.a({className: 'dropdown-item', href: '#', id: `setAsImdb-${index}`}, 'setAsImdb'),
+            tags.a({className: 'dropdown-item', href: '#', id: `setAsNotImdb-${index}`}, 'not an imbd movie'),
           ])
       ).appendTo(imdbCell)
       button.classList.add('dropdown-toggle')
@@ -147,6 +157,10 @@ gpf.http.get('raw_movies.csv')
     return gpf.stream.pipe(input, lineAdapter, csvParser, output)
       .then(() => output.toArray())
   })
+  .then(movies => movies.map((movie, index) => {
+    const cached = getCachedImdb(movies, index)
+    return cached || movie
+  }))
   .then(movies => {
     const tbody = document.getElementById('movies')
     movies.forEach((movie, index) => {
@@ -168,6 +182,9 @@ gpf.http.get('raw_movies.csv')
         // if ()
       }
     })
-    search(movies, 0, getRow(0))
-    // gpf.forEachAsync(movies, (movie, index) => search(movies, index, getRow(index)))
+    gpf.forEachAsync(movies, async (movie, index) => {
+      if (!movie.imdb) {
+        return search(movies, index, row(index))
+      }
+    })
   })
