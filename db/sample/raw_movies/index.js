@@ -80,11 +80,58 @@ function search (movies, index, row) {
     .catch(() => {})
 }
 
+function extract (imdbId) {
+  const infos = {}
+  gpf.http.get(`/imdb-title/${imdbId}`)
+    .then(response => response.responseText)
+    .then(titleHtml => {
+      // <a href="/year/1979/?ref_=tt_ov_inf">1979</a>
+      infos.year = /<a href="\/year\/([0-9]+)\//.exec(titleHtml)[1]
+      // <a href="/search/title?genres=horror&amp;explore=title_type,genres&amp;ref_=tt_ov_inf">Horror</a>
+      const genres = []
+      titleHtml.replace(/<a href="\/search\/title\?genres=([^&]+)&/g, (match, genre) => {
+        if (!genres.includes(genre)) {
+          genres.push(genre)
+        }
+      })
+      infos.genres = genres
+      // <a href="/name/nm0000244/?ref_=tt_ov_st_sm">Sigourney Weaver</a>
+      const cast = []
+      titleHtml
+        .split('<table class="cast_list">')[1]
+        .split('</table>')[0]
+        .replace(/\n/g, '')
+        .replace(/<a href="\/name\/[^"]+"\s*>\s*([^<]+)<\/a>(?:[^<]|<[^a])*<a href="\/title\/[^"]+"\s*>([^<]+)<\/a>/gm, (match, actor, role) => {
+            cast.push(`${actor}=${role}`)
+        })
+      infos.cast = cast
+      return gpf.http.get(`/imdb-releaseinfo/${imdbId}`)
+    })
+    .then(response => response.responseText.replace(/\n/g, ''))
+    .then(releaseInfoHtml => {
+        releaseInfoHtml.replace(/<td class="aka-item__name">([^<]*)<\/td>\s*<td class="aka-item__title">([^<]*)<\/td>/gm, (match, country, title) => {
+          if (country.toLowerCase() === 'france') {
+              infos.frenchTitle = title
+          } else if (country.toLowerCase().trim() === '(original title)') {
+              infos.originalTitle = title
+          }
+        })
+    })
+    .then(() => {
+      alert(`Year: ${infos.year}
+Genres: ${infos.genres.join(', ')}
+Cast: ${infos.cast.join('; ')}
+Original title: ${infos.originalTitle}
+French title: ${infos.frenchTitle}`)
+    })
+}
+
 function click (movies, row) {
-  const index = parseInt(row.id, 10)
+  const index = parseInt(/row-([0-9]+)/.exec(row.id)[1], 10)
   const imdbId = movies[index].imdb
   if (imdbId) {
-    window.open('https://www.imdb.com/title/' + imdbId, 'imdb')
+    // window.open('https://www.imdb.com/title/' + imdbId, 'imdb')
+    extract(imdbId)
   } else {
     search(movies, index, row)
   }
@@ -121,5 +168,6 @@ gpf.http.get('raw_movies.csv')
         // if ()
       }
     })
-    gpf.forEachAsync(movies, (movie, index) => search(movies, index, getRow(index)))
+    search(movies, 0, getRow(0))
+    // gpf.forEachAsync(movies, (movie, index) => search(movies, index, getRow(index)))
   })
