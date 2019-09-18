@@ -164,8 +164,20 @@ gpf.http.get('raw_movies.csv')
                 className: 'dropdown-item',
                 href: '#',
                 'data-index': index,
+                'data-action': 'view'
+              }, 'View IMDB page'),
+              tags.a({
+                className: 'dropdown-item',
+                href: '#',
+                'data-index': index,
+                'data-action': 'extract'
+              }, 'Extract IMDB infos'),
+              tags.a({
+                className: 'dropdown-item',
+                href: '#',
+                'data-index': index,
                 'data-action': 'manual'
-            }, 'Manual input'),
+              }, 'Manual input'),
               tags.a({
                 className: 'dropdown-item',
                 href: '#',
@@ -190,6 +202,12 @@ gpf.http.get('raw_movies.csv')
           if (input) {
             select(movies, target.dataset.index, input)
           }
+        }
+        if (target.dataset.action === 'view') {
+          window.open(`https://www.imdb.com/title/${movies[target.dataset.index].imdb}`, 'imdb')
+        }
+        if (target.dataset.action === 'extract') {
+          extract(movies[target.dataset.index].imdb)
         }
         event.preventDefault()
       }
