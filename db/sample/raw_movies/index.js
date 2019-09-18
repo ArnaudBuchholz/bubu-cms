@@ -8,14 +8,13 @@ const tags = {
   div: 0
 }
 
-const VIEW = 'View'
+const NOT_IMDB = 'n/a'
 
-function getCachedImdb (movies, index) {
-  return JSON.parse(localStorage.getItem(index.toString()))
-}
-
-function cacheImdb (movies, index, movie) {
-  localStorage.setItem(index.toString(), JSON.stringify(movie))
+function cache (key, value) {
+  if (value === undefined) {
+    return JSON.parse(localStorage.getItem(key))
+  }
+  localStorage.setItem(key, JSON.stringify(value))
 }
 
 Object.keys(tags).forEach(tag => {
@@ -26,22 +25,25 @@ function row (index) {
   return document.getElementById(`row-${index}`)
 }
 
-function button (index) {
+function btn (index) {
   return document.getElementById(`btn-${index}`)
 }
 
-function setAsImdb (movies, index, imdbId) {
+function mnu (index) {
+  return document.getElementById(`mnu-${index}`)
+}
+
+function select (movies, index, imdbId) {
   movies[index].imdb = imdbId
-  button(index).innerHTML = VIEW
+  const button = btn(index)
+  button.innerHTML = imdbId
+  button.classList.remove('btn-primary')
+  button.classList.add('btn-success')
+  cache(`select-${index}`, imdbId)
 }
 
-function setAsNotImdb (movies, index) {
-  movies[index].imdb = `noimdb${index}`
-  button(index).style = 'display: none;'
-}
-
-function search (movies, index, row) {
-  const title = movies[index].title.toLowerCase().replace(/:|%/g, ' ')
+function search (movie, index, movies) {
+  const title = movie.title.toLowerCase().replace(/:|%/g, ' ')
   if (!title) {
     return false
   }
@@ -54,36 +56,29 @@ function search (movies, index, row) {
     })
     .then(responseText => JSON.parse(responseText))
     .then(responseJSON => responseJSON.d)
+    .then(suggestions => suggestions.filter(suggestion => suggestion.q !== 'video game'))
     .then(suggestions => {
-      if (!suggestions) {
-        return false
+      if (!suggestions || !suggestions.length) {
+        return
       }
-      if (suggestions.length === 1) {
-        return setAsImdb(movies, index, suggestions[0].id)
-      }
-      const exactTitles = suggestions.filter(suggestion => suggestion.l.toLowerCase() === title)
-      if (exactTitles.length === 1) {
-        return setAsImdb(movies, index, exactTitles[0].id)
-      }
-      const imdbCell = row.querySelectorAll('td')[1]
-      const button = imdbCell.querySelector('button')
-      tags.div({className: 'dropdown-menu', 'aria-labelledby':`btn-${index}`},
-        suggestions.map(suggestion => tags.a({
+      suggestions
+        .sort((s1, s2) => s2.y - s1.y)
+        .forEach(suggestion => tags.a({
           className: 'dropdown-item',
+          'data-index': index,
+          'data-imdb': suggestion.id,
           href: `https://www.imdb.com/title/${suggestion.id}`,
           target: 'imdb'
-        }, `${suggestion.id}: ${suggestion.l} [${suggestion.y}]`))
-          .concat([
-            tags.div({className: 'dropdown-divider'}),
-            tags.a({className: 'dropdown-item', href: '#', id: `setAsImdb-${index}`}, 'setAsImdb'),
-            tags.a({className: 'dropdown-item', href: '#', id: `setAsNotImdb-${index}`}, 'not an imbd movie'),
-          ])
-      ).appendTo(imdbCell)
-      button.classList.add('dropdown-toggle')
-      button.setAttribute('data-toggle', 'dropdown')
-      button.setAttribute('aria-haspopup', 'true')
-      button.setAttribute('aria-expanded', 'false')
-      return false
+        }, `${suggestion.id}: ${suggestion.l} [${suggestion.y}]`).appendTo(mnu(index)))
+      if (!movie.imdb) {
+        if (suggestions.length === 1) {
+          return select(movies, index, suggestions[0].id)
+        }
+        const exactTitles = suggestions.filter(suggestion => suggestion.l.toLowerCase() === title)
+        if (exactTitles.length === 1) {
+          return select(movies, index, exactTitles[0].id)
+        }
+      }
     })
     .catch(() => {})
 }
@@ -134,17 +129,6 @@ French title: ${infos.frenchTitle}`)
     })
 }
 
-function click (movies, row) {
-  const index = parseInt(/row-([0-9]+)/.exec(row.id)[1], 10)
-  const imdbId = movies[index].imdb
-  if (imdbId) {
-    // window.open('https://www.imdb.com/title/' + imdbId, 'imdb')
-    extract(imdbId)
-  } else {
-    search(movies, index, row)
-  }
-}
-
 gpf.http.get('raw_movies.csv')
   .then(response => response.responseText)
   .then(csv => {
@@ -159,26 +143,76 @@ gpf.http.get('raw_movies.csv')
     const tbody = document.getElementById('movies')
     movies.forEach((movie, index) => {
       if (movie.title) {
+        movie.imdb = cache(`select-${index}`)
         tags.tr({ id: `row-${index}` },
           tags.td(movie.title),
-          tags.td(tags.button({
-            id: `btn-${index}`,
-            className: 'btn btn-primary'
-          }, movie.imdb ? VIEW : 'Search'))
+          tags.td([
+            tags.button({
+              id: `btn-${index}`,
+              className: `btn dropdown-toggle btn-${movie.imdb ? 'success' : 'primary'}`,
+              'data-imdb': movie.imdb,
+              'data-toggle': 'dropdown',
+              'aria-haspopup': true,
+              'aria-expanded': false
+            }, movie.imdb ? movie.imdb : 'Search'),
+            tags.div({
+              id: `mnu-${index}`,
+              className: 'dropdown-menu',
+              'aria-labelledby': `btn-${index}`
+            }, [
+              tags.a({
+                className: 'dropdown-item',
+                href: '#',
+                'data-index': index,
+                'data-action': 'manual'
+            }, 'Manual input'),
+              tags.a({
+                className: 'dropdown-item',
+                href: '#',
+                'data-index': index,
+                'data-imdb': NOT_IMDB,
+              }, 'Not an imbd movie'),
+              tags.div({className: 'dropdown-divider'})
+            ])
+          ])
         ).appendTo(tbody)
       }
     })
     tbody.addEventListener('click', event => {
-      const targetName = event.target.tagName.toLowerCase()
-      if (targetName === 'button') {
-        click(movies, event.target.closest('tr'))
-      } else if (targetName === 'a' && event.target.id) {
-        // if ()
+      const target = event.target
+      const targetName = (target.tagName || '').toLowerCase()
+      if (targetName === 'a') {
+        if (target.dataset.imdb) {
+          select(movies, target.dataset.index, target.dataset.imdb)
+        }
+        if (target.dataset.action === 'manual') {
+          const input = prompt('Enter IMDB id (tt0123456)')
+          if (input) {
+            select(movies, target.dataset.index, input)
+          }
+        }
+        event.preventDefault()
       }
+      return false
     })
-    gpf.forEachAsync(movies, async (movie, index) => {
-      if (!movie.imdb) {
-        return search(movies, index, row(index))
-      }
+    gpf.forEachAsync(movies, search)
+    document.getElementById('export').addEventListener('click', () => {
+      const select = movies.reduce((dictionary, movie, index) => {
+        const imdb = cache(`select-${index}`)
+        if (imdb) {
+          dictionary[index] = imdb
+        }
+        return dictionary
+      }, {})
+      const content = window.open('about:blank')
+      content.document.write(JSON.stringify({select}))
+      // prompt('Copy the export', )
+    })
+    document.getElementById('import').addEventListener('click', () => {
+      const data = JSON.parse(prompt('Paste to import'))
+      Object.keys(data.select).forEach(index => {
+        cache(`select-${index}`, data.select[index])
+      })
+      location.reload()
     })
   })
