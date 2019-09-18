@@ -32,13 +32,11 @@ function button (index) {
 
 function setAsImdb (movies, index, imdbId) {
   movies[index].imdb = imdbId
-  cacheImdb(movies, index, movies[index])
   button(index).innerHTML = VIEW
 }
 
 function setAsNotImdb (movies, index) {
   movies[index].imdb = `noimdb${index}`
-  cacheImdb(movies, index, movies[index])
   button(index).style = 'display: none;'
 }
 
@@ -74,7 +72,7 @@ function search (movies, index, row) {
           className: 'dropdown-item',
           href: `https://www.imdb.com/title/${suggestion.id}`,
           target: 'imdb'
-        }, suggestion.l))
+        }, `${suggestion.id}: ${suggestion.l} [${suggestion.y}]`))
           .concat([
             tags.div({className: 'dropdown-divider'}),
             tags.a({className: 'dropdown-item', href: '#', id: `setAsImdb-${index}`}, 'setAsImdb'),
@@ -157,10 +155,6 @@ gpf.http.get('raw_movies.csv')
     return gpf.stream.pipe(input, lineAdapter, csvParser, output)
       .then(() => output.toArray())
   })
-  .then(movies => movies.map((movie, index) => {
-    const cached = getCachedImdb(movies, index)
-    return cached || movie
-  }))
   .then(movies => {
     const tbody = document.getElementById('movies')
     movies.forEach((movie, index) => {
