@@ -1,6 +1,9 @@
 {
   "port": 3001,
   "mappings": [{
+    "match": "^/imdb-.*",
+    "custom": "./cache"
+  }, {
     "match": "^/imdb-title/(.*)",
     "url": "https://www.imdb.com/title/$1/"
   }, {
