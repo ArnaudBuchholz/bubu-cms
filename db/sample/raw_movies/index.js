@@ -56,7 +56,7 @@ function search (movie, index, movies) {
     })
     .then(responseText => JSON.parse(responseText))
     .then(responseJSON => responseJSON.d)
-    .then(suggestions => suggestions.filter(suggestion => suggestion.q !== 'video game'))
+    .then(suggestions => suggestions.filter(suggestion => suggestion.q && suggestion.q !== 'video game'))
     .then(suggestions => {
       if (!suggestions || !suggestions.length) {
         return
