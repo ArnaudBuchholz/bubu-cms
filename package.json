@@ -11,7 +11,7 @@
     "mocha": "mocha --verbose",
     "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
     "build": "ui5 build --a",
-    "raw_movies": "reserve --config ./db/sample/raw_movies/reserve.json"
+    "movies2imdb": "reserve --config ./db/sample/movies2imdb/reserve.json"
   },
   "repository": {
     "type": "git",
