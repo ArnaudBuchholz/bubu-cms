@@ -277,7 +277,14 @@ document.getElementById('export').addEventListener('click', () => {
     }
   })
     .then(function () {
-      link.setAttribute('href', `data:application/json;base64,${btoa(JSON.stringify(imdb))}`)
+      const ansii = JSON.stringify(imdb).split('').map(char => {
+        const code = char.charCodeAt(0)
+        if (code > 127) {
+            return `\\u${Number(code).toString(16).padStart(4, '0')}`
+        }
+        return char
+      })
+      link.setAttribute('href', `data:application/json;base64,${btoa(ansii.join(''))}`)
       if (moviesFileName) {
         link.setAttribute('download', `${moviesFileName}.imdb.json`)
       }
