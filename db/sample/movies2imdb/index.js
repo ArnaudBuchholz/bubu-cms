@@ -1,5 +1,7 @@
 'use strict'
 
+/* global gpf, FileReader, prompt, btoa */
+
 const tags = {
   tr: 0,
   td: 0,
@@ -14,16 +16,11 @@ Object.keys(tags).forEach(tag => {
 const NOT_IMDB = 'n/a'
 
 let moviesFileName
-let movies
+let movies = []
 let imdb = {
   select: [],
   movies: {},
-  actors: {},
-  genres: {}
-}
-
-function row (index) {
-  return document.getElementById(`row-${index}`)
+  actors: {}
 }
 
 function btn (index) {
@@ -94,12 +91,15 @@ function search (movie, index) {
 }
 
 function extract (imdbId) {
-  const infos = {}
-  gpf.http.get(`/imdb-title/${imdbId}`)
+  if (imdb.movies[imdbId]) {
+    return Promise.resolve(imdb.movies[imdbId])
+  }
+  const movie = {}
+  return gpf.http.get(`/imdb-title/${imdbId}`)
     .then(response => response.responseText)
     .then(titleHtml => {
       // <a href="/year/1979/?ref_=tt_ov_inf">1979</a>
-      infos.year = /<a href="\/year\/([0-9]+)\//.exec(titleHtml)[1]
+      movie.year = /<a href="\/year\/([0-9]+)\//.exec(titleHtml)[1]
       // <a href="/search/title?genres=horror&amp;explore=title_type,genres&amp;ref_=tt_ov_inf">Horror</a>
       const genres = []
       titleHtml.replace(/<a href="\/search\/title\?genres=([^&]+)&/g, (match, genre) => {
@@ -107,35 +107,44 @@ function extract (imdbId) {
           genres.push(genre)
         }
       })
-      infos.genres = genres
+      movie.genres = genres
       // <a href="/name/nm0000244/?ref_=tt_ov_st_sm">Sigourney Weaver</a>
-      const cast = []
+      const cast = {}
       titleHtml
         .split('<table class="cast_list">')[1]
         .split('</table>')[0]
         .replace(/\n/g, '')
-        .replace(/<a href="\/name\/[^"]+"\s*>\s*([^<]+)<\/a>(?:[^<]|<[^a])*<a href="\/title\/[^"]+"\s*>([^<]+)<\/a>/gm, (match, actor, role) => {
-            cast.push(`${actor}=${role}`)
+        .replace(/<a href="\/name\/([a-z0-9]+)\/[^"]+"\s*>\s*([^<]+)<\/a>(?:[^<]|<[^a])*<a href="\/title\/[^"]+"\s*>([^<]+)<\/a>/gm, (match, id, name, role) => {
+          cast[id] = role
+          if (!Object.prototype.hasOwnProperty.call(imdb.actors, id)) {
+            console.log('IMDB actor', id, name)
+            imdb.actors[id] = name
+          }
         })
-      infos.cast = cast
+      movie.cast = cast
       return gpf.http.get(`/imdb-releaseinfo/${imdbId}`)
     })
     .then(response => response.responseText.replace(/\n/g, ''))
     .then(releaseInfoHtml => {
-        releaseInfoHtml.replace(/<td class="aka-item__name">([^<]*)<\/td>\s*<td class="aka-item__title">([^<]*)<\/td>/gm, (match, country, title) => {
-          if (country.toLowerCase() === 'france') {
-              infos.frenchTitle = title
-          } else if (country.toLowerCase().trim() === '(original title)') {
-              infos.originalTitle = title
-          }
-        })
+      movie.titles = {}
+      releaseInfoHtml.replace(/<td class="aka-item__name">([^<]*)<\/td>\s*<td class="aka-item__title">([^<]*)<\/td>/gm, (match, country, title) => {
+        const lowerCasedCountry = country.toLowerCase().trim()
+        if (lowerCasedCountry === 'france') {
+          movie.titles.fr = title
+        } else if (lowerCasedCountry === 'world-wide (english title)') {
+          movie.titles.en = title
+        } else if (lowerCasedCountry === '(original title)') {
+          movie.titles.original = title
+        }
+      })
     })
     .then(() => {
-      alert(`Year: ${infos.year}
-Genres: ${infos.genres.join(', ')}
-Cast: ${infos.cast.join('; ')}
-Original title: ${infos.originalTitle}
-French title: ${infos.frenchTitle}`)
+      imdb.movies[imdbId] = movie
+      console.log('IMDB movie', imdbId, movie)
+      return movie
+    })
+    .catch(reason => {
+      console.error('IMDB movie', imdbId, reason)
     })
 }
 
@@ -191,9 +200,9 @@ function refresh () {
               className: 'dropdown-item',
               href: '#',
               'data-index': index,
-              'data-imdb': NOT_IMDB,
+              'data-imdb': NOT_IMDB
             }, 'Not an imbd movie'),
-            tags.div({className: 'dropdown-divider'})
+            tags.div({ className: 'dropdown-divider' })
           ])
         ])
       ).appendTo(tbody)
@@ -229,30 +238,30 @@ document.getElementById('movies').addEventListener('click', event => {
       select(target.dataset.index, target.dataset.imdb)
     }
     if (target.dataset.action) {
-        const imdb = movies[target.dataset.index].imdb
-        if (target.dataset.action === 'manual') {
-          const input = prompt('Enter IMDB id (tt0123456)', imdb)
-          if (input) {
-            select(target.dataset.index, input)
-          }
+      const imdbId = movies[target.dataset.index].imdb
+      if (target.dataset.action === 'manual') {
+        const input = prompt('Enter IMDB id (tt0123456)', imdbId)
+        if (input) {
+          select(target.dataset.index, input)
         }
-        if (target.dataset.action === 'copy') {
-          const regexpSrc = prompt('Enter match (regexp)')
-          if (regexpSrc) {
-            const regexp = new RegExp(regexpSrc)
-            movies.forEach((movie, index) => {
-              if(regexp.exec(movie.title)) {
-                select(index, imdb)
-              }
-            })
-          }
+      }
+      if (target.dataset.action === 'copy') {
+        const regexpSrc = prompt('Enter match (regexp)')
+        if (regexpSrc) {
+          const regexp = new RegExp(regexpSrc)
+          movies.forEach((movie, index) => {
+            if (regexp.exec(movie.title)) {
+              select(index, imdbId)
+            }
+          })
         }
-        if (target.dataset.action === 'view') {
-          window.open(`https://www.imdb.com/title/${imdb}`, 'imdb')
-        }
-        if (target.dataset.action === 'extract') {
-          extract(imdb)
-        }
+      }
+      if (target.dataset.action === 'view') {
+        window.open(`https://www.imdb.com/title/${imdbId}`, 'imdb')
+      }
+      if (target.dataset.action === 'extract') {
+        extract(imdbId)
+      }
     }
     event.preventDefault()
   }
@@ -261,11 +270,20 @@ document.getElementById('movies').addEventListener('click', event => {
 
 document.getElementById('export').addEventListener('click', () => {
   const link = document.getElementById('export-link')
-  link.setAttribute('href', `data:application/json;base64,${btoa(JSON.stringify(imdb))}`)
-  if (moviesFileName) {
-    link.setAttribute('download', `${moviesFileName}.imdb.json`)
-  }
-  link.click()
+  gpf.forEachAsync(movies, async (movie, index) => {
+    progress(index)
+    if (movie.imdb && movie.imdb !== NOT_IMDB) {
+      return extract(movie.imdb)
+    }
+  })
+    .then(function () {
+      link.setAttribute('href', `data:application/json;base64,${btoa(JSON.stringify(imdb))}`)
+      if (moviesFileName) {
+        link.setAttribute('download', `${moviesFileName}.imdb.json`)
+      }
+      link.click()
+      progress()
+    })
 })
 
 document.getElementById('import-input').addEventListener('change', function () {
@@ -278,6 +296,12 @@ document.getElementById('import-input').addEventListener('change', function () {
         array[index] = imdb.select[index]
         return array
       }, [])
+    }
+    if (!imdb.movies) {
+      imdb.movies = {}
+    }
+    if (!imdb.actors) {
+      imdb.actors = {}
     }
     refresh()
   }
