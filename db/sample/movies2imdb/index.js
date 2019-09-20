@@ -7,20 +7,20 @@ const tags = {
   button: 0,
   div: 0
 }
-
-const NOT_IMDB = 'n/a'
-let movies
-
-function cache (key, value) {
-  if (value === undefined) {
-    return JSON.parse(localStorage.getItem(key))
-  }
-  localStorage.setItem(key, JSON.stringify(value))
-}
-
 Object.keys(tags).forEach(tag => {
   tags[tag] = gpf.web.createTagFunction(tag)
 })
+
+const NOT_IMDB = 'n/a'
+
+let moviesFileName
+let movies
+let imdb = {
+  select: [],
+  movies: {},
+  actors: {},
+  genres: {}
+}
 
 function row (index) {
   return document.getElementById(`row-${index}`)
@@ -48,7 +48,7 @@ function select (index, imdbId) {
   button.innerHTML = imdbId
   button.classList.remove('btn-primary')
   button.classList.add('btn-success')
-  cache(`select-${index}`, imdbId)
+  imdb.select[index] = imdbId
   progress()
 }
 
@@ -139,82 +139,85 @@ French title: ${infos.frenchTitle}`)
     })
 }
 
-function loadMovies (csv) {
+function refresh () {
   const tbody = document.getElementById('movies')
   tbody.innerHTML = ''
   progress(0, 1)
 
-  const input = new gpf.stream.ReadableString(csv)
-  const lineAdapter = new gpf.stream.LineAdapter()
-  const csvParser = new gpf.stream.csv.Parser()
-  const output = new gpf.stream.WritableArray()
-  gpf.stream.pipe(input, lineAdapter, csvParser, output)
-    .then(() => {
-      movies = output.toArray()
-      movies.forEach((movie, index) => {
-        if (movie.title) {
-          movie.imdb = cache(`select-${index}`)
-          tags.tr({ id: `row-${index}` },
-            tags.td(movie.title),
-            tags.td([
-              tags.button({
-                id: `btn-${index}`,
-                className: `btn dropdown-toggle btn-${movie.imdb ? 'success' : 'primary'}`,
-                'data-imdb': movie.imdb,
-                'data-toggle': 'dropdown',
-                'aria-haspopup': true,
-                'aria-expanded': false
-              }, movie.imdb ? movie.imdb : 'Search'),
-              tags.div({
-                id: `mnu-${index}`,
-                className: 'dropdown-menu',
-                'aria-labelledby': `btn-${index}`
-              }, [
-                tags.a({
-                  className: 'dropdown-item',
-                  href: '#',
-                  'data-index': index,
-                  'data-action': 'view'
-                }, 'View IMDB page'),
-                tags.a({
-                  className: 'dropdown-item',
-                  href: '#',
-                  'data-index': index,
-                  'data-action': 'extract'
-                }, 'Extract IMDB infos'),
-                tags.a({
-                  className: 'dropdown-item',
-                  href: '#',
-                  'data-index': index,
-                  'data-action': 'manual'
-                }, 'Manual input'),
-                tags.a({
-                  className: 'dropdown-item',
-                  href: '#',
-                  'data-index': index,
-                  'data-action': 'copy'
-                }, 'Copy to (series)'),
-                tags.a({
-                  className: 'dropdown-item',
-                  href: '#',
-                  'data-index': index,
-                  'data-imdb': NOT_IMDB,
-                }, 'Not an imbd movie'),
-                tags.div({className: 'dropdown-divider'})
-              ])
-            ])
-          ).appendTo(tbody)
-        }
-      })
-      progress()
-      gpf.forEachAsync(movies, search)
-    })
+  movies.forEach((movie, index) => {
+    if (movie.title) {
+      movie.imdb = imdb.select[index]
+      tags.tr({ id: `row-${index}` },
+        tags.td(movie.title),
+        tags.td([
+          tags.button({
+            id: `btn-${index}`,
+            className: `btn dropdown-toggle btn-${movie.imdb ? 'success' : 'primary'}`,
+            'data-imdb': movie.imdb,
+            'data-toggle': 'dropdown',
+            'aria-haspopup': true,
+            'aria-expanded': false
+          }, movie.imdb ? movie.imdb : 'Search'),
+          tags.div({
+            id: `mnu-${index}`,
+            className: 'dropdown-menu',
+            'aria-labelledby': `btn-${index}`
+          }, [
+            tags.a({
+              className: 'dropdown-item',
+              href: '#',
+              'data-index': index,
+              'data-action': 'view'
+            }, 'View IMDB page'),
+            tags.a({
+              className: 'dropdown-item',
+              href: '#',
+              'data-index': index,
+              'data-action': 'extract'
+            }, 'Extract IMDB infos'),
+            tags.a({
+              className: 'dropdown-item',
+              href: '#',
+              'data-index': index,
+              'data-action': 'manual'
+            }, 'Manual input'),
+            tags.a({
+              className: 'dropdown-item',
+              href: '#',
+              'data-index': index,
+              'data-action': 'copy'
+            }, 'Copy to (series)'),
+            tags.a({
+              className: 'dropdown-item',
+              href: '#',
+              'data-index': index,
+              'data-imdb': NOT_IMDB,
+            }, 'Not an imbd movie'),
+            tags.div({className: 'dropdown-divider'})
+          ])
+        ])
+      ).appendTo(tbody)
+    }
+  })
+  progress()
+  gpf.forEachAsync(movies, search)
 }
 
 document.getElementById('csv-input').addEventListener('change', function () {
   const file = this.files[0]
+  moviesFileName = file.name
   const reader = new FileReader()
-  reader.onload = event => loadMovies(event.target.result)
+  reader.onload = event => {
+    const input = new gpf.stream.ReadableString(event.target.result)
+    const lineAdapter = new gpf.stream.LineAdapter()
+    const csvParser = new gpf.stream.csv.Parser()
+    const output = new gpf.stream.WritableArray()
+    gpf.stream.pipe(input, lineAdapter, csvParser, output)
+      .then(() => {
+        movies = output.toArray()
+        refresh()
+      })
+  }
   reader.readAsText(file)
 })
 
@@ -257,21 +260,26 @@ document.getElementById('movies').addEventListener('click', event => {
 })
 
 document.getElementById('export').addEventListener('click', () => {
-  const select = movies.reduce((dictionary, movie, index) => {
-    const imdb = cache(`select-${index}`)
-    if (imdb) {
-      dictionary[index] = imdb
-    }
-    return dictionary
-  }, {})
-  const content = window.open('about:blank')
-  content.document.write(JSON.stringify({select}))
+  const link = document.getElementById('export-link')
+  link.setAttribute('href', `data:application/json;base64,${btoa(JSON.stringify(imdb))}`)
+  if (moviesFileName) {
+    link.setAttribute('download', `${moviesFileName}.imdb.json`)
+  }
+  link.click()
 })
 
-document.getElementById('import').addEventListener('click', () => {
-  const data = JSON.parse(prompt('Paste to import'))
-  Object.keys(data.select).forEach(index => {
-    cache(`select-${index}`, data.select[index])
-  })
-  location.reload()
+document.getElementById('import-input').addEventListener('change', function () {
+  const file = this.files[0]
+  const reader = new FileReader()
+  reader.onload = event => {
+    imdb = JSON.parse(event.target.result)
+    if (!Array.isArray(imdb.select)) {
+      imdb.select = Object.keys(imdb.select).reduce((array, index) => {
+        array[index] = imdb.select[index]
+        return array
+      }, [])
+    }
+    refresh()
+  }
+  reader.readAsText(file)
 })
