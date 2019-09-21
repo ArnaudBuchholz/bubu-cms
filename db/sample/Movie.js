@@ -4,7 +4,6 @@ const gpf = require('gpf-js')
 const path = require('path')
 
 module.exports = db => {
-
   class Movie extends db.Record {
   }
 
@@ -41,7 +40,7 @@ module.exports = db => {
           // console.log('record', '404', csvRecord.title)
           return // SKIP
         }
-        const movie = new Movie (csvRecord)
+        const movie = new Movie(csvRecord)
         movie._id = movie._buildId(`${fileName}#${count++}`)
         movie._name = csvRecord.title
         movie._number = `${csvRecord.book} / ${csvRecord.page}`
