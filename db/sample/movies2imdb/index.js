@@ -49,12 +49,8 @@ function select (index, imdbId) {
   progress()
 }
 
-function search (movie, index) {
-  const title = movie.title.toLowerCase().replace(/:|%/g, ' ')
-  if (!title) {
-    return false
-  }
-  return gpf.http.get(`/imdb-query/${title.toLowerCase()}`)
+function query (search) {
+  return gpf.http.get(`/imdb-query/${search}`)
     .then(response => {
       const text = response.responseText
       const len = text.length
@@ -63,6 +59,14 @@ function search (movie, index) {
     })
     .then(responseText => JSON.parse(responseText))
     .then(responseJSON => responseJSON.d)
+}
+
+function search (movie, index) {
+  const title = movie.title.toLowerCase().replace(/:|%/g, ' ')
+  if (!title) {
+    return false
+  }
+  return query(title.toLowerCase())
     .then(suggestions => suggestions.filter(suggestion => suggestion.q && suggestion.q !== 'video game'))
     .then(suggestions => {
       if (!suggestions || !suggestions.length) {
@@ -79,11 +83,11 @@ function search (movie, index) {
         }, `${suggestion.id}: ${suggestion.l} [${suggestion.y}]`).appendTo(mnu(index)))
       if (!movie.imdb) {
         if (suggestions.length === 1) {
-          return select(movies, index, suggestions[0].id)
+          return select(index, suggestions[0].id)
         }
         const exactTitles = suggestions.filter(suggestion => suggestion.l.toLowerCase() === title)
         if (exactTitles.length === 1) {
-          return select(movies, index, exactTitles[0].id)
+          return select(index, exactTitles[0].id)
         }
       }
     })
@@ -91,11 +95,15 @@ function search (movie, index) {
 }
 
 function extract (imdbId) {
-  if (imdb.movies[imdbId]) {
+  if (imdb.movies[imdbId] && imdb.movies[imdbId].image) {
     return Promise.resolve(imdb.movies[imdbId])
   }
   const movie = {}
-  return gpf.http.get(`/imdb-title/${imdbId}`)
+  return query(imdbId)
+    .then(suggestions => {
+      movie.image = suggestions[0].i
+      return gpf.http.get(`/imdb-title/${imdbId}`)
+    })
     .then(response => response.responseText)
     .then(titleHtml => {
       // <a href="/year/1979/?ref_=tt_ov_inf">1979</a>
