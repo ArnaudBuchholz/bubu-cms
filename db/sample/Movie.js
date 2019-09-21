@@ -33,12 +33,12 @@ module.exports = db => {
       write: async function (csvRecord) {
         const imdbId = imdb.select[count]
         if (!imdbId) {
-          console.log('record', '400', movie.name)
+          // console.log('record', '400', csvRecord.title)
           return // SKIP
         }
         const imdbMovie = imdb.movies[imdbId]
         if (!imdbMovie) {
-          console.log('record', '404', movie.name)
+          // console.log('record', '404', csvRecord.title)
           return // SKIP
         }
         const movie = new Movie (csvRecord)
@@ -52,7 +52,7 @@ module.exports = db => {
           movie.addTag(actorId)
         })
         movie._cast = imdbMovie.cast
-        console.log('record', '200', movie.name)
+        // console.log('record', '200', movie.name)
       }
     }
     await gpf.stream.pipe(csvFile, lineAdapter, csvParser, factory)
