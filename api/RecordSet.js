@@ -51,6 +51,7 @@ class RecordSet extends Set {
 
     const terms = searchTerms
       .filter(term => term.indexOf(tagPrefix) !== 0)
+      .map(term => term.toLowerCase())
 
     let searchResult
     if (tags.length) {
