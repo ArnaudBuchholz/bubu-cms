@@ -108,7 +108,7 @@ class Record {
     return this._getSearchableProperties()
       .map(property => this[property])
       .filter(value => !!value)
-      .some(value => (value.toString() || '').includes(term))
+      .some(value => (value.toString() || '').toLowerCase().includes(term))
   }
 
   get content () {
