@@ -6,6 +6,7 @@
   "directories": {},
   "scripts": {
     "start": "node .",
+    "debug": "node --inspect-brk .",
     "lint": "standard --fix",
     "test": "standard --fix & mocha",
     "mocha": "mocha --verbose",
