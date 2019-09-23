@@ -288,7 +288,7 @@ document.getElementById('export').addEventListener('click', () => {
       const ansii = JSON.stringify(imdb).split('').map(char => {
         const code = char.charCodeAt(0)
         if (code > 127) {
-            return `\\u${Number(code).toString(16).padStart(4, '0')}`
+          return `\\u${Number(code).toString(16).padStart(4, '0')}`
         }
         return char
       })
