@@ -8,13 +8,18 @@ module.exports = {
     'rss,heapTotal,heapUsed,external'.split(',').forEach(type => {
       const value = usage[type]
       const last = reference[type]
-      let label
-      if (last === undefined || last >= value) {
-        label = value.toString().green
+      let diff
+      if (last) {
+        if (last >= value) {
+          diff = ('-' + (last - value).toString()).green
+        } else {
+          diff = ('+' + (value - last).toString()).red
+        }
       } else {
-        label = value.toString().red
+        diff = ''
       }
-      console.log('MEMRY'.magenta, `  ${type.padEnd(9, ' ')} (bytes) :`.gray, label)
+      console.log('MEMRY'.magenta, `  ${type.padEnd(9, ' ')} (bytes) :`.gray,
+        value.toString().padEnd(9, ' ').white, diff)
     })
     return usage
   }
