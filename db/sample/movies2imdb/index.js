@@ -95,7 +95,7 @@ function search (movie, index) {
 }
 
 function extract (imdbId) {
-  if (imdb.movies[imdbId] && imdb.movies[imdbId].image) {
+  if (imdb.movies[imdbId]) {
     return Promise.resolve(imdb.movies[imdbId])
   }
   const movie = {}
@@ -107,7 +107,9 @@ function extract (imdbId) {
     .then(response => response.responseText)
     .then(titleHtml => {
       // <a href="/year/1979/?ref_=tt_ov_inf">1979</a>
-      movie.year = /<a href="\/year\/([0-9]+)\//.exec(titleHtml)[1]
+      movie.year = parseInt(/<a href="\/year\/([0-9]+)\//.exec(titleHtml)[1], 10)
+      // <time datetime="PT117M">1h 57min</time>
+      movie.duration = parseInt(/<time datetime="PT([^"]+)M"/.exec(titleHtml)[1], 10)
       // <a href="/search/title?genres=horror&amp;explore=title_type,genres&amp;ref_=tt_ov_inf">Horror</a>
       const genres = []
       titleHtml.replace(/<a href="\/search\/title\?genres=([^&]+)&/g, (match, genre) => {
