@@ -1,6 +1,7 @@
 'use strict'
 
 require('colors')
+const gpf = require('gpf-js')
 const path = require('path')
 const Record = require('./Record')
 const RecordSet = require('./RecordSet')
@@ -59,6 +60,25 @@ class Database {
       }
     }
     return this.opened
+  }
+
+  async getI18n (language = '') {
+    console.log('DATAB'.magenta, 'Getting i18n for language \''.gray + language.green + '\'...'.gray)
+    let i18nPath
+    if (language) {
+      i18nPath = `${this.path}/i18n_${language}.properties`
+    } else {
+      i18nPath = `${this.path}/i18n.properties`
+    }
+    const gpfFileStorage = gpf.fs.getFileStorage()
+    const info = await gpfFileStorage.getInfo(i18nPath)
+    if (info.type !== gpf.fs.types.file) {
+      return null
+    }
+    const i18nFile = await gpfFileStorage.openTextStream(i18nPath, gpf.fs.openFor.reading)
+    const output = new gpf.stream.WritableString()
+    return gpf.stream.pipe(i18nFile, output)
+      .then(() => output.toString())
   }
 
   constructor (name) {
