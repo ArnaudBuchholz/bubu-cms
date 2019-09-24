@@ -26,6 +26,7 @@ module.exports = db => {
     console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, `Mappings: ${imdb.select.length}`.gray)
     console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, `Movies: ${Object.keys(imdb.movies).length}`.gray)
     console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, `Actors: ${Object.keys(imdb.actors).length}`.gray)
+    gpf.forEach(imdb.actors, (name, actorId) => db.addI18nKey(`tag.${actorId}`, name))
 
     // Read movies
     let count = -1
