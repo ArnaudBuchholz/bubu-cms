@@ -15,6 +15,9 @@
 	"sap.ui5": {
 		"dependencies": {
 			"libs": {
+				"sap.f": {
+					"lazy": false
+				},
 				"sap.m": {
 					"lazy": false
 				},
@@ -25,6 +28,9 @@
 					"lazy": false
 				},
 				"sap.ui.unified": {
+					"lazy": false
+				},
+				"sap.uxap": {
 					"lazy": false
 				}
 			}
