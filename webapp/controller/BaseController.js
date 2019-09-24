@@ -66,6 +66,17 @@ sap.ui.define([
 
     renderRating: function (value) {
       return new Array(value + 1).join('\u2605') + new Array(6 - value).join('\u2606')
+    },
+
+    renderTags: function (tags) {
+      // First tag is always object type
+      return tags
+        .split(' ')
+        .slice(1)
+        .map(function (tagName) {
+          return this.i18n('tag', tagName) || tagName;
+        }, this)
+        .join(' ')
     }
 
   })
