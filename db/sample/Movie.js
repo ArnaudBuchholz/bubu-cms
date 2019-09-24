@@ -7,12 +7,6 @@ module.exports = db => {
   class Movie extends db.Record {
   }
 
-  Object.assign(Movie.prototype, {
-
-    _icon: 'sap-icon://video'
-
-  })
-
   Movie.load = async function (fileName) {
     const gpfFileStorage = gpf.fs.getFileStorage()
     const forReading = gpf.fs.openFor.reading
@@ -51,10 +45,11 @@ module.exports = db => {
         movie._name = csvRecord.title
         movie._number = `${csvRecord.book} / ${csvRecord.page}`
         movie._statusText1 = imdbMovie.year
+        // 'Format' duration
+        const hours = Math.floor(imdbMovie.duration / 60)
+        const mins = imdbMovie.duration - 60 * hours
+        movie._statusText2 = `${hours.toString()}:${mins.toString().padStart(2, '0')}`
         imdbMovie.genres.forEach(genre => movie.addTag(genre))
-        if (movie.tags.length > 1) {
-          movie._statusText2 = movie.tags[1].name // First genre
-        }
         Object.keys(imdbMovie.cast).forEach(actorId => {
           movie.addTag(actorId)
         })
