@@ -20,13 +20,20 @@ module.exports = async (request, response, relativeUrl) => {
     return
   }
 
-  /*
-  router.get(/\/i18n(_\w+)?\.properties/, (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../db', config.db, req.url.substr(1)))
-  })
-*/
-
   const databaseName = request.headers.db || process.env.BUBU_CMS_DB_NAME || 'sample'
   request.database = databases(databaseName)
   await request.database.open()
+
+  const i18nMatch = /i18n(?:_(\w+))?\.properties/.exec(relativeUrl)
+  if (i18nMatch) {
+    const i18n = await request.database.getI18n(i18nMatch[1])
+    if (i18n) {
+      response.writeHead(200, {
+        'Content-Type': textContentType
+      })
+      response.end(i18n)
+      return
+    }
+    return 404
+  }
 }
