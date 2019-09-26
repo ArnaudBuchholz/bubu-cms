@@ -73,8 +73,8 @@ sap.ui.define([
       return tags
         .split(' ')
         .slice(1)
-        .map(function (tagName) {
-          return this.i18n('tag', tagName) || tagName;
+        .map(function (tag) {
+          return this.i18n('tag', tag) || tag;
         }, this)
         .join(' ')
     }
