@@ -77,6 +77,14 @@ sap.ui.define([
           return this.i18n('tag', tag) || tag;
         }, this)
         .join(' ')
+    },
+
+    escapeSearch: function (search) {
+      return encodeURIComponent(search.replace(/#/g, '__tag__'))
+    },
+
+    unescapeSearch: function (search) {
+      return decodeURIComponent(search).replace(/__tag__/g, '#')
     }
 
   })
