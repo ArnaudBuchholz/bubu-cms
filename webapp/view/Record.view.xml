@@ -24,7 +24,6 @@
 						title="{name}"
 						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
 						iconDensityAware="false"
-						width="100%"
 					/>
 				</expandedHeading>
 				<snappedHeading>
@@ -32,7 +31,6 @@
 						title="{name}"
 						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
 						iconDensityAware="false"
-						width="100%"
 					/>
 				</snappedHeading>
 				<navigationActions>
@@ -47,19 +45,31 @@
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
 				<m:RatingIndicator maxValue="5" class="sapUiSmallMarginBottom" value="{rating}" iconSize="32px" tooltip="Rating Tooltip" />
-				<m:MultiInput id="tags" showValueHelp="true" tokens="{tags>/list}">
-					<m:tokens>
-						<m:Token editable="{tags>editable}" key="{tags>id}" text="#{tags>id}" />
-					</m:tokens>
-				</m:MultiInput>
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
+<!--
 			<ObjectPageSection id="htmlSection" visible="true">
-				<!-- {= ${toContent/type} === 'html' }" > -->
+				{= ${toContent/type} === 'html' }" >
 				<subSections>
 					<ObjectPageSubSection>
 						<core:HTML id="htmlContent" content="&lt;div&gt;{toContent/data}&lt;/div&gt;" preferDOM="false"/>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+-->
+			<ObjectPageSection id="tagsSection" title="{i18n>record.section.tags}">
+				<subSections>
+					<ObjectPageSubSection>
+						<m:List
+							id="tagList"
+							items="{tags>/list}"
+						>
+							<m:StandardListItem
+								type="Navigation"
+								title="{tags>name}"
+							/>
+						</m:List>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
