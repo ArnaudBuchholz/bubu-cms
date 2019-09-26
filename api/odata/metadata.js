@@ -10,8 +10,8 @@ const TYPES_MAPPING = {}
 const Id = require('../Id')
 const Filterable = require('../Filterable')
 const Sortable = require('../Sortable')
+const NavigationProperty = require('./NavigationProperty')
 
-const attributes = require('./attributes')
 const entities = require('./entities')
 const gpf = require('gpf-js')
 const mime = require('mime')
@@ -26,6 +26,11 @@ const writer = new gpf.xml.Writer()
 const output = new gpf.stream.WritableString()
 const metadata = gpf.stream.pipe(writer, output).then(() => output.toString())
 const promisifiedWriter = xmlContentHandler(writer)
+
+const getNavigationProperties = EntityClass => {
+  const dictionary = gpf.attributes.get(EntityClass, NavigationProperty)
+  return Object.keys(dictionary).map(name => dictionary[name][0])
+}
 
 promisifiedWriter
   .startDocument()
@@ -47,9 +52,7 @@ promisifiedWriter
     const serialProps = gpf.serial.get(EntityClass)
     const sortable = gpf.attributes.get(EntityClass, Sortable)
     const filterable = gpf.attributes.get(EntityClass, Filterable)
-
-    const navigationProperties = attributes.navigationProperties(EntityClass)
-
+    const navigationProperties = getNavigationProperties(EntityClass)
     return promisifiedWriter
       .startElement('EntityType', {
         Name: EntityClass.name
@@ -80,49 +83,49 @@ promisifiedWriter
           })
           .endElement() // Property
       }))
-      .then(() => gpf.forEachAsync(navigationProperties, property =>
+      .then(() => gpf.forEachAsync(navigationProperties, navigationProperty =>
         promisifiedWriter
           .startElement('NavigationProperty', {
-            Name: property.getName(),
-            Relationship: `${SCHEMA_NAMESPACE}.${property.getRelationshipName()}`,
-            FromRole: property.getFromRoleName(),
-            ToRole: property.getToRoleName()
+            Name: navigationProperty.name,
+            Relationship: `${SCHEMA_NAMESPACE}.${navigationProperty.relationshipName}`,
+            FromRole: navigationProperty.fromRoleName,
+            ToRole: navigationProperty.toRoleName
           })
           .endElement() // NavigationProperty
       ))
       .endElement() // EntityType
-      .then(() => gpf.forEachAsync(navigationProperties, property =>
+      .then(() => gpf.forEachAsync(navigationProperties, navigationProperty =>
         promisifiedWriter
           .startElement('Association', {
-            Name: property.getRelationshipName(),
+            Name: navigationProperty.relationshipName,
             'sap:content-version': 1
           })
           .startElement('End', {
-            Type: `${SCHEMA_NAMESPACE}.${property.from().name}`,
-            Multiplicity: '0..1',
-            Role: property.getFromRoleName()
+            Type: `${SCHEMA_NAMESPACE}.${navigationProperty.from.name}`,
+            Multiplicity: `1`,
+            Role: navigationProperty.fromRoleName
           })
           .endElement() // End
           .startElement('End', {
-            Type: `${SCHEMA_NAMESPACE}.${property.to().name}`,
-            Multiplicity: property.getMultiplicity(),
-            Role: property.getToRoleName()
+            Type: `${SCHEMA_NAMESPACE}.${navigationProperty.to.name}`,
+            Multiplicity: `0..${navigationProperty.multiplicity}`,
+            Role: navigationProperty.toRoleName
           })
           .endElement() // End
           .startElement('ReferentialConstraint')
           .startElement('Principal', {
-            Role: property.getFromRoleName()
+            Role: navigationProperty.fromRoleName
           })
           .startElement('PropertyRef', {
-            Name: property.getPrincipal()
+            Name: navigationProperty.principal
           })
           .endElement() // PropertyRef
           .endElement() // Principal
           .startElement('Dependent', {
-            Role: property.getToRoleName()
+            Role: navigationProperty.toRoleName
           })
           .startElement('PropertyRef', {
-            Name: property.getDependent()
+            Name: navigationProperty.dependent
           })
           .endElement() // PropertyRef
           .endElement() // Dependent
@@ -135,32 +138,31 @@ promisifiedWriter
     'm:IsDefaultEntityContainer': true
   })
   .then(() => gpf.forEachAsync(entities, EntityClass => {
-    const
-      navigationProperties = attributes.navigationProperties(EntityClass)
+    const navigationProperties = getNavigationProperties(EntityClass)
     return promisifiedWriter
       .startElement('EntitySet', {
         Name: `${EntityClass.name}Set`,
         EntityType: `${SCHEMA_NAMESPACE}.${EntityClass.name}`
       })
       .endElement() // EntitySet
-      .then(() => gpf.forEachAsync(navigationProperties, property =>
+      .then(() => gpf.forEachAsync(navigationProperties, navigationProperty =>
         promisifiedWriter
           .startElement('AssociationSet', {
-            Name: `${property.getRelationshipName()}Set`,
-            Association: `${SCHEMA_NAMESPACE}.${property.getRelationshipName()}`,
+            Name: `${navigationProperty.relationshipName}Set`,
+            Association: `${SCHEMA_NAMESPACE}.${navigationProperty.relationshipName}`,
             'sap:creatable': false,
             'sap:updatable': false,
             'sap:deletable': false,
             'sap:content-version': 1
           })
           .startElement('End', {
-            EntitySet: `${property.from().name}Set`,
-            Role: property.getFromRoleName()
+            EntitySet: `${navigationProperty.from.name}Set`,
+            Role: navigationProperty.fromRoleName
           })
           .endElement() // End
           .startElement('End', {
-            EntitySet: `${property.to().name}Set`,
-            Role: property.getToRoleName()
+            EntitySet: `${navigationProperty.to.name}Set`,
+            Role: navigationProperty.toRoleName
           })
           .endElement() // End
           .endElement() // AssociationSet
