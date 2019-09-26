@@ -4,7 +4,6 @@ const gpf = require('gpf-js')
 const attribute = gpf.attributes.decorator
 
 class NavigationProperty extends gpf.attributes.Attribute {
-
   get from () {
     return this.getClassConstructor()
   }
@@ -54,7 +53,6 @@ class NavigationProperty extends gpf.attributes.Attribute {
     this._principal = ''
     this._dependent = ''
   }
-
 }
 
 attribute(new gpf.attributes.UniqueAttribute())(NavigationProperty)
