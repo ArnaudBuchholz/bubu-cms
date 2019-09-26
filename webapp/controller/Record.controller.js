@@ -79,6 +79,15 @@ sap.ui.define([
         country = phone[0] || '1'
         URLHelper.triggerTel('+' + country + phone[2] + phone[3] + phone[4])
       }
+    },
+
+    onTagPress: function (event) {
+      var tag = event.getSource().getBindingContext("tags").getObject()
+      this._getRouter().navTo('list', {
+        query: {
+          search: this.escapeSearch('#' + tag.id)
+        }
+      }, false)
     }
 
   })
