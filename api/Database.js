@@ -82,8 +82,8 @@ class Database {
       .then(content => {
         const i18nKeys = this._i18nKeys[language] || this._i18nKeys['']
         if (i18nKeys) {
-          return content + '\n\n# Dynamic keys\n'
-            + Object.keys(i18nKeys).map(key => `${key}=${i18nKeys[key]}`).join('\n')
+          return content + '\n\n# Dynamic keys\n' +
+            Object.keys(i18nKeys).map(key => `${key}=${i18nKeys[key]}`).join('\n')
         }
         return content
       })
