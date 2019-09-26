@@ -51,13 +51,13 @@ sap.ui.define([
       page.setModel(new JSONModel({
         list: record.tags.split(' ').map(function (tag) {
           return {
-            editable: tag !== record.type,
-            id: tag
+            id: tag,
+            name: this.i18n('tag', tag) || tag
           }
-        })
+        }, this)
       }), 'tags')
-      page.setSelectedSection(this.byId('htmlSection').getId())
-      this.byId('htmlContent').invalidate()
+      // page.setSelectedSection(this.byId('htmlSection').getId())
+      // this.byId('htmlContent').invalidate()
       page.setBusy(false)
     },
 
