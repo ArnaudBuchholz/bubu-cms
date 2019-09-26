@@ -82,7 +82,7 @@ sap.ui.define([
     },
 
     onTagPress: function (event) {
-      var tag = event.getSource().getBindingContext("tags").getObject()
+      var tag = event.getSource().getBindingContext('tags').getObject()
       this._getRouter().navTo('list', {
         query: {
           search: this.escapeSearch('#' + tag.id)
