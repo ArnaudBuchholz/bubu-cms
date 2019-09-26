@@ -59,6 +59,7 @@
 							<m:StandardListItem
 								type="Navigation"
 								title="{tags>name}"
+								press="onTagPress"
 							/>
 						</m:List>
 					</ObjectPageSubSection>
