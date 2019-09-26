@@ -18,26 +18,17 @@
 		toggleHeaderOnTitleClick="false"
 	>
 		<headerTitle>
-			<ObjectPageDynamicHeaderTitle areaShrinkRatio="0:1:1">
-				<expandedHeading>
-					<m:ObjectHeader
-						title="{name}"
-						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
-						iconDensityAware="false"
-					/>
-				</expandedHeading>
-				<snappedHeading>
-					<m:ObjectHeader
-						title="{name}"
-						icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
-						iconDensityAware="false"
-					/>
-				</snappedHeading>
-				<navigationActions>
+			<ObjectPageHeader
+				objectImageURI="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+			  objectTitle="{name}"
+			  isObjectTitleAlwaysVisible="false"
+			  isObjectSubtitleAlwaysVisible="false"
+			>
+				<actions>
 					<ObjectPageHeaderActionButton icon="sap-icon://nav-back" press="onBack" type="Transparent" />
 					<ObjectPageHeaderActionButton icon="sap-icon://present" type="Transparent" />
-				</navigationActions>
-			</ObjectPageDynamicHeaderTitle>
+				</actions>
+			</ObjectPageHeader>
 		</headerTitle>
 		<headerContent>
 			<layout:VerticalLayout>
