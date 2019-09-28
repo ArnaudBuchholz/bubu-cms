@@ -1,35 +1,18 @@
 'use strict'
 
 const gpf = require('gpf-js')
+const attribute = gpf.attributes.decorator
 
-const Content = gpf.define({
-  $class: 'Content',
-
-  '[_recordId]': [new gpf.attributes.Serializable({
-    name: 'recordId',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _recordId: '',
-
-  '[_type]': [new gpf.attributes.Serializable({
-    name: 'type',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _type: '',
-
-  '[_data]': [new gpf.attributes.Serializable({
-    name: 'data',
-    type: gpf.serial.types.string,
-    required: true
-  })],
-  _data: '',
-
-  constructor: function (recordId) {
+class Content {
+  constructor (recordId, data = '', mimeType = 'text/plain') {
     this._recordId = recordId
+    this._data = data
+    this._mimeType = mimeType
   }
+}
 
-})
+attribute(new gpf.attributes.Serializable())(Content, '_recordId')
+attribute(new gpf.attributes.Serializable())(Content, '_data')
+attribute(new gpf.attributes.Serializable())(Content, '_mimeType')
 
 module.exports = Content
