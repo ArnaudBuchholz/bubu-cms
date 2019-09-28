@@ -5,8 +5,21 @@ require('url')
 const mime = require('mime')
 const metadata = require('./metadata')
 require('./toJSON')
+const NavigationProperty = require('./NavigationProperty')
 
 const jsonContentType = mime.getType('json')
+
+async function toJSONEntities (entities, url) {
+  // if (url.searchParams.has('$expand')) {
+  //   const expandOn = url.searchParams.has('$expand').split(',')
+  //   const expanded = []
+  //   const navigationProperties = NavigationProperty.list(entities[0])
+  //
+  //   return entities
+  //     .map((entity, index) => {...entity.toJSON(), ...expanded[index]})
+  // }
+  return entities.map(entity => entity.toJSON())
+}
 
 async function getEntitySet (set, url, response) {
   response.writeHead(200, {
@@ -19,16 +32,16 @@ async function getEntitySet (set, url, response) {
     sortCriteria = orderBy[0]
     sortAscending = orderBy[1] === 'asc'
   }
-  let results = await set.query(url.searchParams.get('search') || '', sortCriteria, sortAscending)
+  let entities = await set.query(url.searchParams.get('search') || '', sortCriteria, sortAscending)
   if (url.searchParams.has('$skip')) {
-    results = results.slice(parseInt(url.searchParams.get('$skip'), 10))
+    entities = entities.slice(parseInt(url.searchParams.get('$skip'), 10))
   }
   if (url.searchParams.has('$top')) {
-    results = results.slice(0, parseInt(url.searchParams.get('$top'), 10))
+    entities = entities.slice(0, parseInt(url.searchParams.get('$top'), 10))
   }
   response.end(JSON.stringify({
     d: {
-      results: results.map(entity => entity.toJSON())
+      results: await toJSONEntities(entities, url)
     }
   }))
 }
@@ -38,7 +51,7 @@ async function getEntity (entity, url, response) {
     'Content-Type': jsonContentType
   })
   response.end(JSON.stringify({
-    d: entity.toJSON()
+    d: (await toJSONEntities([entity], url))[0]
   }))
 }
 
@@ -55,7 +68,6 @@ module.exports = async (request, response, relativeUrl) => {
   if (relativeUrl.startsWith('$metadata')) {
     return metadata(request, response)
   }
-
   const url = new URL(relativeUrl, 'http://localhost/')
   if (request.method === 'GET') {
     const match = /(Record|Tag)Set(?:\('([^']+)'\))?/.exec(url.pathname)
@@ -65,6 +77,5 @@ module.exports = async (request, response, relativeUrl) => {
     }
     return getEntitySet(set, url, response)
   }
-
   return 404
 }
