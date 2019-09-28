@@ -5,6 +5,7 @@ const attribute = gpf.attributes.decorator
 const Id = require('./Id')
 const Searchable = require('./Searchable')
 const Sortable = require('./Sortable')
+const Content = require('./Content')
 
 const nanoFormat = require('nanoid/format')
 const nanoUrl = require('nanoid/url')
@@ -111,11 +112,8 @@ class Record {
       .some(value => (value.toString() || '').toLowerCase().includes(term))
   }
 
-  get content () {
-    return Promise.resolve(this._allocateContent({
-      _type: 'plain',
-      _data: ''
-    }))
+  async buildContent () {
+    return new Content(this._id)
   }
 
   constructor (database) {
