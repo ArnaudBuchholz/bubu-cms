@@ -35,15 +35,15 @@ class NavigationProperty extends gpf.attributes.Attribute {
   }
 
   get relationshipName () {
-    return `${this.from.name}to${this.to.name}`
+    return `${this.from.name}To${this.to.name}`
   }
 
   get fromRoleName () {
-    return `FromRole_${this.from.name}to${this.to.name}`
+    return `FromRole_${this.from.name}To${this.to.name}`
   }
 
   get toRoleName () {
-    return `ToRole_${this.from.name}to${this.to.name}`
+    return `ToRole_${this.from.name}To${this.to.name}`
   }
 
   constructor (Entity, multiplicity = '*') {
