@@ -27,11 +27,6 @@ const output = new gpf.stream.WritableString()
 const metadata = gpf.stream.pipe(writer, output).then(() => output.toString())
 const promisifiedWriter = xmlContentHandler(writer)
 
-const getNavigationProperties = EntityClass => {
-  const dictionary = gpf.attributes.get(EntityClass, NavigationProperty)
-  return Object.keys(dictionary).map(name => dictionary[name][0])
-}
-
 promisifiedWriter
   .startDocument()
   .startPrefixMapping('edmx', EDMX_NAMESPACE)
@@ -52,7 +47,7 @@ promisifiedWriter
     const serialProps = gpf.serial.get(EntityClass)
     const sortable = gpf.attributes.get(EntityClass, Sortable)
     const filterable = gpf.attributes.get(EntityClass, Filterable)
-    const navigationProperties = getNavigationProperties(EntityClass)
+    const navigationProperties = NavigationProperty.list(EntityClass)
     return promisifiedWriter
       .startElement('EntityType', {
         Name: EntityClass.name
@@ -138,7 +133,7 @@ promisifiedWriter
     'm:IsDefaultEntityContainer': true
   })
   .then(() => gpf.forEachAsync(entities, EntityClass => {
-    const navigationProperties = getNavigationProperties(EntityClass)
+    const navigationProperties = NavigationProperty.list(EntityClass)
     return promisifiedWriter
       .startElement('EntitySet', {
         Name: `${EntityClass.name}Set`,
