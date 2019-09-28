@@ -2,8 +2,6 @@
 
 const gpf = require('gpf-js')
 const Id = require('../Id')
-const Record = require('../Record')
-const Tag = require('../Tag')
 
 const mapOfSerialTypeToJSON = {
   undefined: () => '',
@@ -55,5 +53,6 @@ function toJSON () {
   return json
 }
 
-Record.prototype.toJSON = toJSON
-Tag.prototype.toJSON = toJSON
+require('./entities').forEach(EntityClass => {
+  EntityClass.prototype.toJSON = toJSON
+})
