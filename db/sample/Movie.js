@@ -9,7 +9,7 @@ module.exports = db => {
     async buildContent () {
       return super.buildContent({
         imdbId: this._imdbId,
-        image: this._image.replace(".jpg", "_SY1000_CR0,0,678,1000_.jpg"),
+        image: this._image ? this._image.replace(".jpg", "_SY1000_CR0,0,678,1000_.jpg") : '',
         cast: this._cast
       })
     }
