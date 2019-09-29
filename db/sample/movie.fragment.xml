@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+	xmlns="sap.uxap"
+	xmlns:core="sap.ui.core"
+	xmlns:m="sap.m"
+>
+	<ObjectPageSection title="{i18n>movie.section.title}">
+		<subSections>
+			<ObjectPageSubSection>
+				<m:Link
+					href="https://www.imdb.com/title/{content/imdbId}"
+					text="{i18n>movie.section.OpenOnIMDB}"
+				/>
+				<m:Image
+					src="{content/image}"
+					width="100%"
+				/>
+				<m:List
+					items="{content/cast}"
+				>
+					<m:StandardListItem
+						title="{id} ... {role}"
+					/>
+				</m:List>
+			</ObjectPageSubSection>
+		</subSections>
+	</ObjectPageSection>
+</core:FragmentDefinition>
