@@ -5,6 +5,7 @@ const nanoid = require('nanoid')
 const databases = require('./databases')
 
 const textContentType = mime.getType('text')
+const xmlContentType = mime.getType('xml')
 
 module.exports = async (request, response, relativeUrl) => {
   const memory = process.memoryUsage()
@@ -32,6 +33,19 @@ module.exports = async (request, response, relativeUrl) => {
         'Content-Type': textContentType
       })
       response.end(i18n)
+      return
+    }
+    return 404
+  }
+
+  const fragmentMatch = /(\w+)\.fragment\.xml/.exec(relativeUrl)
+  if (fragmentMatch) {
+    const fragment = await request.database.getFragment(fragmentMatch[1])
+    if (fragment) {
+      response.writeHead(200, {
+        'Content-Type': xmlContentType
+      })
+      response.end(fragment)
       return
     }
     return 404
