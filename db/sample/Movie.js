@@ -5,6 +5,15 @@ const path = require('path')
 
 module.exports = db => {
   class Movie extends db.Record {
+
+    async buildContent () {
+      return super.buildContent({
+        imdbId: this._imdbId,
+        image: this._image.replace(".jpg", "_SY1000_CR0,0,678,1000_.jpg"),
+        cast: this._cast
+      })
+    }
+
   }
 
   Movie.load = async function (fileName) {
@@ -42,6 +51,7 @@ module.exports = db => {
         }
         const movie = new Movie(csvRecord)
         movie._id = movie._buildId(`${fileName}#${count}`)
+        movie._imdbId = imdbId
         movie._name = csvRecord.title
         movie._number = `${csvRecord.book} / ${csvRecord.page}`
         movie._statusText1 = imdbMovie.year
@@ -50,11 +60,16 @@ module.exports = db => {
         const mins = imdbMovie.duration - 60 * hours
         movie._statusText2 = `${hours.toString()}:${mins.toString().padStart(2, '0')}`
         imdbMovie.genres.forEach(genre => movie.addTag(genre))
+        movie._cast = []
         Object.keys(imdbMovie.cast).forEach(actorId => {
-          movie.addTag(actorId)
+          const tag = movie.addTag(actorId)
+          movie._cast.push({
+            id: tag.name,
+            role: imdbMovie.cast[actorId]
+          })
         })
-        movie._cast = imdbMovie.cast
         if (imdbMovie.image && imdbMovie.image.length) {
+          movie._image =imdbMovie.image[0]
           movie._icon = imdbMovie.image[0].replace('.jpg', '._SX40_CR0,0,40,54_.jpg')
         }
         console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, movie.name.gray)
