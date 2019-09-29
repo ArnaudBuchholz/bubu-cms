@@ -112,8 +112,8 @@ class Record {
       .some(value => (value.toString() || '').toLowerCase().includes(term))
   }
 
-  async buildContent () {
-    return new Content(this._id)
+  async buildContent (data, mimeType) {
+    return new Content(this._id, data, mimeType)
   }
 
   constructor (database) {
