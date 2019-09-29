@@ -99,6 +99,20 @@ class Database {
     this._i18nKeys[language][key] = value
   }
 
+  async getFragment (type) {
+    console.log('DATAB'.magenta, 'Getting fragment for type \''.gray + type.green + '\'...'.gray)
+    const fragmentPath = `${this.path}/${type}.fragment.xml`
+    const gpfFileStorage = gpf.fs.getFileStorage()
+    const info = await gpfFileStorage.getInfo(fragmentPath)
+    if (info.type !== gpf.fs.types.file) {
+      return null
+    }
+    const fragmentFile = await gpfFileStorage.openTextStream(fragmentPath, gpf.fs.openFor.reading)
+    const output = new gpf.stream.WritableString()
+    return gpf.stream.pipe(fragmentFile, output)
+      .then(() => output.toString())
+  }
+
   constructor (name) {
     this._name = name
     if (path.isAbsolute(name)) {
