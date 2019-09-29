@@ -1,7 +1,7 @@
 'use strict'
 
 require('url')
-
+const gpf = require('gpf-js')
 const mime = require('mime')
 const metadata = require('./metadata')
 require('./toJSON')
