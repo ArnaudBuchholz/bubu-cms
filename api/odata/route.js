@@ -9,16 +9,20 @@ const NavigationProperty = require('./NavigationProperty')
 
 const jsonContentType = mime.getType('json')
 
-async function toJSONEntities (entities, url) {
-  // if (url.searchParams.has('$expand')) {
-  //   const expandOn = url.searchParams.has('$expand').split(',')
-  //   const expanded = []
-  //   const navigationProperties = NavigationProperty.list(entities[0])
-  //
-  //   return entities
-  //     .map((entity, index) => {...entity.toJSON(), ...expanded[index]})
-  // }
-  return entities.map(entity => entity.toJSON())
+async function getEntitiesAsJSON (entities, url) {
+  const jsonEntities = entities.map(entity => entity.toJSON())
+  if (url.searchParams.has('$expand')) {
+    const expandOn = url.searchParams.get('$expand').split(',')
+    const navigationProperties = NavigationProperty.list(entities[0])
+      .filter(navigationProperty => expandOn.includes(navigationProperty.name))
+    await gpf.forEachAsync(navigationProperties, navigationProperty => {
+      return gpf.forEachAsync(entities, async (entity, index) => {
+        jsonEntities[index][navigationProperty.name] =
+          (await entity[navigationProperty.getMemberName()]()).toJSON()
+      })
+    })
+  }
+  return jsonEntities
 }
 
 async function getEntitySet (set, url, response) {
@@ -41,7 +45,7 @@ async function getEntitySet (set, url, response) {
   }
   response.end(JSON.stringify({
     d: {
-      results: await toJSONEntities(entities, url)
+      results: await getEntitiesAsJSON(entities, url)
     }
   }))
 }
@@ -51,7 +55,7 @@ async function getEntity (entity, url, response) {
     'Content-Type': jsonContentType
   })
   response.end(JSON.stringify({
-    d: (await toJSONEntities([entity], url))[0]
+    d: (await getEntitiesAsJSON([entity], url))[0]
   }))
 }
 
