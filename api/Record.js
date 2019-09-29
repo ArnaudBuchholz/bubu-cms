@@ -9,6 +9,10 @@ const Content = require('./Content')
 
 const nanoFormat = require('nanoid/format')
 const nanoUrl = require('nanoid/url')
+const mime = require('mime')
+
+const jsonContentType = mime.getType('json')
+
 
 class Record {
   get database () {
@@ -113,6 +117,9 @@ class Record {
   }
 
   async buildContent (data, mimeType) {
+    if (!mimeType && gpf.isLiteralObject(data)) {
+      return new Content(this._id, JSON.stringify(data), jsonContentType)
+    }
     return new Content(this._id, data, mimeType)
   }
 
