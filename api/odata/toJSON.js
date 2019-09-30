@@ -6,7 +6,7 @@ const Id = require('../Id')
 const mapOfSerialTypeToJSON = {
   undefined: () => '',
   number: value => value,
-  string: value => `'${value}'`
+  string: value => `'${encodeURIComponent(value)}'`
 }
 
 function getKeys (record) {
