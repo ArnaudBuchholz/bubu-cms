@@ -36,6 +36,27 @@ sap.ui.define([
       })
     },
 
+    _setContent: function (content) {
+      this.getView().setModel(new JSONModel(content), 'content')
+    },
+
+    _extractContent: function (record) {
+      var content = record.toContent
+      if (content.__ref) {
+        content = this.getView().getModel().getObject('/' + content.__ref)
+      }
+      this._setContent(content)
+      // alert(record.type + ' ' + content.mimeType)
+    },
+
+    _handleContent: function (record) {
+      if (!record.toContent) {
+        this._setContent({})
+        return
+      }
+      return this._extractContent(record)
+    },
+
     _onBindingChanged: function () {
       var page = this.byId('page')
       var binding = this.getView().getElementBinding()
@@ -58,11 +79,7 @@ sap.ui.define([
           }
         }, this)
       }), 'tags')
-      if (record.toContent.mimeType === 'application/json') {
-        alert(record.type)
-      }
-      // page.setSelectedSection(this.byId('htmlSection').getId())
-      // this.byId('htmlContent').invalidate()
+      this._handleContent(record);
       page.setBusy(false)
     },
 
@@ -72,10 +89,6 @@ sap.ui.define([
       } else {
         this._getRouter().navTo('list', {}, true)
       }
-    },
-
-    onProperties: function () {
-      this.byId('page').setSelectedSection(this.byId('properties').getId())
     },
 
     onTagPress: function (event) {
