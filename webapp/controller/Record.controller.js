@@ -2,13 +2,13 @@
 sap.ui.define([
   './BaseController',
   'sap/m/Token',
-  'sap/ui/model/json/JSONModel'
+  'sap/ui/model/json/JSONModel',
+  'sap/m/MessageBox'
 
-], function (BaseController, Token, JSONModel) {
+], function (BaseController, Token, JSONModel, MessageBox) {
   'use strict'
 
   var URLHelper = sap.m.URLHelper
-  var REGEX_PHONENUMBER = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/
 
   return BaseController.extend('bubu-cms.controller.Record', {
 
@@ -18,11 +18,9 @@ sap.ui.define([
 
     _onDisplayRecord: function (event) {
       var recordId = event.getParameter('arguments').recordId
-
       var sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
         id: recordId
       })
-
       var page = this.byId('page')
       this.getView().bindElement({
         path: sPath,
@@ -40,12 +38,16 @@ sap.ui.define([
 
     _onBindingChanged: function () {
       var page = this.byId('page')
-
       var binding = this.getView().getElementBinding()
-
       var record
       if (!binding.getBoundContext()) {
-        alert('problem')
+        MessageBox.show(this.i18n('record', 'notLoaded'), {
+          icon: MessageBox.Icon.ERROR,
+          title: this.i18n('db', 'title'),
+          actions: [MessageBox.Action.CLOSE],
+          onClose: this.onBack.bind(this)
+        })
+        return
       }
       record = binding.getBoundContext().getObject()
       page.setModel(new JSONModel({
@@ -56,29 +58,24 @@ sap.ui.define([
           }
         }, this)
       }), 'tags')
+      if (record.toContent.mimeType === 'application/json') {
+        alert(record.type)
+      }
       // page.setSelectedSection(this.byId('htmlSection').getId())
       // this.byId('htmlContent').invalidate()
       page.setBusy(false)
     },
 
     onBack: function () {
-      history.back()
+      if (history.length > 1) {
+        history.back()
+      } else {
+        this._getRouter().navTo('list', {}, true)
+      }
     },
 
     onProperties: function () {
       this.byId('page').setSelectedSection(this.byId('properties').getId())
-    },
-
-    onPressStatus: function (event) {
-      var statusText = event.getSource().getText()
-
-      var phone = REGEX_PHONENUMBER.exec(statusText)
-
-      var country
-      if (phone) {
-        country = phone[0] || '1'
-        URLHelper.triggerTel('+' + country + phone[2] + phone[3] + phone[4])
-      }
     },
 
     onTagPress: function (event) {
