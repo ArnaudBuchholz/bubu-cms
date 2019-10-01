@@ -19,6 +19,9 @@ sap.ui.define([
       },
       navigateToListFilteredByTag: function (tag) {
         return this._navigateToListFilteredByTag(tag)
+      },
+      redirect: function (url) {
+        sap.m.URLHelper.redirect(url)
       }
     },
 
@@ -63,6 +66,10 @@ sap.ui.define([
       this.byId('page').setSelectedSection(section)
     },
 
+    _isContentSectionVisible: function (expectedType, record) {
+        return record.type === expectedType && this.getModel('content').getProperty('/recordId')
+    },
+
     _displayContent: function (record) {
       var content = record.toContent
       if (content.__ref) {
@@ -84,6 +91,10 @@ sap.ui.define([
           controller: this
         }).then(function (section) {
           this.getView().addDependent(section)
+          section.bindProperty('visible', {
+            path: '',
+            formatter: this._isContentSectionVisible.bind(section, record.type)
+          })
           section.addCustomData(new CustomData({
             key: 'recordType',
             value: record.type
