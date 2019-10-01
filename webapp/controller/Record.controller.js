@@ -67,7 +67,7 @@ sap.ui.define([
     },
 
     _isContentSectionVisible: function (expectedType, record) {
-        return record.type === expectedType && this.getModel('content').getProperty('/recordId')
+      return record.type === expectedType && this.getModel('content').getProperty('/recordId')
     },
 
     _displayContent: function (record) {
@@ -135,7 +135,7 @@ sap.ui.define([
           }
         }, this)
       }), 'tags')
-      this._handleContent(record);
+      this._handleContent(record)
       page.setBusy(false)
     },
 
