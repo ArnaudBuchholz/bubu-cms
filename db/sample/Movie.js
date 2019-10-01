@@ -5,15 +5,13 @@ const path = require('path')
 
 module.exports = db => {
   class Movie extends db.Record {
-
     async buildContent () {
       return super.buildContent({
         imdbId: this._imdbId,
-        image: this._image ? this._image.replace(".jpg", "_SY1000_CR0,0,678,1000_.jpg") : '',
+        image: this._image ? this._image.replace('.jpg', '_SY1000_CR0,0,678,1000_.jpg') : '',
         cast: this._cast
       })
     }
-
   }
 
   Movie.load = async function (fileName) {
@@ -69,7 +67,7 @@ module.exports = db => {
           })
         })
         if (imdbMovie.image && imdbMovie.image.length) {
-          movie._image =imdbMovie.image[0]
+          movie._image = imdbMovie.image[0]
           movie._icon = imdbMovie.image[0].replace('.jpg', '._SX40_CR0,0,40,54_.jpg')
         }
         console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, movie.name.gray)
