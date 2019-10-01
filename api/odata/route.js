@@ -52,7 +52,7 @@ async function getEntitySet (set, url, response) {
 
 async function getEntity (entity, url, response) {
   if (!entity) {
-      return 404
+    return 404
   }
   response.writeHead(200, {
     'Content-Type': jsonContentType
