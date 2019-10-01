@@ -45,9 +45,18 @@ function toJSON () {
     )
     .join(',')
 
+  /*
+   * Since Record is subclassed but accessed with RecordSet, the __metadata should match
+   * Check for the constructor which prototype owns toJSON
+   */
+  let constructor = this.constructor
+  while (!Object.prototype.hasOwnProperty.call(constructor.prototype, 'toJSON')) {
+    constructor = Object.getPrototypeOf(constructor.prototype).constructor
+  }
+
   json.__metadata = {
-    uri: `${this.constructor.name}Set(${uriKey})`,
-    type: `BUBU_CMS.${this.constructor.name}`
+    uri: `${constructor.name}Set(${uriKey})`,
+    type: `BUBU_CMS.${constructor.name}`
   }
 
   return json
