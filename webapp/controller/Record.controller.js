@@ -3,17 +3,36 @@ sap.ui.define([
   './BaseController',
   'sap/m/Token',
   'sap/ui/model/json/JSONModel',
-  'sap/m/MessageBox'
+  'sap/m/MessageBox',
+  'sap/ui/core/Fragment',
+  'sap/ui/core/CustomData'
 
-], function (BaseController, Token, JSONModel, MessageBox) {
+], function (BaseController, Token, JSONModel, MessageBox, Fragment, CustomData) {
   'use strict'
-
-  var URLHelper = sap.m.URLHelper
 
   return BaseController.extend('bubu-cms.controller.Record', {
 
+    // content API for records' sections
+    content: {
+      translateTag: function (tag) {
+        return this.i18n('tag', tag) || tag
+      },
+      navigateToListFilteredByTag: function (tag) {
+        return this._navigateToListFilteredByTag(tag)
+      }
+    },
+
+    _buildBoundContent: function () {
+      var boundContent = {}
+      Object.keys(this.content).forEach(function (method) {
+        boundContent[method] = this.content[method].bind(this)
+      }, this)
+      this.content = boundContent
+    },
+
     onInit: function () {
       this._getRouter().getRoute('record').attachPatternMatched(this._onDisplayRecord, this)
+      this._buildBoundContent()
     },
 
     _onDisplayRecord: function (event) {
@@ -40,13 +59,39 @@ sap.ui.define([
       this.getView().setModel(new JSONModel(content), 'content')
     },
 
-    _extractContent: function (record) {
+    _showSection: function (section) {
+      this.byId('page').setSelectedSection(section)
+    },
+
+    _displayContent: function (record) {
       var content = record.toContent
       if (content.__ref) {
         content = this.getView().getModel().getObject('/' + content.__ref)
       }
-      this._setContent(content)
-      // alert(record.type + ' ' + content.mimeType)
+      this._setContent(JSON.parse(content.data))
+      var objectPage = this.byId('page')
+      var section = objectPage.getSections().filter(function (candidate) {
+        return candidate.getCustomData().some(function (customData) {
+          return customData.getKey() === 'recordType' && customData.getValue() === record.type
+        })
+      })[0]
+      if (section) {
+        this._showSection(section)
+      } else {
+        Fragment.load({
+          id: 'section.json.' + record.type,
+          name: 'bubu-cms/api/' + record.type,
+          controller: this
+        }).then(function (section) {
+          this.getView().addDependent(section)
+          section.addCustomData(new CustomData({
+            key: 'recordType',
+            value: record.type
+          }))
+          this.byId('page').insertSection(section, 0)
+          this._showSection(section)
+        }.bind(this))
+      }
     },
 
     _handleContent: function (record) {
@@ -54,7 +99,7 @@ sap.ui.define([
         this._setContent({})
         return
       }
-      return this._extractContent(record)
+      return this._displayContent(record)
     },
 
     _onBindingChanged: function () {
@@ -91,13 +136,17 @@ sap.ui.define([
       }
     },
 
-    onTagPress: function (event) {
-      var tag = event.getSource().getBindingContext('tags').getObject()
+    _navigateToListFilteredByTag: function (tag) {
       this._getRouter().navTo('list', {
         query: {
-          search: this.escapeSearch('#' + tag.id)
+          search: this.escapeSearch('#' + tag)
         }
       }, false)
+    },
+
+    onTagPress: function (event) {
+      var tag = event.getSource().getBindingContext('tags').getObject()
+      this._navigateToListFilteredByTag(tag.id)
     }
 
   })
