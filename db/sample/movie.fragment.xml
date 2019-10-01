@@ -3,22 +3,25 @@
 	xmlns:core="sap.ui.core"
 	xmlns:m="sap.m"
 >
-	<ObjectPageSection title="{i18n>movie.section.title}">
+	<ObjectPageSection title="{db.i18n>movie.section.title}">
 		<subSections>
 			<ObjectPageSubSection>
 				<m:Link
-					href="https://www.imdb.com/title/{content/imdbId}"
-					text="{i18n>movie.section.OpenOnIMDB}"
+					href="https://www.imdb.com/title/{content>/imdbId}"
+					text="{db.i18n>movie.section.OpenOnIMDB}"
 				/>
 				<m:Image
-					src="{content/image}"
+					src="{content>/image}"
 					width="100%"
 				/>
 				<m:List
-					items="{content/cast}"
+					items="{content>/cast}"
 				>
 					<m:StandardListItem
-						title="{id} ... {role}"
+						type="Navigation"
+						title="{content>role}"
+						description="{path: 'content>id', formatter: '.content.translateTag'}"
+						press=".content.navigateToListFilteredByTag(${content>id})"
 					/>
 				</m:List>
 			</ObjectPageSubSection>
