@@ -39,16 +39,6 @@
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
-<!--
-			<ObjectPageSection id="htmlSection" visible="true">
-				{= ${toContent/type} === 'html' }" >
-				<subSections>
-					<ObjectPageSubSection>
-						<core:HTML id="htmlContent" content="&lt;div&gt;{toContent/data}&lt;/div&gt;" preferDOM="false"/>
-					</ObjectPageSubSection>
-				</subSections>
-			</ObjectPageSection>
--->
 			<ObjectPageSection id="tagsSection" title="{i18n>record.section.tags}">
 				<subSections>
 					<ObjectPageSubSection>
