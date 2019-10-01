@@ -13,7 +13,6 @@ const mime = require('mime')
 
 const jsonContentType = mime.getType('json')
 
-
 class Record {
   get database () {
     return this._database
