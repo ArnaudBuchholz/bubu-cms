@@ -6,13 +6,10 @@
 	<ObjectPageSection title="{db.i18n>movie.section.title}">
 		<subSections>
 			<ObjectPageSubSection>
-				<m:Link
-					href="https://www.imdb.com/title/{content>/imdbId}"
-					text="{db.i18n>movie.section.OpenOnIMDB}"
-				/>
 				<m:Image
 					src="{content>/image}"
 					width="100%"
+					press=".content.redirect('https://www.imdb.com/title/' + ${content>/imdbId})"
 				/>
 				<m:List
 					items="{content>/cast}"
