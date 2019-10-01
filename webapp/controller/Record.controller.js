@@ -1,4 +1,4 @@
-/* global sap, history, alert */
+/* global sap, history */
 sap.ui.define([
   './BaseController',
   'sap/m/Token',
