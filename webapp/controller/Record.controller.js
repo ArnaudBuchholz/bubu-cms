@@ -158,6 +158,29 @@ sap.ui.define([
     onTagPress: function (event) {
       var tag = event.getSource().getBindingContext('tags').getObject()
       this._navigateToListFilteredByTag(tag.id)
+    },
+
+    _submitChanges: function () {
+      var oModel = this.getView().getModel()
+      oModel.submitChanges({
+        error: function () {
+          MessageBox.show(this.i18n('record', 'submitChanges.error'), {
+            icon: MessageBox.Icon.ERROR,
+            title: this.i18n('db', 'title'),
+            actions: [MessageBox.Action.CLOSE]
+          })
+        }
+      })
+    },
+
+    onRatingChanged: function () {
+      this._submitChanges()
+    },
+
+    onTouch: function () {
+      var path = this.getView().getBindingContext().getPath()
+      this.getView().getModel().setProperty(path + '/touched', new Date())
+      this._submitChanges()
     }
 
   })
