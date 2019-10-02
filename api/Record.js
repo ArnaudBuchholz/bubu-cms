@@ -12,6 +12,7 @@ const nanoUrl = require('nanoid/url')
 const mime = require('mime')
 
 const jsonContentType = mime.getType('json')
+const minDate = new Date(0)
 
 class Record {
   get database () {
@@ -47,26 +48,8 @@ class Record {
     return this._rating || 0
   }
 
-  set rating (value) {
-    if (typeof value !== 'number' || value < 0 || value > 5) {
-      throw new Error('Invalid value')
-    }
-    this._rating = value
-  }
-
-  get created () {
-    return this._created
-  }
-
-  get modified () {
-    return this._modified
-  }
-
-  set modified (value) {
-    if (!(value instanceof Date)) {
-      throw new Error('Invalid value')
-    }
-    this._modified = value
+  get touched () {
+    return this._touched || minDate
   }
 
   get statusText1 () {
@@ -155,9 +138,8 @@ attribute(new gpf.attributes.Serializable())(Record, 'icon')
 attribute(new gpf.attributes.Serializable())(Record, 'number')
 attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer, readOnly: false }))(Record, 'rating')
 attribute(new Sortable())(Record, 'rating')
-attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime }))(Record, 'created')
-attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime, readOnly: true }))(Record, 'modified')
-attribute(new Sortable())(Record, 'modified')
+attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime, readOnly: false }))(Record, 'touched')
+attribute(new Sortable())(Record, 'touched')
 attribute(new gpf.attributes.Serializable())(Record, 'statusText1')
 attribute(new gpf.attributes.Serializable())(Record, 'statusState1')
 attribute(new gpf.attributes.Serializable())(Record, 'statusText2')
