@@ -25,41 +25,42 @@ async function getEntitiesAsJSON (entities, url) {
   return jsonEntities
 }
 
-async function getEntitySet (set, url, response) {
-  response.writeHead(200, {
-    'Content-Type': jsonContentType
-  })
-  let sortCriteria
-  let sortAscending
-  if (url.searchParams.has('$orderby')) {
-    const orderBy = url.searchParams.get('$orderby').split(' ')
-    sortCriteria = orderBy[0]
-    sortAscending = orderBy[1] === 'asc'
-  }
-  let entities = await set.query(url.searchParams.get('search') || '', sortCriteria, sortAscending)
-  if (url.searchParams.has('$skip')) {
-    entities = entities.slice(parseInt(url.searchParams.get('$skip'), 10))
-  }
-  if (url.searchParams.has('$top')) {
-    entities = entities.slice(0, parseInt(url.searchParams.get('$top'), 10))
-  }
-  response.end(JSON.stringify({
-    d: {
-      results: await getEntitiesAsJSON(entities, url)
-    }
-  }))
-}
+const methods = {
 
-async function getEntity (entity, url, response) {
-  if (!entity) {
-    return 404
+  GET_set: async (url, set, response) => {
+    response.writeHead(200, {
+      'Content-Type': jsonContentType
+    })
+    let sortCriteria
+    let sortAscending
+    if (url.searchParams.has('$orderby')) {
+      const orderBy = url.searchParams.get('$orderby').split(' ')
+      sortCriteria = orderBy[0]
+      sortAscending = orderBy[1] === 'asc'
+    }
+    let entities = await set.query(url.searchParams.get('search') || '', sortCriteria, sortAscending)
+    if (url.searchParams.has('$skip')) {
+      entities = entities.slice(parseInt(url.searchParams.get('$skip'), 10))
+    }
+    if (url.searchParams.has('$top')) {
+      entities = entities.slice(0, parseInt(url.searchParams.get('$top'), 10))
+    }
+    response.end(JSON.stringify({
+      d: {
+        results: await getEntitiesAsJSON(entities, url)
+      }
+    }))
+  },
+
+  GET_entity: async (url, entity, response) => {
+    response.writeHead(200, {
+      'Content-Type': jsonContentType
+    })
+    response.end(JSON.stringify({
+      d: (await getEntitiesAsJSON([entity], url))[0]
+    }))
   }
-  response.writeHead(200, {
-    'Content-Type': jsonContentType
-  })
-  response.end(JSON.stringify({
-    d: (await getEntitiesAsJSON([entity], url))[0]
-  }))
+
 }
 
 function getDatabaseSet (database, setName) {
@@ -76,13 +77,17 @@ module.exports = async (request, response, relativeUrl) => {
     return metadata(request, response)
   }
   const url = new URL(relativeUrl, 'http://localhost/')
-  if (request.method === 'GET') {
-    const match = /(Record|Tag)Set(?:\('([^']+)'\))?/.exec(url.pathname)
-    const set = getDatabaseSet(request.database, match[1])
-    if (match[2]) {
-      return getEntity(await set.byId(match[2]), url, response)
-    }
-    return getEntitySet(set, url, response)
+  const match = /(Record|Tag)Set(?:\('([^']+)'\))?/.exec(url.pathname)
+  if (!match) {
+    return 404
   }
-  return 404
+  const set = getDatabaseSet(request.database, match[1])
+  if (match[2]) {
+    const entity = await set.byId(match[2])
+    if (!entity) {
+      return 404
+    }
+    return methods[`${request.method}_entity`](url, entity, response)
+  }
+  return methods[`${request.method}_set`](url, set, response)
 }
