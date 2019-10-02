@@ -35,7 +35,7 @@
 				<m:ObjectStatus visible="{= ${number} !== '' }" text="{number} {path: 'type', formatter: '.formatNumberUnit'}"/>
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
 				<m:ObjectStatus title="{path: 'type', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
-				<m:RatingIndicator maxValue="5" class="sapUiSmallMarginBottom" value="{rating}" iconSize="32px" tooltip="Rating Tooltip" change="onRatingChanged" />
+				<m:RatingIndicator id="rating" maxValue="5" class="sapUiSmallMarginBottom" value="{= ${rating} }" iconSize="32px" tooltip="Rating Tooltip" change="onRatingChanged" />
 			</layout:VerticalLayout>
 		</headerContent>
 		<sections>
