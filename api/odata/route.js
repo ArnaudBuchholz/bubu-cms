@@ -25,9 +25,19 @@ async function getEntitiesAsJSON (entities, url) {
   return jsonEntities
 }
 
+function data (request) {
+  return new Promise((resolve, reject) => {
+    const chunks = []
+    request
+      .on('data', chunk => chunks.push(chunk.toString()))
+      .on('error', reject)
+      .on('end', () => resolve(chunks.join('')))
+  })
+}
+
 const methods = {
 
-  GET_set: async (url, set, response) => {
+  GET_set: async ({ url, set, response }) => {
     response.writeHead(200, {
       'Content-Type': jsonContentType
     })
@@ -52,13 +62,23 @@ const methods = {
     }))
   },
 
-  GET_entity: async (url, entity, response) => {
+  GET_entity: async ({ url, entity, response }) => {
     response.writeHead(200, {
       'Content-Type': jsonContentType
     })
     response.end(JSON.stringify({
       d: (await getEntitiesAsJSON([entity], url))[0]
     }))
+  },
+
+  POST_entity: async ({ request, database, url, entity, response }) => {
+    const body = JSON.parse(await data(request))
+    if (body.rating) {
+      entity._rating = body.rating
+    } else if (body.touched) {
+      entity._touched = new Date(parseInt(/\/Date\(([0-9]+)\)\//.exec(body.touched)[1], 10))
+    }
+    return methods.GET_entity({ url, entity, response })
   }
 
 }
@@ -81,13 +101,28 @@ module.exports = async (request, response, relativeUrl) => {
   if (!match) {
     return 404
   }
-  const set = getDatabaseSet(request.database, match[1])
-  if (match[2]) {
-    const entity = await set.byId(match[2])
-    if (!entity) {
-      return 404
+  try {
+    const database = request.database
+    const set = getDatabaseSet(database, match[1])
+    if (match[2]) {
+      const entity = await set.byId(match[2])
+      if (!entity) {
+        return 404
+      }
+      return methods[`${request.method}_entity`]({ request, database, url, entity, response })
     }
-    return methods[`${request.method}_entity`](url, entity, response)
+    return methods[`${request.method}_set`]({ request, database, url, set, response })
+  } catch (e) {
+    const body = JSON.stringify({
+      error: {
+        severity: 'error',
+        message: 'An exception occurred'
+      }
+    })
+    response.writeHead(500, {
+      'Content-Type': jsonContentType,
+      'Content-Length': body.length
+    })
+    response.end(body)
   }
-  return methods[`${request.method}_set`](url, set, response)
 }
