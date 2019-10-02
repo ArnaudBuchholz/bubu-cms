@@ -126,6 +126,7 @@ sap.ui.define([
         })
         return
       }
+      this.byId('rating').getBinding('value').refresh(true) // Force refresh
       record = binding.getBoundContext().getObject()
       page.setModel(new JSONModel({
         list: record.tags.split(' ').map(function (tag) {
@@ -160,27 +161,25 @@ sap.ui.define([
       this._navigateToListFilteredByTag(tag.id)
     },
 
-    _submitChanges: function () {
-      var oModel = this.getView().getModel()
-      oModel.submitChanges({
+    _updateRecord: function (body) {
+      var view = this.getView()
+      view.getModel().update(view.getBindingContext().getPath(), body, {
         error: function () {
           MessageBox.show(this.i18n('record', 'submitChanges.error'), {
             icon: MessageBox.Icon.ERROR,
             title: this.i18n('db', 'title'),
             actions: [MessageBox.Action.CLOSE]
           })
-        }
+        }.bind(this)
       })
     },
 
-    onRatingChanged: function () {
-      this._submitChanges()
+    onRatingChanged: function (event) {
+      this._updateRecord({ rating: event.getSource().getValue() })
     },
 
     onTouch: function () {
-      var path = this.getView().getBindingContext().getPath()
-      this.getView().getModel().setProperty(path + '/touched', new Date())
-      this._submitChanges()
+      this._updateRecord({ touched: '/Date(' + new Date().getTime() + ')/' })
     }
 
   })
