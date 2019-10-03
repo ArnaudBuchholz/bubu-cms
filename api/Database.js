@@ -26,6 +26,7 @@ class Database {
           const filePath = path.join(database.path, `${fieldName}.csv`)
           const csvFile = await gpfFileStorage.openTextStream(filePath, forAppending)
           if (insertHeader) {
+            console.log('DATAB'.magenta, 'Creating values storage for \''.gray + fieldName.green + '\'...'.gray)
             await csvFile.write('id;value;timestamp\n')
           }
           await csvFile.write(`${this._id};${value};${new Date().toISOString()}\n`)
@@ -95,9 +96,9 @@ class Database {
         }
       }
     })
-    console.log('DATAB'.magenta, 'Loaded '.gray + count.toString().green
-      + ' values for \''.gray + fieldName.green + '\', '.gray
-      + ignored.toString().red + ' ignored'.gray)
+    console.log('DATAB'.magenta, 'Loaded '.gray + count.toString().green +
+      ' values for \''.gray + fieldName.green + '\', '.gray +
+      ignored.toString().red + ' ignored'.gray)
   }
 
   open () {
