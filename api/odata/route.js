@@ -73,14 +73,12 @@ const methods = {
 
   POST_entity: async ({ request, database, url, entity, response }) => {
     const body = JSON.parse(await data(request))
-    if (body.rating) {
-      entity._rating = body.rating
-    } else if (body.touched) {
-      entity._touched = new Date(parseInt(/\/Date\(([0-9]+)\)\//.exec(body.touched)[1], 10))
+    if (body.touched) {
+      body.touched = new Date(parseInt(/\/Date\(([0-9]+)\)\//.exec(body.touched)[1], 10))
     }
+    await entity.dbSave(body)
     return methods.GET_entity({ url, entity, response })
   }
-
 }
 
 function getDatabaseSet (database, setName) {
