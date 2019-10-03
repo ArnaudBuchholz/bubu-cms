@@ -1,5 +1,9 @@
 'use strict'
 
+function toKb (value) {
+  return Math.floor(value / 1024).toString()
+}
+
 module.exports = {
 
   memory: (reference = {}) => {
@@ -11,15 +15,15 @@ module.exports = {
       let diff
       if (last) {
         if (last >= value) {
-          diff = ('-' + (last - value).toString()).green
+          diff = ('-' + toKb(last - value)).green
         } else {
-          diff = ('+' + (value - last).toString()).red
+          diff = ('+' + toKb(value - last)).red
         }
       } else {
         diff = ''
       }
-      console.log('MEMRY'.magenta, `  ${type.padEnd(9, ' ')} (bytes) :`.gray,
-        value.toString().padEnd(9, ' ').white, diff)
+      console.log('MEMRY'.magenta, `  ${type.padEnd(9, ' ')} (KB) :`.gray,
+        toKb(value).padEnd(9, ' ').white, diff)
     })
     return usage
   }
