@@ -8,6 +8,10 @@ const RecordSet = require('./RecordSet')
 const TagSet = require('./TagSet')
 const traceMemory = require('./traces').memory
 
+const gpfFileStorage = gpf.fs.getFileStorage()
+const forReading = gpf.fs.openFor.reading
+const forAppending = gpf.fs.openFor.appending
+
 class Database {
   get Record () {
     if (!this._Record) {
@@ -15,6 +19,28 @@ class Database {
       this._Record = class DBRecord extends Record {
         constructor () {
           super(database)
+        }
+
+        async dbSaveField (fieldName, value) {
+          const insertHeader = !database._hasCSV(fieldName)
+          const filePath = path.join(database.path, `${fieldName}.csv`)
+          const csvFile = await gpfFileStorage.openTextStream(filePath, forAppending)
+          if (insertHeader) {
+            await csvFile.write('id;value;timestamp\n')
+          }
+          await csvFile.write(`${this._id};${value};${new Date().toISOString()}\n`)
+          return gpfFileStorage.close(csvFile)
+        }
+
+        async dbSave (values) {
+          for await (const fieldName of Object.keys(values)) {
+            let value = values[fieldName]
+            this[`_${fieldName}`] = value
+            if (value instanceof Date) {
+              value = value.toISOString()
+            }
+            await this.dbSaveField(fieldName, value)
+          }
         }
       }
       // Forward record static properties
@@ -37,6 +63,23 @@ class Database {
     return this._path
   }
 
+  async _hasCSV (fileName) {
+    const filePath = path.join(this.path, `${fileName}.csv`)
+    const fileInfo = await gpfFileStorage.getInfo(filePath)
+    return fileInfo.type === gpf.fs.types.file
+  }
+
+  async _readCSV (fileName, output) {
+    if (!await this._hasCSV(fileName)) {
+      return Promise.resolve()
+    }
+    const filePath = path.join(this._path, `${fileName}.csv`)
+    const csvFile = await gpfFileStorage.openTextStream(filePath, forReading)
+    const lineAdapter = new gpf.stream.LineAdapter()
+    const csvParser = new gpf.stream.csv.Parser()
+    return gpf.stream.pipe(csvFile, lineAdapter, csvParser, output)
+  }
+
   open () {
     if (!this.opened) {
       try {
@@ -45,6 +88,30 @@ class Database {
         const memoryBefore = traceMemory()
         this.opened = require(`${this.path}/init`)(this)
           .then(() => {
+            console.log('DATAB'.magenta, 'Loading ratings...'.gray)
+            return this._readCSV('rating', {
+              write: async rating => {
+                const record = await this.records.byId(rating.id)
+                if (record) {
+                  record._rating = record.value
+                }
+              }
+            })
+          })
+          .then(() => {
+            console.log('DATAB'.magenta, 'Ratings loaded.'.green)
+            console.log('DATAB'.magenta, 'Loading touch timestamps...'.gray)
+            return this._readCSV('touched', {
+              write: async touched => {
+                const record = await this.records.byId(rating.id)
+                if (record) {
+                  record._touched = new Date(record.value)
+                }
+              }
+            })
+          })
+          .then(() => {
+            console.log('DATAB'.magenta, 'Touch timestamps loaded.'.green)
             console.log('DATAB'.magenta, 'Database \''.gray + this.path.green + '\' opened.'.gray)
             const duration = process.hrtime(start)
             console.log('DATAB'.magenta, '  Duration (ms) :'.gray, (duration[0] * 1000 + duration[1] / 1000000).toString().green)
