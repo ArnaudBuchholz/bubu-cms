@@ -22,7 +22,7 @@ class Database {
         }
 
         async dbSaveField (fieldName, value) {
-          const insertHeader = !database._hasCSV(fieldName)
+          const insertHeader = !await database._hasCSV(fieldName)
           const filePath = path.join(database.path, `${fieldName}.csv`)
           const csvFile = await gpfFileStorage.openTextStream(filePath, forAppending)
           if (insertHeader) {
@@ -80,6 +80,26 @@ class Database {
     return gpf.stream.pipe(csvFile, lineAdapter, csvParser, output)
   }
 
+  async _readFields (fieldName, converter = value => value) {
+    console.log('DATAB'.magenta, 'Loading values for \''.gray + fieldName.green + '\'...'.gray)
+    let count = 0
+    let ignored = 0
+    await this._readCSV(fieldName, {
+      write: async csvRecord => {
+        ++count
+        const record = await this.records.byId(csvRecord.id)
+        if (record) {
+          record[`_${fieldName}`] = converter(csvRecord.value)
+        } else {
+          ++ignored
+        }
+      }
+    })
+    console.log('DATAB'.magenta, 'Loaded '.gray + count.toString().green
+      + ' values for \''.gray + fieldName.green + '\', '.gray
+      + ignored.toString().red + ' ignored'.gray)
+  }
+
   open () {
     if (!this.opened) {
       try {
@@ -87,31 +107,9 @@ class Database {
         const start = process.hrtime()
         const memoryBefore = traceMemory()
         this.opened = require(`${this.path}/init`)(this)
+          .then(() => this._readFields('rating', value => parseInt(value, 10)))
+          .then(() => this._readFields('touched', value => new Date(value)))
           .then(() => {
-            console.log('DATAB'.magenta, 'Loading ratings...'.gray)
-            return this._readCSV('rating', {
-              write: async rating => {
-                const record = await this.records.byId(rating.id)
-                if (record) {
-                  record._rating = record.value
-                }
-              }
-            })
-          })
-          .then(() => {
-            console.log('DATAB'.magenta, 'Ratings loaded.'.green)
-            console.log('DATAB'.magenta, 'Loading touch timestamps...'.gray)
-            return this._readCSV('touched', {
-              write: async touched => {
-                const record = await this.records.byId(touched.id)
-                if (record) {
-                  record._touched = new Date(record.value)
-                }
-              }
-            })
-          })
-          .then(() => {
-            console.log('DATAB'.magenta, 'Touch timestamps loaded.'.green)
             console.log('DATAB'.magenta, 'Database \''.gray + this.path.green + '\' opened.'.gray)
             const duration = process.hrtime(start)
             console.log('DATAB'.magenta, '  Duration (ms) :'.gray, (duration[0] * 1000 + duration[1] / 1000000).toString().green)
