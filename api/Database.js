@@ -103,7 +103,7 @@ class Database {
             console.log('DATAB'.magenta, 'Loading touch timestamps...'.gray)
             return this._readCSV('touched', {
               write: async touched => {
-                const record = await this.records.byId(rating.id)
+                const record = await this.records.byId(touched.id)
                 if (record) {
                   record._touched = new Date(record.value)
                 }
