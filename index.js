@@ -3,6 +3,7 @@
 require('colors')
 require('dotenv').config()
 require('./gpf-src')
+require('./reserve-src')
 
 'BUBU_CMS_UI5_DIST'.split(',').forEach(requiredEnv => {
   if (!process.env[requiredEnv]) {
