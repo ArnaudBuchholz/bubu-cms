@@ -24,7 +24,7 @@ describe('/api/odata/toJSON.js', () => {
     it('generates a valid ODATA json for record', () => {
       const json = record.toJSON()
       assert.strictEqual(json.name, 'test')
-      assert.strictEqual(json.__metadata.uri, `MyRecordSet('1')`)
+      assert.strictEqual(json.__metadata.uri, `RecordSet('1')`)
     })
   })
   describe('Tag.toJSON()', () => {
