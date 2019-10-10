@@ -12,6 +12,7 @@
     "mocha": "mocha --verbose",
     "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
     "build": "ui5 build --a",
+    "cover": "nyc mocha && nyc report --reporter=lcov",
     "movies2imdb": "reserve --config ./db/sample/movies2imdb/reserve.json"
   },
   "repository": {
@@ -33,10 +34,11 @@
     "reserve": "^1.0.4"
   },
   "devDependencies": {
-    "@ui5/cli": "^1.7.0",
+    "@ui5/cli": "^1.10.0",
     "lodash": ">=4.17.13",
     "mocha": "^6.1.4",
     "mock-require": "^3.0.3",
+    "nyc": "^14.1.1",
     "standard": "^13.1.0"
   },
   "standard": {
