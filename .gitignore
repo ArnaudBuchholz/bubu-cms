@@ -20,3 +20,5 @@ tmp/
 debug.log
 .env
 db/sample/tmp/
+.nyc_output/
+coverage/
