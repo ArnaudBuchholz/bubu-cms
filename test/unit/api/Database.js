@@ -4,7 +4,7 @@ const assert = require('assert')
 const Database = require('../../../api/Database')
 
 describe('/api/Database.js', () => {
-  describe('loading', () => {
+  describe('loading the sample database', () => {
     let db
     beforeEach(() => {
       db = new Database('sample')
