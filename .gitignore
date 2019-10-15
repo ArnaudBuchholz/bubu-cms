@@ -22,3 +22,7 @@ debug.log
 db/sample/tmp/
 .nyc_output/
 coverage/
+
+# Untracked databases
+db/*
+!db/sample
