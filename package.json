@@ -12,8 +12,7 @@
     "mocha": "mocha --verbose",
     "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
     "build": "ui5 build --a",
-    "cover": "nyc mocha && nyc report --reporter=lcov",
-    "movies2imdb": "reserve --config ./db/sample/movies2imdb/reserve.json"
+    "cover": "nyc mocha && nyc report --reporter=lcov"
   },
   "repository": {
     "type": "git",
