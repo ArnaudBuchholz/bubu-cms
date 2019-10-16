@@ -30,7 +30,7 @@
     "gpf-js": "^0.2.9",
     "mime": "^2.4.4",
     "nanoid": "^1.2.3",
-    "reserve": "^1.0.4"
+    "reserve": "^1.1.1"
   },
   "devDependencies": {
     "@ui5/cli": "^1.10.0",
