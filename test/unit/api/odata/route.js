@@ -20,13 +20,19 @@ describe('/api/odata/route.js', () => {
     })
   )
 
-  it('lists records', () => mock.request('GET', '/api/odata/RecordSet?$top=10&$skip=0')
+  const recordSet = '/api/odata/RecordSet'
+
+  it('lists records', () => mock.request('GET', recordSet + '?$top=10&$skip=0', {
+    db: 'sample'
+  })
     .then(response => {
       assert.strictEqual(response.statusCode, 200)
     })
   )
 
-  it('expand navigation properties', () => mock.request('GET', '/api/odata/RecordSet?$top=10&$skip=0&$expand=toContent')
+  it('expand navigation properties', () => mock.request('GET', recordSet + '?$top=10&$skip=0&$expand=toContent', {
+    db: 'sample'
+  })
     .then(response => {
       assert.strictEqual(response.statusCode, 200)
     })
