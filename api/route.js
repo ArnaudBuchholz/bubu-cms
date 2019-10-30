@@ -21,7 +21,7 @@ module.exports = async (request, response, relativeUrl) => {
     return
   }
 
-  const databaseName = request.headers.db || process.env.BUBU_CMS_DB_NAME || 'sample'
+  const databaseName = request.headers.db || process.env.BUBU_CMS_DEFAULT_DB_NAME || 'sample'
   request.database = databases(databaseName)
   await request.database.open()
 
