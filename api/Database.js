@@ -165,9 +165,7 @@ class Database {
     this._i18nKeys[language][key] = value
   }
 
-  async getFragment (type) {
-    console.log('DATAB'.magenta, 'Getting fragment for type \''.gray + type.green + '\'...'.gray)
-    const fragmentPath = `${this.path}/${type}.fragment.xml`
+  async _readFragment (fragmentPath) {
     const gpfFileStorage = gpf.fs.getFileStorage()
     const info = await gpfFileStorage.getInfo(fragmentPath)
     if (info.type !== gpf.fs.types.file) {
@@ -177,6 +175,31 @@ class Database {
     const output = new gpf.stream.WritableString()
     return gpf.stream.pipe(fragmentFile, output)
       .then(() => output.toString())
+  }
+
+  async getFragment (type) {
+    console.log('DATAB'.magenta, 'Getting fragment for type \''.gray + type.green + '\'...'.gray)
+    const overridden = await this._readFragment(`${this.path}/${type}.fragment.xml`)
+    if (overridden) {
+      return overridden
+    }
+    return this._readFragment(path.join(__dirname, `recordTypes/${type}.fragment.xml`))
+  }
+
+  get recordTypes () {
+    if (!this._recordTypes) {
+      this._recordTypes = new Proxy({}, {
+        get: (loadedTypes, name) => {
+          let loaded = Reflect.get(loadedTypes, name)
+          if (!loaded) {
+            loaded = require(`./recordTypes/${name}`)(this)
+            loadedTypes[name] = loaded
+          }
+          return loaded
+        }
+      })
+    }
+    return this._recordTypes
   }
 
   constructor (name) {
