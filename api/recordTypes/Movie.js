@@ -3,6 +3,13 @@
 const gpf = require('gpf-js')
 const path = require('path')
 
+function getAbsolutePath (db, fileName) {
+  if (path.isAbsolute(fileName)) {
+    return fileName
+  }
+  return path.join(db.path, fileName)
+}
+
 module.exports = db => {
   class Movie extends db.Record {
     async buildContent () {
@@ -14,12 +21,12 @@ module.exports = db => {
     }
   }
 
-  Movie.load = async function (fileName) {
+  Movie.load = async function (csvFileName, imdbFileName) {
     const gpfFileStorage = gpf.fs.getFileStorage()
     const forReading = gpf.fs.openFor.reading
 
     // Read IMDB database
-    const imdbFile = await gpfFileStorage.openTextStream(path.join(__dirname, `${fileName}.imdb.json`), forReading)
+    const imdbFile = await gpfFileStorage.openTextStream(getAbsolutePath(db, imdbFileName), forReading)
     const writableString = new gpf.stream.WritableString()
     await gpf.stream.pipe(imdbFile, writableString)
     const imdb = JSON.parse(writableString.toString())
@@ -31,7 +38,7 @@ module.exports = db => {
 
     // Read movies
     let count = -1
-    const csvFile = await gpfFileStorage.openTextStream(path.join(__dirname, `${fileName}.csv`), forReading)
+    const csvFile = await gpfFileStorage.openTextStream(getAbsolutePath(db, csvFileName), forReading)
     const lineAdapter = new gpf.stream.LineAdapter()
     const csvParser = new gpf.stream.csv.Parser()
     const factory = {
@@ -48,7 +55,7 @@ module.exports = db => {
           return // SKIP
         }
         const movie = new Movie(csvRecord)
-        movie._id = movie._buildId(`${fileName}#${count}`)
+        movie._id = movie._buildId(`${csvFileName}#${count}`)
         movie._imdbId = imdbId
         movie._name = csvRecord.title
         movie._number = `${csvRecord.book} / ${csvRecord.page}`
