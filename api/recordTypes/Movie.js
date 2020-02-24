@@ -1,14 +1,7 @@
 'use strict'
 
 const gpf = require('gpf-js')
-const path = require('path')
-
-function getAbsolutePath (db, fileName) {
-  if (path.isAbsolute(fileName)) {
-    return fileName
-  }
-  return path.join(db.path, fileName)
-}
+const { getAbsolutePath } = require('./helpers')
 
 module.exports = db => {
   class Movie extends db.Record {
@@ -54,7 +47,7 @@ module.exports = db => {
           console.log('RECRD'.magenta, 'Movie'.blue, '404'.red, csvRecord.title.gray)
           return // SKIP
         }
-        const movie = new Movie(csvRecord)
+        const movie = new Movie()
         movie._id = movie._buildId(`${csvFileName}#${count}`)
         movie._imdbId = imdbId
         movie._name = csvRecord.title
@@ -76,6 +69,11 @@ module.exports = db => {
         if (imdbMovie.image && imdbMovie.image.length) {
           movie._image = imdbMovie.image[0]
           movie._icon = imdbMovie.image[0].replace('.jpg', '._SX40_CR0,0,40,54_.jpg')
+        }
+        if (csvRecord.tags) {
+          csvRecord.tags.split(' ').forEach(tag => {
+            movie.addTag(tag)
+          })
         }
         console.log('RECRD'.magenta, 'Movie'.blue, '200'.green, movie.name.gray)
       }
