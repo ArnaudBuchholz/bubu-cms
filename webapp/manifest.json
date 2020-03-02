@@ -16,22 +16,22 @@
 		"dependencies": {
 			"libs": {
 				"sap.f": {
-					"lazy": false
+					"lazy": true
 				},
 				"sap.m": {
-					"lazy": false
+					"lazy": true
 				},
 				"sap.ui.core": {
-					"lazy": false
+					"lazy": true
 				},
 				"sap.ui.layout": {
-					"lazy": false
+					"lazy": true
 				},
 				"sap.ui.unified": {
-					"lazy": false
+					"lazy": true
 				},
 				"sap.uxap": {
-					"lazy": false
+					"lazy": true
 				}
 			}
 		},
@@ -44,22 +44,28 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "bubu-cms.i18n.i18n"
-				}
+					"bundleName": "bubu-cms.i18n.i18n",
+					"async": true
+				},
+				"preload": true
 			},
 			"db.i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "bubu-cms.api.i18n"
-				}
+					"bundleName": "bubu-cms.api.i18n",
+					"async": true
+				},
+				"preload": true
 			},
 			"": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
 				"dataSource": "mainService",
 				"settings": {
 					"defaultBindingMode": "TwoWay",
 					"defaultCountMode": "InlineRepeat",
 					"useBatch": false
-				}
+				},
+				"preload": true
 			}
 		},
 		"routing": {
