@@ -6,15 +6,21 @@
 		<meta charset="UTF-8" />
 	</head>
 	<body class="sapUiBody" id="root" role="application">
-    Loading<span id="wait">...</span>
-    <span id="url"></span>
+      <div id="loading">
+        Loading<span id="wait">...</span>
+      </div>
   </body>
   <script>
+    var count = 0
     var _XMLHttpRequest = window.XMLHttpRequest
     window.XMLHttpRequest = function () {
       var xhr = new _XMLHttpRequest()
       xhr.open = function (method, url) {
-        document.getElementById('url').innerHTML += "<br/>" + url
+        var file = document.createElement('div')
+        file.innerHTML = url
+        document.getElementById('loading').appendChild(file)
+        document.getElementById('wait').innerHTML = new Array(1 + count % 3).join('.')
+        ++count
         return _XMLHttpRequest.prototype.open.apply(this, arguments)
       }
       return xhr
@@ -26,7 +32,7 @@
     data-sap-ui-libs="sap.m"
     data-sap-ui-bindingSyntax="complex"
     data-sap-ui-compatVersion="edge"
-    data-sap-ui-preload="async"
+    data-sap-ui-async="true"
     data-sap-ui-resourceroots='{"bubu-cms": "./"}'>
   </script>
   <script>
@@ -40,6 +46,7 @@
           name: "bubu-cms",
           async: true
         }).then(function(oComponent) {
+          document.getElementById('loading').setAttribute('style', 'display: none;')
           new ComponentContainer({
             component: oComponent
           }).placeAt("root");
