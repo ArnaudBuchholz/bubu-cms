@@ -12,9 +12,14 @@ sap.ui.define([
 
     init: function () {
       UIComponent.prototype.init.apply(this, arguments)
-      this.getModel().metadataLoaded().then(function () {
-        this.getRouter().initialize()
-      }.bind(this))
+      Promise.all([
+        this.getModel().metadataLoaded(),
+        this.getModel('i18n').getResourceBundle(),
+        this.getModel('db.i18n').getResourceBundle()
+      ])
+        .then(function () {
+          this.getRouter().initialize()
+        }.bind(this))
     }
 
   })
