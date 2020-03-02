@@ -8,7 +8,7 @@ module.exports = {
       return fileName
     }
     return path.join(db.path, fileName)
-  }
+  },
 
   async addAllKeys (db, i18nFileName) {
   }
