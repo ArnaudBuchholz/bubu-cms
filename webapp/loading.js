@@ -1,18 +1,50 @@
 (function () {
   'use strict'
 
-  var loading = document.body.appendChild(document.createElement('div'))
-  loading.innerHTML = 'Loading...'
+  const loading = document.body.appendChild(document.createElement('div'))
+  loading.setAttribute('style', 'z-index: 999; position: absolute; left: 2rem; top: 2rem; font-size: 5rem; opacity: .5;')
 
-  var count = 0
-  var _XMLHttpRequest = window.XMLHttpRequest
+  const steps = [
+      '&#9625;',
+      '&#9627;',
+      '&#9628;',
+      '&#9631;',
+      '&#9626;',
+      '&#9630;'
+  ]
+
+  let count = 0
+  function animate () {
+    loading.innerHTML = steps[count % steps.length]
+    ++count
+  }
+
+  const _XMLHttpRequest = window.XMLHttpRequest
   window.XMLHttpRequest = function () {
-    var xhr = new _XMLHttpRequest()
+    const xhr = new _XMLHttpRequest()
     xhr.open = function (method, url) {
-      loading.innerHTML = 'Loading' + new Array(1 + count % 3).join('.')
-      ++count
+      animate()
       return _XMLHttpRequest.prototype.open.apply(this, arguments)
     }
     return xhr
   }
+
+  const headObserver = new MutationObserver(animate)
+  headObserver.observe(document.querySelector("head"), {
+    childList: true
+  });
+
+  const bodyObserver = new MutationObserver(function () {
+    if (document.body.dataset.loading === 'off') {
+      loading.setAttribute('style', 'display: none;')
+      window.XMLHttpRequest = _XMLHttpRequest
+      headObserver.disconnect()
+      bodyObserver.disconnect()
+    }
+  })
+  bodyObserver.observe(document.body, {
+    attributes: true
+  })
+
+  animate()
 }())
