@@ -17,16 +17,20 @@ sap.ui.define([
       }
     },
 
+    _getResourceBundle: function (modelName) {
+      return this.getOwnerComponent().getModel('db.i18n')._oResourceBundle
+    },
+
     dbI18n: function (key, params) {
       if (!this._dbI18n) {
-        this._dbI18n = this.getOwnerComponent().getModel('db.i18n').getResourceBundle()
+        this._dbI18n = this._getResourceBundle('db.i18n')
       }
       return this.getTextIfInI18n(this._dbI18n, key, params)
     },
 
     uiI18n: function (key, params) {
       if (!this._uiI18n) {
-        this._uiI18n = this.getOwnerComponent().getModel('i18n').getResourceBundle()
+        this._uiI18n = this._getResourceBundle('i18n')
       }
       return this.getTextIfInI18n(this._uiI18n, key, params)
     },
