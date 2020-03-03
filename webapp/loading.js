@@ -1,17 +1,12 @@
 (function () {
   'use strict'
 
+  /* global MutationObserver */
+
   const loading = document.body.appendChild(document.createElement('div'))
   loading.setAttribute('style', 'z-index: 999; position: absolute; left: 2rem; top: 2rem; font-size: 5rem; opacity: .5;')
 
-  const steps = [
-      '&#9625;',
-      '&#9627;',
-      '&#9628;',
-      '&#9631;',
-      '&#9626;',
-      '&#9630;'
-  ]
+  const steps = ['&#9625;', '&#9627;', '&#9628;', '&#9631;', '&#9626;', '&#9630;']
 
   let count = 0
   function animate () {
@@ -39,9 +34,9 @@
   }
 
   const headObserver = new MutationObserver(animate)
-  headObserver.observe(document.querySelector("head"), {
+  headObserver.observe(document.querySelector('head'), {
     childList: true
-  });
+  })
 
   const bodyObserver = new MutationObserver(function () {
     if (document.body.dataset.loading === 'off') {
