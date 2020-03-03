@@ -5,27 +5,8 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta charset="UTF-8" />
 	</head>
-	<body class="sapUiBody" id="root" role="application">
-      <div id="loading">
-        Loading<span id="wait">...</span>
-      </div>
-  </body>
-  <script>
-    var count = 0
-    var _XMLHttpRequest = window.XMLHttpRequest
-    window.XMLHttpRequest = function () {
-      var xhr = new _XMLHttpRequest()
-      xhr.open = function (method, url) {
-        var file = document.createElement('div')
-        file.innerHTML = url
-        document.getElementById('loading').appendChild(file)
-        document.getElementById('wait').innerHTML = new Array(1 + count % 3).join('.')
-        ++count
-        return _XMLHttpRequest.prototype.open.apply(this, arguments)
-      }
-      return xhr
-    }
-  </script>
+	<body class="sapUiBody" id="root" role="application" />
+	<script src="loading.js"></script>
   <script id="sap-ui-bootstrap" type="text/javascript"
     src="resources/sap-ui-core.js"
     data-sap-ui-theme="sap_belize"
