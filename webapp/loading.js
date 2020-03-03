@@ -15,9 +15,18 @@
 
   let count = 0
   function animate () {
-    loading.innerHTML = steps[count % steps.length]
-    ++count
+    if (count !== -1) {
+      loading.innerHTML = steps[count]
+      count = (count + 1) % steps.length
+    }
   }
+
+  function onError () {
+    loading.innerHTML = '&#9888;'
+    count = -1
+  }
+
+  window.addEventListener('error', onError)
 
   const _XMLHttpRequest = window.XMLHttpRequest
   window.XMLHttpRequest = function () {
@@ -40,6 +49,7 @@
       window.XMLHttpRequest = _XMLHttpRequest
       headObserver.disconnect()
       bodyObserver.disconnect()
+      window.removeEventListener('error', onError)
     }
   })
   bodyObserver.observe(document.body, {
