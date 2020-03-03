@@ -7,32 +7,32 @@
 	</head>
 	<body class="sapUiBody" id="root" role="application" />
 	<script src="loading.js"></script>
-  <script id="sap-ui-bootstrap" type="text/javascript"
-    src="resources/sap-ui-core.js"
-    data-sap-ui-theme="sap_belize"
-    data-sap-ui-libs="sap.m"
-    data-sap-ui-bindingSyntax="complex"
-    data-sap-ui-compatVersion="edge"
-    data-sap-ui-async="true"
-    data-sap-ui-resourceroots='{"bubu-cms": "./"}'>
-  </script>
-  <script>
-    sap.ui.getCore().attachInit(function() {
-      sap.ui.require([
-        "sap/ui/core/Component",
-        "sap/ui/core/ComponentContainer"
-      ], function(Component, ComponentContainer) {
-        sap.ui.component({
-          id: "todo",
-          name: "bubu-cms",
-          async: true
-        }).then(function(oComponent) {
-          document.getElementById('loading').setAttribute('style', 'display: none;')
-          new ComponentContainer({
-            component: oComponent
-          }).placeAt("root");
-        });
-      });
-    });
-  </script>
+	<script id="sap-ui-bootstrap" type="text/javascript"
+		src="resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_belize"
+		data-sap-ui-libs="sap.m"
+		data-sap-ui-bindingSyntax="complex"
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-async="true"
+		data-sap-ui-resourceroots='{"bubu-cms": "./"}'>
+	</script>
+	<script>
+		sap.ui.getCore().attachInit(function() {
+			sap.ui.require([
+				"sap/ui/core/Component",
+				"sap/ui/core/ComponentContainer"
+			], function(Component, ComponentContainer) {
+				sap.ui.component({
+					id: "todo",
+					name: "bubu-cms",
+					async: true
+				}).then(function(oComponent) {
+					document.body.dataset.loading = 'off'
+					new ComponentContainer({
+						component: oComponent
+					}).placeAt("root");
+				});
+			});
+		});
+	</script>
 </html>
