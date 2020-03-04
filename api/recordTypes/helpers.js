@@ -10,6 +10,13 @@ module.exports = {
     return path.join(db.path, fileName)
   },
 
+  getRelativePath (db, fileName) {
+    if (path.isAbsolute(fileName)) {
+      return path.relative(db.path, fileName)
+    }
+    return fileName
+  },
+
   async addAllKeys (db, i18nFileName) {
   }
 }
