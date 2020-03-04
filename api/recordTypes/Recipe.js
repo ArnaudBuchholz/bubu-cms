@@ -1,7 +1,7 @@
 'use strict'
 
 const gpf = require('gpf-js')
-const { getAbsolutePath } = require('./helpers')
+const { getAbsolutePath, getRelativePath } = require('./helpers')
 
 module.exports = db => {
   class Recipe extends db.Record {
@@ -15,36 +15,64 @@ module.exports = db => {
     const gpfFileStorage = gpf.fs.getFileStorage()
     const forReading = gpf.fs.openFor.reading
 
-    async function load (path, name) {
-      // const recipe = new Recipe()
-      // recipe._id = recipe._buildId(`${path}#${name}`)
-
-      console.log('RECRD'.magenta, 'Recipe'.blue, '200'.green, `${path}/${name}`.gray)
+    async function load (path, name, {md, json, img}) {
+      const relativePath = getRelativePath(db, path)
+      const baseId = `${relativePath}#${name}`
+      let info
+      if (json) {
+        info = JSON.parse(await gpf.read(json.filePath))
+      } else {
+        info = { name }
+      }
+      info.md = getRelativePath(db, md.filePath)
+      const recipe = new Recipe()
+      recipe._id = recipe._buildId(baseId)
+      recipe._name = info.name
+      if (info.calories && info.portions) {
+        recipe._number = Math.floor(info.calories / info.portions)
+      }
+      if (img) {
+        recipe._icon = getRelativePath(db, img.filePath)
+      }
+      recipe._icon = `/images/recipe/${raw.id}.jpg`
+      if (info.portions) {
+        recipe._statusText1 = portions.toString()
+      }
+      if (info.time) {
+        recipe._statusText2 = Object.keys(info.time).reduce((total, time) => total + time, 0) + 'm'
+      }
+      console.log('RECRD'.magenta, 'Recipe'.blue, '200'.green, baseId.gray)
     }
 
     async function scan (path) {
       const fileNames = await gpfFileStorage.explore(path)
       const recipes = {}
-      const splitter = /^(.*)(\.\w+)?$/
-      while (fileNames.moveNext()) {
-        const fileName = fileNames.getCurrent()
-        console.log(fileName)
-        const parts = splitter.exec(fileName)
-        const name = parts[0]
-        const extension = parts[1]
-        if (['.md', '.json'].includes(extension)) {
-          if (!Object.prototype.hasOwnProperty.call(recipes, name)) {
-            recipes[name] = {}
+      const splitter = /^(.*)\.(\w+)?$/
+      const subs = []
+      while (await fileNames.moveNext()) {
+        const file = fileNames.getCurrent()
+        if (file.type === gpf.fs.types.directory) {
+          subs.push(scan(file.filePath))
+        } else if (file.type === gpf.fs.types.file) {
+          const parts = splitter.exec(file.fileName)
+          const name = parts[1]
+          let extension = parts[2]
+          if (['jpg', 'jpeg', 'png'].includes(extension)) {
+            extension = 'img'
           }
-          recipes[name][extension] = true
+          if (['md', 'json', 'img'].includes(extension)) {
+            if (!Object.prototype.hasOwnProperty.call(recipes, name)) {
+              recipes[name] = {}
+            }
+            recipes[name][extension] = file
+          }
         }
       }
-      return Promise.all(Object.keys(recipes).map(name => load(path, name, recipes[name])))
+      return Promise.all(subs.concat(Object.keys(recipes).map(name => load(path, name, recipes[name]))))
     }
 
     await scan(getAbsolutePath(db, folderName))
   }
-
 
   return Recipe
 }
