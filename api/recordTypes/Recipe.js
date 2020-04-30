@@ -44,17 +44,33 @@ module.exports = db => {
       console.log('RECRD'.magenta, 'Recipe'.blue, '200'.green, baseId.gray)
     }
 
+    async function buildFileNamesMap (fileNames) {
+      const map = {}
+      const splitter = /^(.*)\.(\w+)?$/
+      while (await fileNames.moveNext()) {
+        const file = fileNames.getCurrent()
+        const fileName = file.fileName
+        const { , name, extension } = splitter.exec(fileName)
+        map[file.fileName] = Object.extend({}, file, {
+          name,
+          extension
+        })
+      }
+      return map
+    }
+
     async function scan (path) {
       const fileNames = await gpfFileStorage.explore(path)
       const recipes = {}
-      const splitter = /^(.*)\.(\w+)?$/
       const subs = []
+      // Either multiples  md + json? + jpg|jpeg|png
+      // or single txt named like the folder name (+ time stamp) with Links &Aattachments
       while (await fileNames.moveNext()) {
         const file = fileNames.getCurrent()
         if (file.type === gpf.fs.types.directory) {
           subs.push(scan(file.filePath))
         } else if (file.type === gpf.fs.types.file) {
-          const parts = splitter.exec(file.fileName)
+          const parts =
           const name = parts[1]
           let extension = parts[2]
           if (['jpg', 'jpeg', 'png'].includes(extension)) {
