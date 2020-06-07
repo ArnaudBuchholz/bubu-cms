@@ -26,3 +26,5 @@ coverage/
 # Untracked databases
 db/*
 !db/sample
+
+# UI5 cache folder
