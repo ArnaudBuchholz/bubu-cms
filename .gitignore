@@ -28,3 +28,4 @@ db/*
 !db/sample
 
 # UI5 cache folder
+cache/
