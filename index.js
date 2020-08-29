@@ -1,22 +1,16 @@
 'use strict'
 
-require('colors')
 require('dotenv').config()
 require('./core/gpf-src')
 require('./core/reserve-src')
+const { join } = require('path')
 
-'BUBU_CMS_UI5_DIST'.split(',').forEach(requiredEnv => {
-  if (!process.env[requiredEnv]) {
-    console.error(`Missing ${requiredEnv}`.red)
-    process.exit(-1)
-  }
-})
-
-const configuration = require('./core/configuration')({
-  ui5: process.env.BUBU_CMS_UI5_DIST,
-  port: parseInt(process.env.BUBU_CMS_PORT, 10) || 3000
+const mappings = require('./core/factory')({
+  ui5: process.env.BUBU_CMS_UI5_DIST || 'https://openui5.hana.ondemand.com/1.81.1',
+  port: parseInt(process.env.BUBU_CMS_PORT, 10) || 3000,
+  db: process.env.BUBU_CMS_DB_PATH || join(__dirname, 'test/db')
 })
 
 const { log ,serve } = require('reserve')
 
-log(serve(configuration), process.argv.includes('--verbose'))
+log(serve(mappings), process.argv.includes('--verbose'))

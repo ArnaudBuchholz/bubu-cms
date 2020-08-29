@@ -1,17 +1,22 @@
 'use strict'
 
 const { createWriteStream, mkdir } = require('fs')
+const mkdirAsync = require('util').promisify(mkdir)
 const { dirname, join } = require('path')
 const { capture } = require('reserve')
+const api = require('./api/handler')
+const odata = require('./api/odata/handler')
 
-const mkdirAsync = require('util').promisify(mkdir)
-
-module.exports = ({ ui5, port }) => {
+module.exports = ({ ui5, port, db }) => {
   const ui5version = /((?:open)ui5).*(\d+\.\d+\.\d+)$/.exec(ui5)
-  const ui5cache = `./cache/${ui5version[1]}/${ui5version[2]}`
+  const ui5cache = join(__dirname, '../cache', ui5version[1], ui5version[2])
 
   return {
     port,
+    handlers: {
+      api,
+      odata
+    },
     mappings: [{
       method: 'GET',
       match: /\/((?:test-)?resources\/.*)/,
@@ -33,13 +38,14 @@ module.exports = ({ ui5, port }) => {
     }, {
       method: 'GET',
       match: /\/((?:test-)?resources\/.*)/,
-      url: `${process.env.BUBU_CMS_UI5_DIST}/$1`
+      url: `${ui5}/$1`
     }, {
       match: /^\/api\/(.*)/,
-      custom: require('../api/route')
+      db,
+      api: '$1'
     }, {
       match: /^\/api\/odata\/(.*)/,
-      custom: require('../api/odata/route')
+      odata: '$1'
     }, {
       method: 'GET',
       match: /^\/$/,

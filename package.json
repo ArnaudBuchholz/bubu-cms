@@ -1,6 +1,6 @@
 {
   "name": "bubu-cms",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "description": "Small, simple & flat CMS for bubu's family",
   "directories": {},
@@ -29,12 +29,10 @@
     "dotenv": "^8.0.0",
     "gpf-js": "^1.0.0",
     "mime": "^2.4.4",
-    "nanoid": "^1.2.3",
-    "reserve": "^1.8.2"
+    "reserve": "^1.8.2",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@ui5/cli": "^1.10.0",
-    "lodash": "^4.17.20",
     "mocha": "^7.1.2",
     "mock-require": "^3.0.3",
     "nyc": "^14.1.1",
