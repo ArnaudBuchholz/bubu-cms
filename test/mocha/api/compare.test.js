@@ -5,7 +5,7 @@ const compare = require('../../../api/compare')
 
 var now = new Date()
 
-describe('/api/compare.js', () => {
+describe('/core/api/compare.js', () => {
   [
     [undefined, undefined, 0],
     [null, null, 0],

@@ -48,12 +48,24 @@
   },
   "mocha": {
     "spec": [
-      "./test/unit/api/*.js",
-      "./test/unit/api/odata/*.js"
+      "./test/mocha/**/*.test.js"
     ],
     "require": [
-      "./gpf-src.js",
-      "./reserve-src.js"
+      "./api/gpf-src.js",
+      "./api/reserve-src.js"
     ]
+  },
+  "nyc": {
+    "all": true,
+    "cache": false,
+    "check-coverage": true,
+    "exclude": [
+      "index.js",
+      "tests/**"
+    ],
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100
   }
 }

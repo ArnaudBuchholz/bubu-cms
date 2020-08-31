@@ -4,19 +4,16 @@ const { createWriteStream, mkdir } = require('fs')
 const mkdirAsync = require('util').promisify(mkdir)
 const { dirname, join } = require('path')
 const { capture } = require('reserve')
-const api = require('./api/handler')
-const odata = require('./api/odata/handler')
+const Database = rquire('./Database')
 
 module.exports = ({ ui5, port, db }) => {
   const ui5version = /((?:open)ui5).*(\d+\.\d+\.\d+)$/.exec(ui5)
   const ui5cache = join(__dirname, '../cache', ui5version[1], ui5version[2])
+  const database = new Database()
+  
 
   return {
     port,
-    handlers: {
-      api,
-      odata
-    },
     mappings: [{
       method: 'GET',
       match: /\/((?:test-)?resources\/.*)/,
@@ -41,11 +38,7 @@ module.exports = ({ ui5, port, db }) => {
       url: `${ui5}/$1`
     }, {
       match: /^\/api\/(.*)/,
-      db,
-      api: '$1'
-    }, {
-      match: /^\/api\/odata\/(.*)/,
-      odata: '$1'
+
     }, {
       method: 'GET',
       match: /^\/$/,
