@@ -2,9 +2,9 @@
 
 const gpf = require('gpf-js')
 const attribute = gpf.attributes.decorator
-const Id = require('./Id')
-const Searchable = require('./Searchable')
-const Sortable = require('./Sortable')
+const Key = require('reserve-odata/Key')
+const Filterable = require('reserve-odata/Filterable')
+const Sortable = require('reserve-odata/Sortable')
 const Content = require('./Content')
 
 const nanoFormat = require('nanoid/format')
@@ -128,11 +128,10 @@ Object.assign(Record.prototype, {
   _statusState2: Record.StatusState.show
 })
 
-attribute(new Id())(Record, 'id')
+attribute(new Key())(Record, 'id')
 attribute(new gpf.attributes.Serializable())(Record, 'id')
 attribute(new gpf.attributes.Serializable())(Record, 'type')
 attribute(new gpf.attributes.Serializable())(Record, 'name')
-attribute(new Searchable())(Record, 'name')
 attribute(new Sortable())(Record, 'name')
 attribute(new gpf.attributes.Serializable())(Record, 'icon')
 attribute(new gpf.attributes.Serializable())(Record, 'number')
