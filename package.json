@@ -26,7 +26,6 @@
   "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
   "dependencies": {
     "colors": "^1.4.0",
-    "dotenv": "^8.2.0",
     "gpf-js": "^1.0.0",
     "mime": "^2.4.7",
     "reserve": "^1.9.2",
