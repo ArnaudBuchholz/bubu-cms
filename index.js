@@ -1,16 +1,16 @@
 'use strict'
 
-require('dotenv').config()
-require('./api/gpf-src')
-require('./api/reserve-src')
-const { join } = require('path')
+const { log, serve } = require('reserve')
+const loader = require('./loader')
+const mappingsBuilder = require('./api/mappings')
 
-const mappings = require('./api/factory')({
-  ui5: process.env.BUBU_CMS_UI5_DIST || 'https://openui5.hana.ondemand.com/1.81.1',
-  port: parseInt(process.env.BUBU_CMS_PORT, 10) || 3000,
-  db: process.env.BUBU_CMS_DB_PATH || join(__dirname, 'test/db')
-})
+if (process.argv.includes('--dev')) {
+  require('./api/devMode')
+}
 
-const { log ,serve } = require('reserve')
-
-log(serve(mappings), process.argv.includes('--verbose'))
+const fileName = process.argv.filter(arg => !arg.startsWith('--'))[0] || 'index.js'
+loader(fileName)
+  .then(settings => mappingsBuilder(settings))
+  .then(mappings => {
+    log(serve(mappings), process.argv.includes('--verbose'))
+  })
