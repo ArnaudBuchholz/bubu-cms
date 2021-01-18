@@ -1,9 +1,15 @@
 'use strict'
 
 const { isAbsolute, join } = require('path')
+const latestUI5 = require('./latestUI5')
 
 async function check (configuration) {
-
+  if (!configuration.ui5 || configuration.ui5 === 'latest') {
+    configuration.ui5 = await latestUI5()
+  }
+  if (!configuration.port) {
+    configuration.port = 'auto'
+  }
   return configuration
 }
 
