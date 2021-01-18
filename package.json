@@ -27,10 +27,9 @@
   "dependencies": {
     "colors": "^1.4.0",
     "gpf-js": "^1.0.0",
-    "mime": "^2.4.7",
-    "reserve": "^1.9.2",
-    "reserve-odata": "^0.8.0",
-    "uuid": "^8.3.2"
+    "mime": "^2.5.0",
+    "reserve": "^1.9.3",
+    "reserve-odata": "^0.8.0"
   },
   "devDependencies": {
     "mocha": "^8.2.1",
