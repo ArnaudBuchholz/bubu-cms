@@ -52,7 +52,7 @@
 			"db.i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "bubu-cms.api.i18n",
+					"bundleName": "bubu-cms.i18n.db_i18n",
 					"async": true
 				},
 				"preload": true
