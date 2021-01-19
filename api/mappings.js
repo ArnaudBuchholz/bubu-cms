@@ -5,6 +5,7 @@ const mkdirAsync = require('util').promisify(mkdir)
 const { basename, dirname, join } = require('path')
 const { capture } = require('reserve')
 const mime = require('mime')
+const RecordType = require('./RecordType')
 const Record = require('./Record')
 const Content = require('./Content')
 const Tag = require('./Tag')
@@ -60,7 +61,7 @@ module.exports = ({ ui5, port, db }) => {
       odata: '$1',
       'service-namespace': 'bubu-cms',
       'use-sap-extension': true,
-      'data-provider-classes': () => [Record, Content, Tag]
+      'data-provider-classes': () => [RecordType, Record, Content, Tag]
     }, {
       match: /^\/$/,
       file: join(__dirname, '../webapp/index.html')
