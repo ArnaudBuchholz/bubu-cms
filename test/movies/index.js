@@ -7,16 +7,19 @@ module.exports = {
   ui5: 'latest',
   port: 3000,
   types: {
+
     movie: {
-      label: {
-        type: "film", // { en: "movie", fr: "film" },
-        status1: "Sortie",
-        status2: "Longueur",
-        "section.title": "IMDB",
-        "section.OpenOnIMDB": "Ouvrir dans IMDB"
-      },
+      type: { en: "movie", fr: "film" },
+
+      number: { "read-only": false },
+      status1: { en: "released", fr: "sortie", "read-only": true },
+      status2: { en: "length", fr: "longueur" },
+
+      "section.title": "IMDB",
+      "section.OpenOnIMDB": "Ouvrir dans IMDB",
       defaultIcon: "video",
       fragment: "movie.fragment.xml",
+ 
       async load ({ log, error, addI18nKey, addRecord }) {
         const gpfFileStorage = gpf.fs.getFileStorage()
         const forReading = gpf.fs.openFor.reading
@@ -86,6 +89,7 @@ module.exports = {
         await gpf.stream.pipe(csvFile, lineAdapter, csvParser, factory)
           .catch(reason => error(reason.toString()))
       },
+
       async content (record) {
         return {
           imdbId: record.imdbId,
