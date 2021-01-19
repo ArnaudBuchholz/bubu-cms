@@ -5,6 +5,7 @@
   "description": "Small, simple & flat CMS for bubu's family",
   "directories": {},
   "scripts": {
+    "tsc": "tsc",
     "start": "node .",
     "debug": "node --inspect-brk .",
     "lint": "standard --fix",
@@ -29,7 +30,8 @@
     "gpf-js": "^1.0.0",
     "mime": "^2.5.0",
     "reserve": "^1.9.3",
-    "reserve-odata": "^0.8.0"
+    "reserve-odata": "^0.8.0",
+    "typescript": "^4.1.3"
   },
   "devDependencies": {
     "mocha": "^8.2.1",
