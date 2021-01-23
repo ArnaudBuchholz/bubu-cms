@@ -116,7 +116,6 @@ sap.ui.define([
     _onBindingChanged: function () {
       const page = this.byId('page')
       const binding = this.getView().getElementBinding()
-      let record
       if (!binding.getBoundContext()) {
         MessageBox.show(this.i18n('record', 'notLoaded'), {
           icon: MessageBox.Icon.ERROR,
@@ -127,7 +126,7 @@ sap.ui.define([
         return
       }
       this.byId('rating').getBinding('value').refresh(true) // Force refresh
-      record = binding.getBoundContext().getObject()
+      const record = binding.getBoundContext().getObject()
       page.setModel(new JSONModel({
         list: record.tags.split(' ').map(function (tag) {
           return {
