@@ -25,7 +25,7 @@ module.exports = ({ ui5, port, db }) => {
   return {
     port,
     handlers: [{
-      odata: "reserve-odata"
+      odata: 'reserve-odata'
     }],
     mappings: [{
       match: /\/((?:test-)?resources\/.*)/,
@@ -40,9 +40,9 @@ module.exports = ({ ui5, port, db }) => {
         await mkdirAsync(cacheFolder, { recursive: true })
         const file = createWriteStream(cachePath)
         capture(response, file)
-        .catch(reason => {
-          console.error(`Unable to cache ${cachePath}`, reason)
-        })
+          .catch(reason => {
+            console.error(`Unable to cache ${cachePath}`, reason)
+          })
       }
     }, {
       method: ['GET', 'HEAD'],
