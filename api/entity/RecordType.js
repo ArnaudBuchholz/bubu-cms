@@ -7,17 +7,17 @@ const NavigationProperty = require('reserve-odata/attributes/NavigationProperty'
 const TypeProperty = require('./TypeProperty')
 
 module.exports = class RecordType {
-    get type () {
-        return this._type
-    }
+  get type () {
+    return this._type
+  }
 
-    getProperties () {
+  getProperties () {
 
-    }
+  }
 
-    constructor (type) {
-        this._type = type
-    }
+  constructor (type) {
+    this._type = type
+  }
 }
 
 attribute(new gpf.attributes.Serializable())(RecordType, 'type')
