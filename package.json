@@ -49,10 +49,6 @@
   "mocha": {
     "spec": [
       "./test/mocha/**/*.test.js"
-    ],
-    "require": [
-      "./api/gpf-src.js",
-      "./api/reserve-src.js"
     ]
   },
   "nyc": {
