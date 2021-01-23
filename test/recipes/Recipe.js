@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict'
 
 const gpf = require('gpf-js')
@@ -15,7 +16,7 @@ module.exports = db => {
     const gpfFileStorage = gpf.fs.getFileStorage()
     const forReading = gpf.fs.openFor.reading
 
-    async function load (path, name, {md, json, img}) {
+    async function load (path, name, { md, json, img }) {
       const relativePath = getRelativePath(db, path)
       const baseId = `${relativePath}#${name}`
       let info
@@ -50,7 +51,7 @@ module.exports = db => {
       while (await fileNames.moveNext()) {
         const file = fileNames.getCurrent()
         const fileName = file.fileName
-        const { , name, extension } = splitter.exec(fileName)
+        const { _, name, extension } = splitter.exec(fileName)
         map[file.fileName] = Object.extend({}, file, {
           name,
           extension
@@ -70,7 +71,7 @@ module.exports = db => {
         if (file.type === gpf.fs.types.directory) {
           subs.push(scan(file.filePath))
         } else if (file.type === gpf.fs.types.file) {
-          const parts =
+          const parts = []
           const name = parts[1]
           let extension = parts[2]
           if (['jpg', 'jpeg', 'png'].includes(extension)) {
