@@ -3,7 +3,7 @@
 const assert = require('assert')
 const compare = require('../../../api/compare')
 
-var now = new Date()
+const now = new Date()
 
 describe('/core/api/compare.js', () => {
   [
