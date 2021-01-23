@@ -11,9 +11,23 @@ module.exports = {
     movie: {
       type: { en: "movie", fr: "film" },
 
-      number: { "read-only": false },
-      status1: { en: "released", fr: "sortie", "read-only": true },
-      status2: { en: "length", fr: "longueur" },
+      // properties
+
+      // name is not declared, it remains read-only
+      number: {
+        // no label or label:<lang> attribute means no label
+        regexp: "\\d+ / \\d+", // implies editable: true
+        placeholder: "page / book",
+        placeholder_fr: "page / classeur"
+      }, 
+      status1: {
+        label: "released",
+        label_fr: "sortie"
+      },
+      status2: {
+        label: "length",
+        label_fr: "longueur"
+      },
 
       "section.title": "IMDB",
       "section.OpenOnIMDB": "Ouvrir dans IMDB",
