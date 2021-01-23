@@ -47,6 +47,7 @@
     "dependencies": []
   },
   "mocha": {
+    "diff": false,
     "spec": [
       "./test/mocha/**/*.test.js"
     ]
@@ -57,7 +58,8 @@
     "check-coverage": true,
     "exclude": [
       "index.js",
-      "tests/**"
+      "tests/**",
+      "webapp/**"
     ],
     "branches": 100,
     "lines": 100,
