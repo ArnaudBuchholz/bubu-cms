@@ -3,7 +3,6 @@
 const gpf = require('gpf-js')
 const attribute = gpf.attributes.decorator
 const Key = require('reserve-odata/Key')
-const Filterable = require('reserve-odata/Filterable')
 const Sortable = require('reserve-odata/Sortable')
 const Content = require('./Content')
 
@@ -83,6 +82,7 @@ class Record {
     return this._tags.includes(tag)
   }
 
+  /*
   _getSearchableProperties () {
     const MyClass = this.constructor
     if (!MyClass._searchableProperties) {
@@ -97,6 +97,7 @@ class Record {
       .filter(value => !!value)
       .some(value => (value.toString() || '').toLowerCase().includes(term))
   }
+*/
 
   async buildContent (data, mimeType) {
     if (!mimeType && gpf.isLiteralObject(data)) {
