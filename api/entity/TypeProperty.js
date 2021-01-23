@@ -95,4 +95,11 @@ attribute(new Key())(TypeProperty, 'name')
 attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer }))(TypeProperty, 'editable')
 attribute(new gpf.attributes.Serializable())(TypeProperty, 'regexp')
 
+TypeProperty.names = [
+  'name',
+  'number',
+  'status1',
+  'status2'
+]
+
 module.exports = TypeProperty
