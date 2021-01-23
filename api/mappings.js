@@ -11,7 +11,6 @@ const Content = require('./Content')
 const Tag = require('./Tag')
 
 const textContentType = mime.getType('text')
-const xmlContentType = mime.getType('xml')
 
 module.exports = ({ ui5, port, db }) => {
   const ui5version = /((?:open)ui5).*(\d+\.\d+\.\d+)$/.exec(ui5)
