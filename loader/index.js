@@ -1,6 +1,6 @@
 'use strict'
 
-const { isAbsolute, join } = require('path')
+const { isAbsolute, join } = require('path')
 const latestUI5 = require('./latestUI5')
 
 async function check (configuration) {
