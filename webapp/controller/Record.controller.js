@@ -26,7 +26,7 @@ sap.ui.define([
     },
 
     _buildBoundContent: function () {
-      var boundContent = {}
+      const boundContent = {}
       Object.keys(this.content).forEach(function (method) {
         boundContent[method] = this.content[method].bind(this)
       }, this)
@@ -39,11 +39,11 @@ sap.ui.define([
     },
 
     _onDisplayRecord: function (event) {
-      var recordId = event.getParameter('arguments').recordId
-      var sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
+      const recordId = event.getParameter('arguments').recordId
+      const sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
         id: recordId
       })
-      var page = this.byId('page')
+      const page = this.byId('page')
       this.getView().bindElement({
         path: sPath,
         parameters: {
@@ -71,13 +71,13 @@ sap.ui.define([
     },
 
     _displayContent: function (record) {
-      var content = record.toContent
+      let content = record.toContent
       if (content.__ref) {
         content = this.getView().getModel().getObject('/' + content.__ref)
       }
       this._setContent(JSON.parse(content.data))
-      var objectPage = this.byId('page')
-      var section = objectPage.getSections().filter(function (candidate) {
+      const objectPage = this.byId('page')
+      const section = objectPage.getSections().filter(function (candidate) {
         return candidate.getCustomData().some(function (customData) {
           return customData.getKey() === 'recordType' && customData.getValue() === record.type
         })
@@ -114,9 +114,9 @@ sap.ui.define([
     },
 
     _onBindingChanged: function () {
-      var page = this.byId('page')
-      var binding = this.getView().getElementBinding()
-      var record
+      const page = this.byId('page')
+      const binding = this.getView().getElementBinding()
+      let record
       if (!binding.getBoundContext()) {
         MessageBox.show(this.i18n('record', 'notLoaded'), {
           icon: MessageBox.Icon.ERROR,
@@ -157,12 +157,12 @@ sap.ui.define([
     },
 
     onTagPress: function (event) {
-      var tag = event.getSource().getBindingContext('tags').getObject()
+      const tag = event.getSource().getBindingContext('tags').getObject()
       this._navigateToListFilteredByTag(tag.id)
     },
 
     _updateRecord: function (body) {
-      var view = this.getView()
+      const view = this.getView()
       view.getModel().update(view.getBindingContext().getPath(), body, {
         error: function () {
           MessageBox.show(this.i18n('record', 'submitChanges.error'), {

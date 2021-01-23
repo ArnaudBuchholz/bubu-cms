@@ -12,9 +12,9 @@ sap.ui.define([
   return BaseController.extend('bubu-cms.controller.List', {
 
     _buildSortingMenu: function () {
-      var sortMenu = this.byId('sortMenu')
+      const sortMenu = this.byId('sortMenu')
 
-      var order = ['name', 'rating', 'created', 'modified']
+      const order = ['name', 'rating', 'created', 'modified']
       this.getOwnerComponent().getModel().getServiceMetadata()
         .dataServices.schema[0].entityType
         .filter(function (entity) {
@@ -29,9 +29,9 @@ sap.ui.define([
           return property.name
         })
         .sort(function (name1, name2) {
-          var pos1 = order.indexOf(name1)
+          const pos1 = order.indexOf(name1)
 
-          var pos2 = order.indexOf(name2)
+          const pos2 = order.indexOf(name2)
           if (pos1 !== -1 && pos2 !== -1) {
             return pos1 - pos2 // Expected ones are sorted according to the order array
           }
@@ -66,21 +66,21 @@ sap.ui.define([
     _queryParameters: {},
 
     _onDisplayList: function (event) {
-      var binding = this.byId('records').getBinding('items')
+      const binding = this.byId('records').getBinding('items')
       this._queryParameters = event.getParameter('arguments')['?query'] || {}
       if (this._queryParameters.search) {
-        var unescapedSearch = this.unescapeSearch(this._queryParameters.search)
+        const unescapedSearch = this.unescapeSearch(this._queryParameters.search)
         this.byId('search').setValue(unescapedSearch)
         binding.sCustomParams = 'search=' + encodeURIComponent(unescapedSearch)
       } else {
         this.byId('search').setValue('')
         binding.sCustomParams = ''
       }
-      var sort = this._queryParameters.sort || 'nameAsc'
+      const sort = this._queryParameters.sort || 'nameAsc'
 
-      var sortParts = /(\w+)(Asc|Desc)/.exec(sort)
+      const sortParts = /(\w+)(Asc|Desc)/.exec(sort)
 
-      var sortButton = this.byId('sortButton')
+      const sortButton = this.byId('sortButton')
       this.byId('sortMenu').getItems().every(function (menuItem) {
         if (menuItem.getId().indexOf(sort) !== -1) {
           sortButton.setIcon(menuItem.getIcon())
@@ -113,14 +113,14 @@ sap.ui.define([
     },
 
     onSort: function (event) {
-      var sortItem = event.getParameter('item')
+      const sortItem = event.getParameter('item')
 
-      var sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId())
+      const sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId())
       this._setQueryParameter('sort', sort[0])
     },
 
     onRecordPress: function (event) {
-      var record = event.getSource().getBindingContext().getObject()
+      const record = event.getSource().getBindingContext().getObject()
       if (record.type === 'tag') {
         this._setQueryParameter('search', this.escapeSearch('#' + record.name))
       } else {

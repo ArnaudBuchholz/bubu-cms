@@ -36,9 +36,9 @@ sap.ui.define([
     },
 
     i18n: function (type, key, parameters) {
-      var translationKey = type + '.' + key
+      const translationKey = type + '.' + key
 
-      var result = this.dbI18n(translationKey, parameters)
+      let result = this.dbI18n(translationKey, parameters)
       if (undefined === result) {
         result = this.uiI18n(translationKey, parameters)
       }
@@ -49,7 +49,7 @@ sap.ui.define([
       if (icon) {
         return icon
       }
-      var defaultIcon = this.i18n(type, 'defaultIcon')
+      const defaultIcon = this.i18n(type, 'defaultIcon')
       if (defaultIcon) {
         return 'sap-icon://' + defaultIcon
       }
