@@ -13,12 +13,16 @@ const string = value => {
 
 const qualifiers = {
   regexp: (typeProperty, value) => {
+    typeProperty._editable = true
     typeProperty._regexp = string(value)
-    new RegExp(typeProperty._regexp)
+    RegExp(typeProperty._regexp)
   }
 }
 
-const translatables = ['label', 'placeholder']
+const translatables = [
+  'label',
+  'placeholder'
+]
 
 class TypeProperty {
   get type () {
@@ -29,9 +33,9 @@ class TypeProperty {
     return this._name
   }
 
-  get readOnly () {
+  get editable () {
     // Workaround until gpf-js declares boolean serial type
-    return this._readOnly ? 1 : 0
+    return this._editable ? 1 : 0
   }
 
   get regexp () {
@@ -45,31 +49,38 @@ class TypeProperty {
     this._translations[lang][key] = label
   }
 
+  translations (lang = '') {
+    const dictionary = this._translations[lang] || {}
+    return Object.keys(dictionary)
+      .map(key => `${this._type}.${this._name}.${key}=${dictionary[key]}`)
+      .join('\n')
+  }
+
   constructor (type, name, property) {
     this._type = type
     this._name = name
-    this._readOnly = true
+    this._editable = false
     this._regexp = ''
     this._translations = {}
-    if (this.property) {
+    if (property) {
       Object.keys(property).forEach(qualifier => {
         try {
           const value = property[qualifier]
-          const handler = qualifiers[name]
+          const handler = qualifiers[qualifier]
           if (handler) {
             return handler(this, value)
           }
-          translatables.forEach(translatable => {
-            if (qualifier === translatable) {
-              return this._addTranslation(`${type}.${name}.${translatable}`, value)
+          if (translatables.every(translatable => {
+            const parts = qualifier.split('_')
+            if (parts[0] === translatable) {
+              return this._addTranslation(translatable, value, parts[1])
             }
-            if (qualifier.startsWith(`${translatable}:`)) {
-              return this._addTranslation(`${type}.${name}.${translatable}`, value, qualifier.substring(1 + translatable.length))
-            }
-            throw new Error('unknown')
-          })
+            return true
+          })) {
+            throw new Error('unknown qualifier')
+          }
         } catch (e) {
-          throw new Error(`Invalid type '${type}' property '${name}' qualifier `${qualifier}` : ${e.message}`)
+          throw new Error(`Invalid type '${type}' property '${name}' qualifier '${qualifier}' : ${e.message}`)
         }
       })
     }
@@ -81,7 +92,7 @@ attribute(new Key())(TypeProperty, 'type')
 attribute(new gpf.attributes.Serializable())(TypeProperty, 'name')
 attribute(new Key())(TypeProperty, 'name')
 // Workaround until gpf-js declares boolean serial type
-attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer }))(TypeProperty, 'readOnly')
+attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer }))(TypeProperty, 'editable')
 attribute(new gpf.attributes.Serializable())(TypeProperty, 'regexp')
 
 module.exports = TypeProperty
