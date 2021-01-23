@@ -34,7 +34,7 @@ module.exports = {
       defaultIcon: 'video',
       fragment: 'movie.fragment.xml',
 
-      async load ({ log, error, addI18nKey, addRecord }) {
+      async load ({ log, error, addI18nKey, addRecord }) {
         const gpfFileStorage = gpf.fs.getFileStorage()
         const forReading = gpf.fs.openFor.reading
 
@@ -84,7 +84,7 @@ module.exports = {
             record.cast = Object.keys(imdbMovie.cast).map(actorId => {
               record.tags.push(actorId)
               return {
-                id: tag.name,
+                //                id: tag.name,
                 role: imdbMovie.cast[actorId]
               }
             })
