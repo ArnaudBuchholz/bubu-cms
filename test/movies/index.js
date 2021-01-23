@@ -9,31 +9,31 @@ module.exports = {
   types: {
 
     movie: {
-      type: { en: "movie", fr: "film" },
+      type: { en: 'movie', fr: 'film' },
 
       // properties
 
       // name is not declared, it remains read-only
       number: {
         // no label or label:<lang> attribute means no label
-        regexp: "\\d+ / \\d+", // implies editable: true
-        placeholder: "page / book",
-        placeholder_fr: "page / classeur"
-      }, 
+        regexp: '\\d+ / \\d+', // implies editable: true
+        placeholder: 'page / book',
+        placeholder_fr: 'page / classeur'
+      },
       status1: {
-        label: "released",
-        label_fr: "sortie"
+        label: 'released',
+        label_fr: 'sortie'
       },
       status2: {
-        label: "length",
-        label_fr: "longueur"
+        label: 'length',
+        label_fr: 'longueur'
       },
 
-      "section.title": "IMDB",
-      "section.OpenOnIMDB": "Ouvrir dans IMDB",
-      defaultIcon: "video",
-      fragment: "movie.fragment.xml",
- 
+      'section.title': 'IMDB',
+      'section.OpenOnIMDB': 'Ouvrir dans IMDB',
+      defaultIcon: 'video',
+      fragment: 'movie.fragment.xml',
+
       async load ({ log, error, addI18nKey, addRecord }) {
         const gpfFileStorage = gpf.fs.getFileStorage()
         const forReading = gpf.fs.openFor.reading
@@ -42,12 +42,12 @@ module.exports = {
         const writableString = new gpf.stream.WritableString()
         await gpf.stream.pipe(imdbFile, writableString)
         const imdb = JSON.parse(writableString.toString())
-    
+
         log('IMDB database loaded :')
         log('Mappings :', imdb.select.length)
         log('Movies :', Object.keys(imdb.movies).length)
         log('Actors :', Object.keys(imdb.actors).length)
-        gpf.forEach(imdb.actors, (name, actorId) => addI18nKey(`tag.${actorId}`, name/*, language or all*/))
+        gpf.forEach(imdb.actors, (name, actorId) => addI18nKey(`tag.${actorId}`, name/*, language or all */))
 
         let count = -1
         const csvFile = await gpfFileStorage.openTextStream(join(__dirname, 'movies.csv'), forReading)
@@ -72,7 +72,7 @@ module.exports = {
               imdbId,
               name: csvRecord.title,
               number: `${csvRecord.book} / ${csvRecord.page}`,
-              statusText1: imdbMovie.year,
+              statusText1: imdbMovie.year
             }
 
             // 'Format' duration
@@ -89,7 +89,7 @@ module.exports = {
               }
             })
 
-            if(imdbMovie.image && imdbMovie.image.length) {
+            if (imdbMovie.image && imdbMovie.image.length) {
               record.image = imdbMovie.image[0]
               record.icon = imdbMovie.image[0].replace('.jpg', '._SX40_CR0,0,40,54_.jpg')
             }
