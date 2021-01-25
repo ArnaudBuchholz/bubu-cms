@@ -98,6 +98,7 @@ attribute(new gpf.attributes.Serializable())(TypeProperty, 'regexp')
 TypeProperty.names = [
   'name',
   'number',
+  'numberUnit',
   'status1',
   'status2'
 ]
