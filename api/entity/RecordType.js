@@ -15,9 +15,23 @@ class RecordType {
     return this._properties
   }
 
+  _checkLoad (definition) {
+    if (typeof definition.load !== 'function' && definition.load.length !== 1) {
+      throw new Error('Missing load function')
+    }
+    this._load = definition.load
+  }
+
+  _checkDefaultIcon (definition) {
+    this._defaultIcon = definition.defaultIcon
+    // Might need to map the path
+  }
+
   constructor (type, definition) {
     this._type = type
     this._properties = TypeProperty.names.map(name => new TypeProperty(type, name, definition[name]))
+    this._checkLoad(definition)
+    this._checkDefaultIcon(definition)
   }
 }
 
