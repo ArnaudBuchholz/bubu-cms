@@ -29,10 +29,11 @@ module.exports = {
         label_fr: 'longueur'
       },
 
+      defaultIcon: 'sap-icon://video',
+
+      fragment: 'movie.fragment.xml',
       'section.title': 'IMDB',
       'section.OpenOnIMDB': 'Ouvrir dans IMDB',
-      defaultIcon: 'video',
-      fragment: 'movie.fragment.xml',
 
       async load ({ log, error, addI18nKey, addRecord }) {
         const gpfFileStorage = gpf.fs.getFileStorage()
@@ -90,7 +91,7 @@ module.exports = {
             })
 
             if (imdbMovie.image && imdbMovie.image.length) {
-              record.image = imdbMovie.image[0]
+              record.image = imdbMovie.image[0].replace('.jpg', '_SY1000_CR0,0,678,1000_.jpg')
               record.icon = imdbMovie.image[0].replace('.jpg', '._SX40_CR0,0,40,54_.jpg')
             }
 
@@ -102,14 +103,6 @@ module.exports = {
         }
         await gpf.stream.pipe(csvFile, lineAdapter, csvParser, factory)
           .catch(reason => error(reason.toString()))
-      },
-
-      async content (record) {
-        return {
-          imdbId: record.imdbId,
-          image: record.image ? this._image.replace('.jpg', '_SY1000_CR0,0,678,1000_.jpg') : '',
-          cast: record.cast
-        }
       }
     }
   }
