@@ -11,15 +11,16 @@ class RecordType {
     return this._type
   }
 
-  getProperties () {
+  get properties () {
     return this._properties
   }
 
   _checkLoad (definition) {
-    if (typeof definition.load !== 'function' && definition.load.length !== 1) {
+    const { load } = definition
+    if (typeof load !== 'function' || load.length !== 1) {
       throw new Error('Missing load function')
     }
-    this._load = definition.load
+    this._load = load
   }
 
   _checkDefaultIcon (definition) {
