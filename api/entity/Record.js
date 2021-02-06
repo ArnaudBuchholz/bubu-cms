@@ -6,68 +6,51 @@ const Key = require('reserve-odata/Key')
 const Sortable = require('reserve-odata/Sortable')
 const Content = require('./Content')
 
-const nanoFormat = require('nanoid/format')
-const nanoUrl = require('nanoid/url')
-const mime = require('mime')
-
 const jsonContentType = mime.getType('json')
 const minDate = new Date(0)
 
 class Record {
-  get database () {
-    return this._database
-  }
-
-  _buildId (key) {
-    const id = `${this.constructor.name}#${key}`
-    return nanoFormat(() => id.split('').map(char => char.charCodeAt(0)), nanoUrl, id.length)
+  get raw () {
+    return this._raw
   }
 
   get id () {
-    return this._id
+    return `${this.type.name}.${this.raw.id}`
   }
 
   get type () {
-    return this._type
+    return this._type.name
   }
 
   get name () {
-    return this._name
+    return this.raw.name
   }
 
   get icon () {
-    return this._icon
+    return this.raw.icon
   }
 
   get number () {
-    return this._number
+    return this.raw.number
   }
 
   get rating () {
-    return this._rating || 0
+    return this.raw.rating || 0
   }
 
   get touched () {
-    return this._touched || minDate
+    return this.raw.touched || minDate
   }
 
-  get statusText1 () {
-    return this._statusText1
+  get status1 () {
+    return this.raw.status1
   }
 
-  get statusState1 () {
-    return this._statusState1
+  get status2 () {
+    return this.raw.status2
   }
 
-  get statusText2 () {
-    return this._statusText2
-  }
-
-  get statusState2 () {
-    return this._statusState2
-  }
-
-  get tags () {
+  getTags () {
     return this._tags
   }
 
@@ -82,23 +65,6 @@ class Record {
     return this._tags.includes(tag)
   }
 
-  /*
-  _getSearchableProperties () {
-    const MyClass = this.constructor
-    if (!MyClass._searchableProperties) {
-      MyClass._searchableProperties = Object.keys(gpf.attributes.get(MyClass, Searchable))
-    }
-    return MyClass._searchableProperties
-  }
-
-  search (term) {
-    return this._getSearchableProperties()
-      .map(property => this[property])
-      .filter(value => !!value)
-      .some(value => (value.toString() || '').toLowerCase().includes(term))
-  }
-*/
-
   async buildContent (data, mimeType) {
     if (!mimeType && gpf.isLiteralObject(data)) {
       return new Content(this._id, JSON.stringify(data), jsonContentType)
@@ -106,11 +72,11 @@ class Record {
     return new Content(this._id, data, mimeType)
   }
 
-  constructor (database) {
-    this._database = database
+  constructor (database, type, record) {
     this._tags = []
-    this._type = this.addTag(this.constructor.name).name
-    this._database.records.add(this)
+    this._type = type
+    this._raw = record
+    database.records.add(this)
   }
 }
 
