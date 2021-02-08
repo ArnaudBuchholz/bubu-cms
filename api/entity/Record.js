@@ -2,20 +2,14 @@
 
 const gpf = require('gpf-js')
 const attribute = gpf.attributes.decorator
-const Key = require('reserve-odata/Key')
-const Sortable = require('reserve-odata/Sortable')
-const Content = require('./Content')
+const Key = require('reserve-odata/attributes/Key')
+const Sortable = require('reserve-odata/attributes/Sortable')
 
-const jsonContentType = mime.getType('json')
 const minDate = new Date(0)
 
 class Record {
-  get raw () {
-    return this._raw
-  }
-
   get id () {
-    return `${this.type.name}.${this.raw.id}`
+    return `${this.type}.${this._id}`
   }
 
   get type () {
@@ -23,77 +17,54 @@ class Record {
   }
 
   get name () {
-    return this.raw.name
+    return this._name
   }
 
   get icon () {
-    return this.raw.icon
+    return this._icon
   }
 
   get number () {
-    return this.raw.number
+    return this._number
   }
 
   get rating () {
-    return this.raw.rating || 0
+    return this._rating || 0
   }
 
   get touched () {
-    return this.raw.touched || minDate
+    return this._touched || minDate
   }
 
   get status1 () {
-    return this.raw.status1
+    return this._status1
   }
 
   get status2 () {
-    return this.raw.status2
+    return this._status2
   }
 
-  getTags () {
-    return this._tags
-  }
-
-  addTag (tag) {
-    const tagRecord = this._database.tags.allocate(tag)
-    this._tags.push(tagRecord)
-    tagRecord.add(this)
-    return tagRecord
+  get tags () {
+    return this._tags.map(tag => tag.name).join(' ')
   }
 
   hasTag (tag) {
     return this._tags.includes(tag)
   }
 
-  async buildContent (data, mimeType) {
-    if (!mimeType && gpf.isLiteralObject(data)) {
-      return new Content(this._id, JSON.stringify(data), jsonContentType)
-    }
-    return new Content(this._id, data, mimeType)
-  }
-
   constructor (database, type, record) {
-    this._tags = []
     this._type = type
-    this._raw = record
-    database.records.add(this)
+    Object.keys(record)
+      .forEach(property => {
+        const value = record[property]
+        if (Record.prototype.hasOwnProperty(property)) {
+          this[`_${property}`] = value
+        } else {
+          this[property] = value
+        }
+      })
   }
 }
-
-Record.StatusState = {
-  hide: '',
-  error: 'Error',
-  show: 'None',
-  success: 'Success',
-  warning: 'Warning'
-}
-
-Object.freeze(Record.StatusState)
-
-Object.assign(Record.prototype, {
-  _statusState1: Record.StatusState.show,
-  _statusState2: Record.StatusState.show
-})
 
 attribute(new Key())(Record, 'id')
 attribute(new gpf.attributes.Serializable())(Record, 'id')
@@ -106,10 +77,8 @@ attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.integer, read
 attribute(new Sortable())(Record, 'rating')
 attribute(new gpf.attributes.Serializable({ type: gpf.serial.types.datetime, readOnly: false }))(Record, 'touched')
 attribute(new Sortable())(Record, 'touched')
-attribute(new gpf.attributes.Serializable())(Record, 'statusText1')
-attribute(new gpf.attributes.Serializable())(Record, 'statusState1')
-attribute(new gpf.attributes.Serializable())(Record, 'statusText2')
-attribute(new gpf.attributes.Serializable())(Record, 'statusState2')
+attribute(new gpf.attributes.Serializable())(Record, 'status1')
+attribute(new gpf.attributes.Serializable())(Record, 'status2')
 attribute(new gpf.attributes.Serializable())(Record, 'tags')
 
 module.exports = Record
