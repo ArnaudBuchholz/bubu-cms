@@ -35,7 +35,7 @@ module.exports = {
       'section.title': 'IMDB',
       'section.OpenOnIMDB': 'Ouvrir dans IMDB',
 
-      async load ({ log, error, addI18nKey, addRecord }) {
+      async load ({ log, error, addRecord, addTag }) {
         const gpfFileStorage = gpf.fs.getFileStorage()
         const forReading = gpf.fs.openFor.reading
 
@@ -48,7 +48,7 @@ module.exports = {
         log('Mappings :', imdb.select.length)
         log('Movies :', Object.keys(imdb.movies).length)
         log('Actors :', Object.keys(imdb.actors).length)
-        gpf.forEach(imdb.actors, (name, actorId) => addI18nKey(`tag.${actorId}`, name/*, language or all */))
+        gpf.forEach(imdb.actors, (name, actorId) => addTag(actorId, name))
 
         let count = -1
         const csvFile = await gpfFileStorage.openTextStream(join(__dirname, 'movies.csv'), forReading)
@@ -85,7 +85,7 @@ module.exports = {
             record.cast = Object.keys(imdbMovie.cast).map(actorId => {
               record.tags.push(actorId)
               return {
-                //                id: tag.name,
+                id: actorId,
                 role: imdbMovie.cast[actorId]
               }
             })
