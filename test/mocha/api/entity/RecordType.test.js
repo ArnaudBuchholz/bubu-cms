@@ -3,7 +3,7 @@
 const assert = require('assert')
 const RecordType = require('../../../../api/entity/RecordType')
 
-describe('/core/api/entity/RecordType.js', () => {
+describe('/api/entity/RecordType', () => {
   it('loads properties', () => {
     const test = new RecordType('test', {
       load: any => {}
