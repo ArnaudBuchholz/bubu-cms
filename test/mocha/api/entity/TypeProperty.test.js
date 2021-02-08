@@ -3,7 +3,7 @@
 const assert = require('assert')
 const TypeProperty = require('../../../../api/entity/TypeProperty')
 
-describe('/core/api/entity/TypeProperty.js', () => {
+describe('/api/entity/TypeProperty', () => {
   it('initializes with default values', () => {
     const property = new TypeProperty('test', 'name')
     assert.strictEqual(property.type, 'test')
