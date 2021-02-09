@@ -4,6 +4,8 @@ const gpf = require('gpf-js')
 const attribute = gpf.attributes.decorator
 const Key = require('reserve-odata/attributes/Key')
 const Sortable = require('reserve-odata/attributes/Sortable')
+const NavigationProperty = require('reserve-odata/attributes/NavigationProperty')
+const Tag = require('./Tag')
 
 const minDate = new Date(0)
 
@@ -13,7 +15,7 @@ class Record {
   }
 
   get type () {
-    return this._type.name
+    return this._type.type
   }
 
   get name () {
@@ -48,6 +50,10 @@ class Record {
     return this._tags.map(tag => tag.name).join(' ')
   }
 
+  getTags () {
+    return this._tags
+  }
+
   hasTag (tag) {
     return this._tags.includes(tag)
   }
@@ -80,5 +86,6 @@ attribute(new Sortable())(Record, 'touched')
 attribute(new gpf.attributes.Serializable())(Record, 'status1')
 attribute(new gpf.attributes.Serializable())(Record, 'status2')
 attribute(new gpf.attributes.Serializable())(Record, 'tags')
+attribute(new NavigationProperty('Tags', Tag, '*'))(Record, 'getTags')
 
 module.exports = Record
