@@ -9,8 +9,8 @@ describe('/api/entity/Record', () => {
   describe('structure', () => {
     it('has prototype properties', () => {
       const nullRecord = Object.create(Record.prototype)
-      assert.strictEqual(nullRecord.hasOwnProperty('id'), false)
-      assert.strictEqual(Record.prototype.hasOwnProperty('id'), true)
+      assert.strictEqual(Object.prototype.hasOwnProperty.call(nullRecord, 'id'), false)
+      assert.strictEqual(Object.prototype.hasOwnProperty.call(Record.prototype, 'id'), true)
     })
   })
 
