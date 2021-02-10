@@ -8,6 +8,7 @@ describe('/api/entity/RecordType', () => {
     const test = new RecordType('test', {
       load: any => {}
     })
+    assert.strictEqual(test.type, 'test')
     assert.notStrictEqual(test.properties.length, 0)
   })
 
