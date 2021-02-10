@@ -63,7 +63,7 @@ class Record {
     Object.keys(record)
       .forEach(property => {
         const value = record[property]
-        if (Record.prototype.hasOwnProperty(property)) {
+        if (Object.prototype.hasOwnProperty.call(Record.prototype, property)) {
           this[`_${property}`] = value
         } else {
           this[property] = value
