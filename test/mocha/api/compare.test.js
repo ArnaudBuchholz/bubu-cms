@@ -8,7 +8,10 @@ const now = new Date()
 describe('/core/api/compare.js', () => {
   [
     [undefined, undefined, 0],
+    [null, undefined, 0],
+    [undefined, null, 0],
     [null, null, 0],
+    [{}, {}, 0],
     [true, true, 0],
     [false, false, 0],
     [1, 1, 0],
