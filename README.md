@@ -1,23 +1,56 @@
 # bubu-cms
-Small, simple &amp; standalone CMS for my family
+Small, simple &amp; standalone Content Management System.
 
-# Purpose
+## Setup
 
-My family owns lots of data (recipes, movies, contacts...) and we wanted a common way to access it without the pain
-of installing lots of software.
+* `npm install bubu-cms -g`
+* Go in the folder with you record descriptions *(see below)*
+* `bubu-cms`
 
-The purpose is to offer a simple interface to browse and display data.
+## Purpose
 
-# Main concepts
+When one owns lots of data, it might be helpful to have a common way to dig through it and avoid installing different softwares.
+This tool aims to aggregate different kind of data and enables browsing them at ease using tags to organize them.
 
-## interface
+## Main concepts
+
+### interface
 
 The main interface is a list of record offering sorting & searching options. When a list item is selected, the record
 details are displayed.
 
-## Backend
+### Backend
 
-The backend exposes records with a set of predefined properties (name, icon, number, rating...). Each record can be
+The backend exposes records with a set of predefined properties. Each record can be
 qualified with tags (which are exposed separately) and may have a content (initially, HTML).
 
-Databases are loaded once for all in memory and can be composed of flat files (CSV, JSON) or even generated content.
+### Rest API
+
+`GET /records?top=&skip=&search=`
+
+```json
+{
+  "count": 123,
+  "records": [{
+    "id": "record_id",
+    "type": "type",
+    "name": "name",
+    "...": "..."
+  }]
+}
+```
+
+`GET /records/<id>`
+
+```json
+{
+    "id": "record_id",
+    "type": "type",
+    "name": "name",
+    "...": "...",
+    "tags": [ "", "", "" ]
+}
+```
+
+`GET /records/<id>/details`
+
