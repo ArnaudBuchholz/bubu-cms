@@ -26,7 +26,7 @@ qualified with tags (which are exposed separately) and may have a content (initi
 
 ### Rest API
 
-`GET /records?top=&skip=&search=`
+`GET /records?top=&skip=&sort=&search=`
 
 ```json
 {
