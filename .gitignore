@@ -27,5 +27,6 @@ coverage/
 db/*
 !db/sample
 
-# UI5 cache folder
+# UI5
 cache/
+src/ui/webapp/

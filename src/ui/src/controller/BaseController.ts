@@ -1,21 +1,25 @@
-/* global sap */
-sap.ui.define([
-  'sap/ui/core/mvc/Controller'
+import Component from '../Component'
+import Router from 'sap/m/routing/Router'
+import Controller from 'sap/ui/core/mvc/Controller'
 
-], function (Controller) {
-  'use strict'
+/**
+ * @namespace bubu-cms.controller
+ */
+export default class BaseController extends Controller {
 
-  return Controller.extend('bubu-cms.controller.BaseController', {
+  private getComponent(): Component {
+    return this.getOwnerComponent() as Component
+  }
 
-    _getRouter: function () {
-      return this.getOwnerComponent().getRouter()
-    },
+  private getRouter (): Router {
+    return this.getComponent().getRouter() as Router
+  }
 
-    getTextIfInI18n: function (resourceBundle, key, params) {
-      if (resourceBundle.hasText(key)) {
-        return resourceBundle.getText(key, params)
-      }
-    },
+  getTextIfInI18n (resourceBundle, key, params) {
+    if (resourceBundle.hasText(key)) {
+      return resourceBundle.getText(key, params)
+    }
+  },
 
     _getResourceBundle: function (modelName) {
       return this.getOwnerComponent().getModel('db.i18n')._oResourceBundle
@@ -66,9 +70,9 @@ sap.ui.define([
 
     formatStatus2: function (type) {
       return this.i18n(type, 'status2')
-    },
+    }
 
-    renderRating: function (value) {
+    public renderRating (value) {
       return new Array(value + 1).join('\u2605') + new Array(6 - value).join('\u2606')
     },
 
