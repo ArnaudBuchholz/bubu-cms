@@ -8,12 +8,8 @@
     "tsc": "tsc",
     "start": "node .",
     "debug": "node --inspect-brk .",
-    "lint": "standard --fix",
-    "test": "standard --fix & mocha",
-    "mocha": "mocha --verbose",
-    "mocha-dbg": "node --inspect-brk node_modules/mocha/bin/_mocha",
-    "build": "ui5 build --a",
-    "cover": "nyc mocha && nyc report --reporter=lcov"
+    "lint": "ts-standard --fix",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -28,18 +24,44 @@
   "dependencies": {
     "colors": "^1.4.0",
     "mime": "^2.5.2",
-    "reserve": "^1.11.4",
-    "reserve-odata": "^0.8.0"
+    "reserve": "^1.11.4"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.3.0",
     "jest": "^27.0.6",
-    "standard": "^16.0.3",
+    "ts-jest": "^27.0.3",
     "ts-standard": "^10.0.0",
-    "tsc": "^2.0.3"
+    "tsc": "^2.0.3",
+    "typescript": "^4.3.5"
   },
-  "standard": {
+  "ts-standard": {
     "env": [
-      "node"
+      "node",
+      "jest"
+    ],
+    "project": "./tsconfig.json",
+    "ignore": [
+      "/dist/"
     ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "\\.js$"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "./src/**/*.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
   }
 }
