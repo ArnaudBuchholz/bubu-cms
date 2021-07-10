@@ -1,4 +1,11 @@
-import { Fields, StoredRecordRating, StoredRecordId, StoredRecordType, StoredRecord } from './StoredRecord'
+import {
+  StoredRecordType,
+  StoredRecordId,
+  StoredRecordRating,
+  StoredRecordRefs,
+  Fields,
+  StoredRecord
+} from './StoredRecord'
 
 export type SearchOptions = {
   paging: {
@@ -9,8 +16,14 @@ export type SearchOptions = {
     field: string,
     ascending: boolean
   }
-  tags: StoredRecordId[],
+  refs: StoredRecordRefs,
   search?: string
+}
+
+export type SearchResult = {
+  count: number,
+  records: StoredRecord[],
+  refs: Record<StoredRecordType, Record<StoredRecordId, StoredRecord>>
 }
 
 export type UpdateInstructions = {
@@ -29,7 +42,7 @@ export type UpdateInstructions = {
 }
 
 export interface IStorage {
-  search (options: SearchOptions): Promise<StoredRecord[]>
+  search (options: SearchOptions): Promise<SearchResult>
   get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord>
   create (record: StoredRecord): Promise<void>
   update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void>
