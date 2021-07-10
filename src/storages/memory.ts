@@ -1,9 +1,10 @@
 import { StoredRecordId, StoredRecordType, StoredRecord } from '../types/StoredRecord'
-import { IStorage, SearchOptions, UpdateInstructions } from '../types/IStorage'
+import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../types/IStorage'
+import { resourceLimits } from 'worker_threads'
 
 type TypeStore = Record<string, StoredRecord>
 type Store = Record<string, TypeStore>
-type Links = Record<string, StoredRecord[]>
+type Refs = Record<StoredRecordType, Record<StoredRecordId, StoredRecord[]>>
 
 type StoredRecordSorter = (record1: StoredRecord, record2: StoredRecord) => number
 const sorters: Record<string, StoredRecordSorter> = {
@@ -14,36 +15,40 @@ const sorters: Record<string, StoredRecordSorter> = {
 
 export class MemoryStorage implements IStorage {
   private store: Store
-  private links: Links
+  private refs: Refs
 
-  private addLink (tag: string, record: StoredRecord) {
-    if (!this.links[tag]) {
-      this.links[tag] = []
+  private addRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord) {
+    let typedRefs: undefined | Record<StoredRecordId, StoredRecord[]> = this.refs[type]
+    if (typedRefs === undefined) {
+      typedRefs = {}
+      this.refs[type] = typedRefs
     }
-    this.links[tag].push(record)
+    let idRefs: undefined | StoredRecord[] = typedRefs[id]
+    if (idRefs === undefined) {
+      idRefs = []
+      typedRefs[id] = idRefs
+    }
+    idRefs.push(record)
   }
 
-  private delLink (tag: string, record: StoredRecord) {
-    const tagLinks = this.links[tag]
-    if (tagLinks) {
-      const index = tagLinks.indexOf(record)
-      if (index > -1) {
-        tagLinks.splice(index, 1)
-      }
-    }
+  private delRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord) {
+    const typedRefs: Record<StoredRecordId, StoredRecord[]> = this.refs[type]
+    const idRefs: StoredRecord[] = typedRefs[id]
+    const index = idRefs.indexOf(record)
+    idRefs.splice(index, 1)
   }
 
   //region IStorage
 
-  async search (options: SearchOptions): Promise<StoredRecord[]> {
+  async search (options: SearchOptions): Promise<SearchResult> {
     const firstTag: StoredRecordId = options.tags[0]
-    let result: StoredRecord[] = this.links[firstTag]
+    let records: StoredRecord[] = this.links[firstTag]
     options.tags.slice(1).forEach(tag => {
-      result = result.filter(record => record.tags.includes(tag))
+      records = records.filter(record => record.tags.includes(tag))
     })
     if (options.search !== undefined) {
       const lowerCaseSearch = options.search.toLocaleLowerCase()
-      result = result.filter(record => record.name.toLocaleLowerCase().includes(lowerCaseSearch))
+      records = records.filter(record => record.name.toLocaleLowerCase().includes(lowerCaseSearch))
     }
     if (options.sort !== undefined) {
       const field = options.sort.field
@@ -57,9 +62,23 @@ export class MemoryStorage implements IStorage {
       } else {
         sorter = baseSorter
       }
-      result.sort(sorter)
+      records.sort(sorter)
     }
-    return result.slice(options.paging.skip, options.paging.skip + options.paging.top)
+    const result: SearchResult = {
+      count: records.length,
+      records: records.slice(options.paging.skip, options.paging.skip + options.paging.top),
+      tags: {}
+    }
+    result.records.forEach(record => {
+      record.tags.forEach(tagId => {
+        if (!Object.prototype.hasOwnProperty.call(result.tags, tagId)) {
+          result.tags[tagId] = 
+        }
+      })
+    })
+
+
+    return result
   }
 
   async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> {
@@ -123,6 +142,6 @@ export class MemoryStorage implements IStorage {
 
   constructor () {
     this.store = {}
-    this.links = {}
+    this.refs = {}
   }
 }
