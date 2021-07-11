@@ -4,7 +4,7 @@ import { StoredRecord } from '../../src/types/StoredRecord'
 describe('storages/memory', () => {
   let storage: MemoryStorage
 
-  const tags: StoredRecord[] = [... new Array(10).keys()].map(index => {
+  const tags: StoredRecord[] = [...new Array(10).keys()].map(index => {
     return {
       type: 'tag',
       id: `tag${index}`,
@@ -16,9 +16,9 @@ describe('storages/memory', () => {
 
   const records: StoredRecord[] = [{
     type: 'record',
-    id: `record0`,
-    name: `Record 0`,
-    refs: { tag: [ 'tag0', 'tag7' ] },
+    id: 'record0',
+    name: 'Record 0',
+    refs: { tag: ['tag0', 'tag7'] },
     fields: {
       a: 'a',
       b: 'b'
@@ -51,5 +51,4 @@ describe('storages/memory', () => {
   describe('search', () => {
     // it('')
   })
-
 })
