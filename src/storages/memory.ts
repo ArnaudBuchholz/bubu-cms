@@ -1,9 +1,8 @@
-import { StoredRecordId, StoredRecordType, StoredRecord } from '../types/StoredRecord'
+import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../types/IStorage'
-import { resourceLimits } from 'worker_threads'
 
-type TypeStore = Record<string, StoredRecord>
-type Store = Record<string, TypeStore>
+type TypeStore = Record<StoredRecordId, StoredRecord>
+type Store = Record<StoredRecordType, TypeStore>
 type Refs = Record<StoredRecordType, Record<StoredRecordId, StoredRecord[]>>
 
 type StoredRecordSorter = (record1: StoredRecord, record2: StoredRecord) => number
@@ -11,6 +10,13 @@ const sorters: Record<string, StoredRecordSorter> = {
   name: (record1: StoredRecord, record2: StoredRecord) => record1.name.localeCompare(record2.name),
   rating: (record1: StoredRecord, record2: StoredRecord) => (record1.rating ?? 0) - (record2.rating ?? 0),
   touched: (record1: StoredRecord, record2: StoredRecord) => (record1.touched?.getTime() ?? 0) - (record2.touched?.getTime() ?? 0)
+}
+
+function forEachRef (refs: StoredRecordRefs, callback: (type: StoredRecordType, id: StoredRecordId) => boolean) {
+  Object.keys(refs).every((type: StoredRecordType) => {
+    const typedRefs: StoredRecordId[] = refs[type]
+    return typedRefs.every((id: StoredRecordId) => callback(type, id))
+  })
 }
 
 export class MemoryStorage implements IStorage {
@@ -41,15 +47,26 @@ export class MemoryStorage implements IStorage {
   //region IStorage
 
   async search (options: SearchOptions): Promise<SearchResult> {
-    const firstTag: StoredRecordId = options.tags[0]
-    let records: StoredRecord[] = this.links[firstTag]
-    options.tags.slice(1).forEach(tag => {
-      records = records.filter(record => record.tags.includes(tag))
+    let records: StoredRecord[] = []
+    let initial: boolean = true
+    forEachRef(options.refs, (type: StoredRecordType, id: StoredRecordId) => {
+      const refRecords: StoredRecord[] = this.refs[type][id]
+      if (initial) {
+        records = refRecords
+        initial = false
+      } else {
+        records = records.filter(record => refRecords.includes(record))
+      }
+      return records.length !== 0
     })
-    if (options.search !== undefined) {
-      const lowerCaseSearch = options.search.toLocaleLowerCase()
-      records = records.filter(record => record.name.toLocaleLowerCase().includes(lowerCaseSearch))
+    if (initial) {
+      records = Object.keys(this.store).reduce((all: StoredRecord[], type: StoredRecordType) => {
+        const typeStore: TypeStore = this.store[type]
+        const typeRecords: StoredRecord[] = Object.keys(typeStore).map(id => typeStore[id])
+        return [...all, ...typeRecords]
+      }, [])
     }
+
     if (options.sort !== undefined) {
       const field = options.sort.field
       if (sorters[field] === undefined) {
@@ -64,19 +81,22 @@ export class MemoryStorage implements IStorage {
       }
       records.sort(sorter)
     }
+
     const result: SearchResult = {
       count: records.length,
       records: records.slice(options.paging.skip, options.paging.skip + options.paging.top),
-      tags: {}
+      refs: {}
     }
+
     result.records.forEach(record => {
-      record.tags.forEach(tagId => {
-        if (!Object.prototype.hasOwnProperty.call(result.tags, tagId)) {
-          result.tags[tagId] = 
+      forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
+        if (result.refs[type]?.[id] === undefined) {
+          result.refs[type] ??= {}
+          result.refs[type][id] = this.store[type]?.[id]
         }
+        return true
       })
     })
-
 
     return result
   }
@@ -94,7 +114,10 @@ export class MemoryStorage implements IStorage {
       throw new Error('Already existing')
     }
     this.store[record.type][record.id] = record
-    record.tags.forEach(tag => this.addLink(tag, record))
+    forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
+      this.addRef(type, id, record)
+      return true
+    })
   }
 
   async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
@@ -114,13 +137,13 @@ export class MemoryStorage implements IStorage {
     if (instructions.touched !== undefined) {
       record.touched = instructions.touched
     }
-    instructions.tags.add.forEach(tag => {
-      record.tags.push(tag)
-      this.addLink(tag, record)
+    forEachRef(instructions.refs.add, (type: StoredRecordType, id: StoredRecordId) => {
+      this.addRef(type, id, record)
+      return true
     })
-    instructions.tags.del.forEach(tag => {
-      record.tags.splice(record.tags.indexOf(tag), 1)
-      this.delLink(tag, record)
+    forEachRef(instructions.refs.del, (type: StoredRecordType, id: StoredRecordId) => {
+      this.delRef(type, id, record)
+      return true
     })
     Object.keys(instructions.fields.add).forEach(field => {
       record.fields[field] = instructions.fields.add[field]
@@ -135,7 +158,10 @@ export class MemoryStorage implements IStorage {
     if (!record) {
       throw new Error('Not existing')
     }
-    record.tags.forEach(tag => this.delLink(tag, record))
+    forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
+      this.delRef(type, id, record)
+      return true
+    })
   }
 
   //endregion
