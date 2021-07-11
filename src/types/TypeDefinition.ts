@@ -1,7 +1,7 @@
-import { FieldDefinition } from "./FieldDefinition"
+import { FieldDefinition } from './FieldDefinition'
 
-export type TypeDefinition = {
-  name: string,
+export interface TypeDefinition {
+  name: string
   defaultIcon?: string
   fields: FieldDefinition[]
 }
