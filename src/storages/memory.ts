@@ -1,19 +1,19 @@
 import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../types/IStorage'
+import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField } from '../types/IStorage'
 
 type TypeStore = Record<StoredRecordId, StoredRecord>
 type Store = Record<StoredRecordType, TypeStore>
 type Refs = Record<StoredRecordType, Record<StoredRecordId, StoredRecord[]>>
 
 type StoredRecordSorter = (record1: StoredRecord, record2: StoredRecord) => number
-const sorters: Record<string, StoredRecordSorter> = {
+const sorters: Record<SortableField, StoredRecordSorter> = {
   name: (record1: StoredRecord, record2: StoredRecord) => record1.name.localeCompare(record2.name),
   rating: (record1: StoredRecord, record2: StoredRecord) => (record1.rating ?? 0) - (record2.rating ?? 0),
   touched: (record1: StoredRecord, record2: StoredRecord) => (record1.touched?.getTime() ?? 0) - (record2.touched?.getTime() ?? 0)
 }
 
-function forEachRef (refs: StoredRecordRefs, callback: (type: StoredRecordType, id: StoredRecordId) => boolean) {
-  Object.keys(refs).every((type: StoredRecordType) => {
+function forEachRef (refs: StoredRecordRefs, callback: (type: StoredRecordType, id: StoredRecordId) => boolean): boolean {
+  return Object.keys(refs).every((type: StoredRecordType) => {
     const typedRefs: StoredRecordId[] = refs[type]
     return typedRefs.every((id: StoredRecordId) => callback(type, id))
   })
@@ -23,7 +23,7 @@ export class MemoryStorage implements IStorage {
   private store: Store
   private refs: Refs
 
-  private addRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord) {
+  private addRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord): void {
     let typedRefs: undefined | Record<StoredRecordId, StoredRecord[]> = this.refs[type]
     if (typedRefs === undefined) {
       typedRefs = {}
@@ -37,14 +37,14 @@ export class MemoryStorage implements IStorage {
     idRefs.push(record)
   }
 
-  private delRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord) {
+  private delRef (type: StoredRecordType, id: StoredRecordId, record: StoredRecord): void {
     const typedRefs: Record<StoredRecordId, StoredRecord[]> = this.refs[type]
     const idRefs: StoredRecord[] = typedRefs[id]
     const index = idRefs.indexOf(record)
     idRefs.splice(index, 1)
   }
 
-  //region IStorage
+  // region IStorage
 
   async search (options: SearchOptions): Promise<SearchResult> {
     let records: StoredRecord[] = []
@@ -67,12 +67,13 @@ export class MemoryStorage implements IStorage {
       }, [])
     }
 
+    if (options.search !== undefined) {
+      const lowerCaseSearch = options.search.toLowerCase()
+      records = records.filter(record => record.name.toLowerCase().includes(lowerCaseSearch))
+    }
+
     if (options.sort !== undefined) {
-      const field = options.sort.field
-      if (sorters[field] === undefined) {
-        throw new Error('Unknown sort field')
-      }
-      const baseSorter: StoredRecordSorter = sorters[field]
+      const baseSorter: StoredRecordSorter = sorters[options.sort.field]
       let sorter: StoredRecordSorter
       if (!options.sort.ascending) {
         sorter = (record1, record2) => -baseSorter(record1, record2)
@@ -106,25 +107,19 @@ export class MemoryStorage implements IStorage {
   }
 
   async create (record: StoredRecord): Promise<void> {
-    const{ type, id } = record
+    const { type, id } = record
     if (this.store[type] === undefined) {
       this.store[type] = {}
     }
-    if (this.store[type][id]) {
-      throw new Error('Already existing')
-    }
-    this.store[record.type][record.id] = record
-    forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
-      this.addRef(type, id, record)
+    this.store[type][id] = record
+    forEachRef(record.refs, (refType: StoredRecordType, refId: StoredRecordId) => {
+      this.addRef(refType, refId, record)
       return true
     })
   }
 
   async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
-    const record = this.store[type]?.[id]
-    if (!record) {
-      throw new Error('Not existing')
-    }
+    const record: StoredRecord = this.store[type][id]
     if (instructions.name !== undefined) {
       record.name = instructions.name
     }
@@ -149,22 +144,19 @@ export class MemoryStorage implements IStorage {
       record.fields[field] = instructions.fields.add[field]
     })
     Object.keys(instructions.fields.del).forEach(field => {
-      delete record.fields[field]
+      delete record.fields[field] // eslint-disable-line @typescript-eslint/no-dynamic-delete
     })
   }
 
   async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {
-    const record = this.store[type]?.[id]
-    if (!record) {
-      throw new Error('Not existing')
-    }
+    const record: StoredRecord = this.store[type][id]
     forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
       this.delRef(type, id, record)
       return true
     })
   }
 
-  //endregion
+  // endregion
 
   constructor () {
     this.store = {}
