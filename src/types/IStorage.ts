@@ -7,13 +7,15 @@ import {
   StoredRecord
 } from './StoredRecord'
 
+export type SortableField = 'name' | 'rating' | 'touched'
+
 export interface SearchOptions {
   paging: {
     skip: number
     top: number
   }
   sort?: {
-    field: string
+    field: SortableField
     ascending: boolean
   }
   refs: StoredRecordRefs
