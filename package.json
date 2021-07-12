@@ -10,7 +10,7 @@
     "debug": "node --inspect-brk ./dist/index.js",
     "lint": "ts-standard --fix",
     "test": "jest",
-
+    "test:debug": "jest --runInBand",
     "build": "npm-run-all build:ui5.ts build:ui5",
     "build:ui5.ts": "babel src --in-dir src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files",
     "build:ui5": "ui5 build --clean-dest",
@@ -65,7 +65,9 @@
     ],
     "project": "./tsconfig.json",
     "ignore": [
-      "/dist/"
+      "/dist/",
+      "/src/ui/",
+      "/test/"
     ]
   },
   "jest": {
