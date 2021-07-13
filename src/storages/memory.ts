@@ -154,6 +154,7 @@ export class MemoryStorage implements IStorage {
       this.delRef(type, id, record)
       return true
     })
+    delete this.store[type][id] // eslint-disable-line @typescript-eslint/no-dynamic-delete
   }
 
   // endregion
