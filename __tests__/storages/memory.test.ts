@@ -206,14 +206,61 @@ describe('storages/memory', () => {
     })
 
     describe('updating', () => {
+      it('updates name', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          name: 'New name',
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.name).toEqual('New name')
+      })
+
+      it('updates icon', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          icon: 'anything',
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.icon).toEqual('anything')
+      })
+
       it('updates rating', async () => {
         await storage.update('lifecycle', 'lifecycle0', {
           rating: 4,
-          fields: { add: {}, del: {} },
+          fields: {},
           refs: { add: {}, del: {} }
         })
         const record: undefined | StoredRecord = await getLifecycle0()
         expect(record?.rating).toEqual(4)
+      })
+
+      it('updates touched', async () => {
+        const touched = new Date()
+        await storage.update('lifecycle', 'lifecycle0', {
+          touched,
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.touched).toEqual(touched)
+      })
+
+      it('updates fields', async () => {
+        const touched = new Date()
+        await storage.update('lifecycle', 'lifecycle0', {
+          fields: {
+            a: 'A',
+            b: undefined,
+            c: 'c'
+          },
+          refs: { add: {}, del: {} }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.fields.a).toEqual('A')
+        expect(record?.fields.c).toEqual('c')
+        expect(Object.keys(record?.fields || {}).length).toEqual(2)
       })
     })
 
