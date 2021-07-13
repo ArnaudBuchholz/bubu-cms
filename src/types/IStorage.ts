@@ -33,13 +33,10 @@ export interface UpdateInstructions {
   icon?: string
   rating?: StoredRecordRating
   touched?: Date
+  fields: Fields
   refs: {
     add: StoredRecordRefs
     del: StoredRecordRefs
-  }
-  fields: {
-    add: Fields
-    del: Fields
   }
 }
 
