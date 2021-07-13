@@ -1,4 +1,4 @@
-import { SearchResult } from '../../src/types/IStorage'
+import { SearchResult, SortableField } from '../../src/types/IStorage'
 import { MemoryStorage } from '../../src/storages/memory'
 import { StoredRecord } from '../../src/types/StoredRecord'
 
@@ -21,7 +21,7 @@ describe('storages/memory', () => {
     type: 'record',
     id: 'record0',
     name: 'Record 0',
-    rating: 3,
+    rating: 5,
     touched: new Date('2021-06-12T12:14:23.000Z'),
     refs: { tag: ['tag0', 'tag7'] },
     fields: {
@@ -34,7 +34,7 @@ describe('storages/memory', () => {
     type: 'record',
     id: 'record1',
     name: 'Record 1',
-    rating: 5,
+    rating: 3,
     touched: new Date('2021-04-12T14:12:12.000Z'),
     refs: { tag: ['tag0', 'tag1', 'tag2'] },
     fields: {
@@ -113,6 +113,21 @@ describe('storages/memory', () => {
       })
     })
 
+    it('searches through multiple refs', async () => {
+      const all: SearchResult = await storage.search({
+        paging: { skip: 0, top: 100 },
+        refs: {
+          tag: ['tag0', 'tag7']
+        }
+      })
+      expect(all.count).toEqual(1)
+      expect(all.records[0]).toEqual(record0)
+      expect(all.refs.tag).toEqual({
+        tag0: tags[0],
+        tag7: tags[7]
+      })
+    })
+
     it('searches using text', async () => {
       const all: SearchResult = await storage.search({
         paging: { skip: 0, top: 100 },
@@ -127,19 +142,87 @@ describe('storages/memory', () => {
       })
     })
 
-    /*
     describe('sorting', () => {
-      it('sort by name (ascending)', async () => {
-        const all: SearchResult = await storage.search({
-          paging: { skip: 0, top: 100 },
-          refs: { tag: [ 'tag0' ]},
-          sort: {
-
-          }
-
+      const tests = [{
+        field: 'name',
+        ascending: true,
+        expected: [record2, record0, record1]
+      }, {
+        field: 'name',
+        ascending: false,
+        expected: [record1, record0, record2]
+      }, {
+        field: 'rating',
+        ascending: true,
+        expected: [record2, record1, record0]
+      }, {
+        field: 'rating',
+        ascending: false,
+        expected: [record0, record1, record2]
+      }, {
+        field: 'touched',
+        ascending: true,
+        expected: [record1, record2, record0]
+      }, {
+        field: 'touched',
+        ascending: false,
+        expected: [record0, record2, record1]
+      }]
+      tests.forEach(({ field, ascending, expected }) => {
+        it(`sort by ${field} (${ascending ? 'ascending' : 'descending'})`, async () => {
+          const all: SearchResult = await storage.search({
+            paging: { skip: 0, top: 100 },
+            refs: { tag: ['tag0'] },
+            sort: {
+              field: field as SortableField,
+              ascending
+            }
+          })
+          expect(all.records).toEqual(expected)
         })
       })
     })
-*/
+  })
+
+  describe('record lifecycle', () => {
+    const lifecycle0: StoredRecord = {
+      type: 'lifecycle',
+      id: 'lifecycle0',
+      name: 'A new record',
+      refs: { tag: ['tag0', 'tag9', 'tag8'] },
+      fields: {
+        a: 'a',
+        b: 'b'
+      }
+    }
+
+    const getLifecycle0 = async (): Promise<undefined | StoredRecord> => await storage.get('lifecycle', 'lifecycle0')
+
+    beforeAll(async () => await storage.create(lifecycle0))
+
+    it('created the lifecycle record', async () => {
+      const record: undefined | StoredRecord = await getLifecycle0()
+      expect(record).toEqual(lifecycle0)
+    })
+
+    describe('updating', () => {
+      it('updates rating', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          rating: 4,
+          fields: { add: {}, del: {} },
+          refs: { add: {}, del: {} }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.rating).toEqual(4)
+      })
+    })
+
+    describe('deleting', () => {
+      it('removes the record', async () => {
+        await storage.delete('lifecycle', 'lifecycle0')
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record).toEqual(undefined)
+      })
+    })
   })
 })
