@@ -1,4 +1,5 @@
-export type Fields = Record<string, undefined | string | number | Date>
+export type FieldValue = undefined | string | number | Date
+export type Fields = Record<string, FieldValue>
 export type StoredRecordType = string
 export type StoredRecordId = string
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
@@ -11,6 +12,6 @@ export interface StoredRecord {
   icon?: string
   rating?: StoredRecordRating
   touched?: Date
-  refs: StoredRecordRefs
   fields: Fields
+  refs: StoredRecordRefs
 }
