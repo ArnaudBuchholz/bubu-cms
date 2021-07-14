@@ -5,11 +5,22 @@ type TypeStore = Record<StoredRecordId, StoredRecord>
 type Store = Record<StoredRecordType, TypeStore>
 type Refs = Record<StoredRecordType, Record<StoredRecordId, StoredRecord[]>>
 
+function rating (record: StoredRecord): number {
+  return record.rating ?? 0
+}
+
+function touched (record: StoredRecord): number {
+  if (record.touched !== undefined) {
+    return record.touched.getTime()
+  }
+  return 0
+}
+
 type StoredRecordSorter = (record1: StoredRecord, record2: StoredRecord) => number
 const sorters: Record<SortableField, StoredRecordSorter> = {
   name: (record1: StoredRecord, record2: StoredRecord) => record1.name.localeCompare(record2.name),
-  rating: (record1: StoredRecord, record2: StoredRecord) => (record1.rating ?? 0) - (record2.rating ?? 0),
-  touched: (record1: StoredRecord, record2: StoredRecord) => (record1.touched?.getTime() ?? 0) - (record2.touched?.getTime() ?? 0)
+  rating: (record1: StoredRecord, record2: StoredRecord) => rating(record1) - rating(record2),
+  touched: (record1: StoredRecord, record2: StoredRecord) => touched(record1) - touched(record2)
 }
 
 function forEachRef (refs: StoredRecordRefs, callback: (type: StoredRecordType, id: StoredRecordId) => boolean): boolean {
@@ -93,7 +104,7 @@ export class MemoryStorage implements IStorage {
       forEachRef(record.refs, (type: StoredRecordType, id: StoredRecordId) => {
         if (result.refs[type]?.[id] === undefined) {
           result.refs[type] ??= {}
-          result.refs[type][id] = this.store[type]?.[id]
+          result.refs[type][id] = this.store[type][id]
         }
         return true
       })
@@ -134,10 +145,13 @@ export class MemoryStorage implements IStorage {
     }
     forEachRef(instructions.refs.add, (type: StoredRecordType, id: StoredRecordId) => {
       this.addRef(type, id, record)
+      record.refs[type].push(id)
       return true
     })
     forEachRef(instructions.refs.del, (type: StoredRecordType, id: StoredRecordId) => {
       this.delRef(type, id, record)
+      const typedRefs = record.refs[type]
+      typedRefs.splice(typedRefs.indexOf(id), 1)
       return true
     })
     Object.keys(instructions.fields).forEach(field => {
