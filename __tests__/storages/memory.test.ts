@@ -35,7 +35,6 @@ describe('storages/memory', () => {
     id: 'record1',
     name: 'Record 1',
     rating: 3,
-    touched: new Date('2021-04-12T14:12:12.000Z'),
     refs: { tag: ['tag0', 'tag1', 'tag2'] },
     fields: {
       a: 'A',
@@ -47,7 +46,6 @@ describe('storages/memory', () => {
     type: 'record',
     id: 'record2',
     name: 'A record 2',
-    rating: 1,
     touched: new Date('2021-05-26T08:21:00.000Z'),
     refs: { tag: ['tag0', 'tag9', 'tag8'] },
     fields: {
@@ -81,8 +79,13 @@ describe('storages/memory', () => {
       expect(retreived).toEqual(tags[7])
     })
 
-    it('returns undefined if not found', async () => {
+    it('returns undefined if not found (invalid id)', async () => {
       const retreived: undefined | StoredRecord = await storage.get('tag', 'tag12')
+      expect(retreived).toEqual(undefined)
+    })
+
+    it('returns undefined if not found (invalid type)', async () => {
+      const retreived: undefined | StoredRecord = await storage.get('unknwon', '123')
       expect(retreived).toEqual(undefined)
     })
   })
@@ -248,7 +251,6 @@ describe('storages/memory', () => {
       })
 
       it('updates fields', async () => {
-        const touched = new Date()
         await storage.update('lifecycle', 'lifecycle0', {
           fields: {
             a: 'A',
@@ -258,9 +260,30 @@ describe('storages/memory', () => {
           refs: { add: {}, del: {} }
         })
         const record: undefined | StoredRecord = await getLifecycle0()
-        expect(record?.fields.a).toEqual('A')
-        expect(record?.fields.c).toEqual('c')
-        expect(Object.keys(record?.fields || {}).length).toEqual(2)
+        expect(record).not.toEqual(undefined)
+        if (record !== undefined) {
+          expect(record.fields.a).toEqual('A')
+          expect(record.fields.c).toEqual('c')
+          expect(Object.keys(record.fields).length).toEqual(2)
+        }
+      })
+
+      it('updates references', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          fields: {},
+          refs: {
+            add: {
+              tag: ['tag1']
+            },
+            del: {
+              tag: ['tag0']
+            }
+          }
+        })
+        const record: undefined | StoredRecord = await getLifecycle0()
+        expect(record?.refs).toEqual({
+          tag: ['tag9', 'tag8', 'tag1']
+        })
       })
     })
 
