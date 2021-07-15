@@ -26,7 +26,8 @@ qualified with tags (which are exposed separately) and may have a content (initi
 
 ### Rest API
 
-`GET /records?top=&skip=&sort=&search=`
+`GET /records?top=&skip=&sort=<field>[ asc|desc]?&search=<text>`
+`GET /records/type?top=&skip=&sort=<field>[ asc|desc]?&search=<text>`
 
 ```json
 {
@@ -35,22 +36,24 @@ qualified with tags (which are exposed separately) and may have a content (initi
     "id": "record_id",
     "type": "type",
     "name": "name",
-    "...": "..."
+    "fields": { "...": "..." },
+    "refs": { "tags": [ "..." ], "type": [ "type" ] }
   }]
 }
 ```
 
-`GET /records/<id>`
+`GET /records/<type>/<id>`
 
 ```json
 {
     "id": "record_id",
     "type": "type",
     "name": "name",
-    "...": "...",
-    "tags": [ "", "", "" ]
+    "fields": { "...": "..." },
+    "refs": { "tags": [ "..." ], "type": [ "type" ] }
 }
 ```
 
-`GET /records/<id>/details`
+`GET /records/<type>/<id>/content`
 
+Depends on the record
