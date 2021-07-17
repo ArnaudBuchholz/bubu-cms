@@ -5,6 +5,9 @@ export type StoredRecordId = string
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
 export type StoredRecordRefs = Record<StoredRecordType, StoredRecordId[]>
 
+export const $type: StoredRecordType = '$type'
+export const $tag: StoredRecordType = '$tag'
+
 export interface StoredRecord {
   type: StoredRecordType
   id: StoredRecordId
