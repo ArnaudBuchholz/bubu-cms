@@ -79,7 +79,8 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "./src/types/*.ts",
-      "./src/storages/*.ts"
+      "./src/storages/*.ts",
+      "./src/api/*.ts"
     ],
     "coverageThreshold": {
       "global": {
