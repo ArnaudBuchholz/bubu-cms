@@ -37,7 +37,7 @@ qualified with tags (which are exposed separately) and may have a content (initi
     "type": "type",
     "name": "name",
     "fields": { "...": "..." },
-    "refs": { "tags": [ "..." ], "type": [ "type" ] }
+    "refs": { "$tag": [ "..." ], "$type": [ "type" ] }
   }]
 }
 ```
@@ -47,10 +47,10 @@ qualified with tags (which are exposed separately) and may have a content (initi
 ```json
 {
     "id": "record_id",
-    "type": "type",
+    "type": "<type>",
     "name": "name",
     "fields": { "...": "..." },
-    "refs": { "tags": [ "..." ], "type": [ "type" ] }
+    "refs": { "$tag": [ "..." ], "$type": [ "<type>" ] }
 }
 ```
 
