@@ -1,11 +1,4 @@
-import {
-  StoredRecordType,
-  StoredRecordId,
-  StoredRecordRating,
-  StoredRecordRefs,
-  Fields,
-  StoredRecord
-} from './StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, Fields, StoredRecord } from './StoredRecord'
 
 export type SortableField = 'name' | 'rating' | 'touched'
 
