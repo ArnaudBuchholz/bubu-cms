@@ -74,13 +74,14 @@ export async function search (storage: IStorage, url: string): Promise<SearchRes
   if (search !== '') {
     options.search = search
   }
-  const parsedPathname = pathname.match(/\/records(?:\/(\$type|\$tag|\w+))?/)
+  if (pathname === '/records') {
+    return await storage.search(options)
+  }
+  const parsedPathname = pathname.match(/\/records\/(\$type|\$tag|[a-zA-Z]+)$/)
   if (parsedPathname === null) {
     throw new Error('Invalid request')
   }
   const type: undefined | string = parsedPathname[1]
-  if (type !== undefined) {
-    options.refs.$type = [type]
-  }
+  options.refs.$type = [type]
   return await storage.search(options)
 }
