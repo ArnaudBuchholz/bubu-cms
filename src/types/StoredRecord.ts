@@ -55,19 +55,17 @@ export function IsStoredRecordRating (value: any): value is StoredRecordRating {
 
 export type StoredRecordRefs = Record<StoredRecordType, StoredRecordId[]>
 export function isStoredRecordRefs (value: any): value is StoredRecordRefs {
-  if (typeof value !== 'object') {
-    return false
-  }
-  return Object.keys(value).every((type: string) => {
-    if (!isStoredRecordType(type)) {
-      return false
-    }
-    const ids: any = value[type]
-    if (!Array.isArray(ids)) {
-      return false
-    }
-    return ids.every((id: any) => IsStoredRecordId)
-  })
+  return isLiteralObject(value) &&
+    Object.keys(value).every((type: string) => {
+      if (!isStoredRecordType(type)) {
+        return false
+      }
+      const ids: any = value[type]
+      if (!Array.isArray(ids)) {
+        return false
+      }
+      return ids.every((id: any) => IsStoredRecordId)
+    })
 }
 
 export interface StoredRecord {
@@ -81,19 +79,20 @@ export interface StoredRecord {
   refs: StoredRecordRefs
 }
 
-export function isStoredRecord (jsonObject: any): jsonObject is StoredRecord {
-  if (typeof jsonObject !== 'object') {
+export function isStoredRecord (value: any): value is StoredRecord {
+  if (!isLiteralObject(value)) {
     return false
   }
-  const { type, id, name, fields, refs } = jsonObject
-  if (type === undefined || id === undefined || name === undefined || fields === undefined || refs === undefined) {
+  const { type, id, name, rating, fields, refs } = value
+  if (!isStoredRecordType(type) || !IsStoredRecordId(id) || !isFields(fields) || !isStoredRecordRefs(refs)) {
     return false
   }
-  if (!isStoredRecordType(type) || !IsStoredRecordId(id)) {
+  if (rating !== undefined && !IsStoredRecordRating(rating)) {
     return false
   }
   if (name.length === 0) {
     return false
   }
+  // name, icon, touched
   return true
 }
