@@ -9,7 +9,9 @@ import {
   $tag,
   isStoredRecordType,
   MAX_STOREDRECORDID_LENGTH,
-  IsStoredRecordId
+  IsStoredRecordId,
+  IsStoredRecordRating,
+  isStoredRecordRefs
 } from '../../src/types/StoredRecord'
 
 describe('types/StoredRecord', () => {
@@ -55,5 +57,17 @@ describe('types/StoredRecord', () => {
     $tag, $type, 'a', 'anyField', ''.padStart(MAX_STOREDRECORDID_LENGTH, 'abc')
   ], [
     '', ' a', 'a ', 'AVeryLongFieldName', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
+  ])
+
+  testTypeGuardFunc('IsStoredRecordRating', IsStoredRecordRating, [
+    1, 2, 3, 4, 5
+  ], [
+    undefined, null, '', true, false, 0, 6, -1, -2
+  ])
+
+  testTypeGuardFunc('isStoredRecordRefs', isStoredRecordRefs, [
+    {}, { $type: [ '$tag' ] }, { any: [ '123', 'abc_$%?&' ] }, { $type: [ '$tag' ], any: [ '123', 'abc_$%?&' ] }
+  ], [
+    undefined, null, '', true, false, 0, new Date(), { ' a ': [] }, { $type: 0 }
   ])
 })
