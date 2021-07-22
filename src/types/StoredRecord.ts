@@ -1,3 +1,6 @@
+import { types } from 'util'
+const { isDate } = types
+
 export type FieldValue = undefined | string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
 export function isFieldValue (value: any): value is FieldValue {
@@ -44,8 +47,11 @@ export function isStoredRecordType (value: any): value is StoredRecordType {
 
 export type StoredRecordId = string
 export const MAX_STOREDRECORDID_LENGTH: number = 16
+function isValidNonEmptyString (value: any, maxLength: number): value is string {
+  return typeof value === 'string' && value.length > 0 && value.length <= maxLength
+}
 export function IsStoredRecordId (value: any): value is StoredRecordId {
-  return typeof value === 'string' && value.trim() === value && value.length > 0 && value.length <= MAX_STOREDRECORDID_LENGTH
+  return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) && value.trim() === value
 }
 
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
@@ -79,20 +85,20 @@ export interface StoredRecord {
   refs: StoredRecordRefs
 }
 
+export const MAX_STOREDRECORDNAME_LENGTH: number = 256
+export const MAX_STOREDRECORDICON_LENGTH: number = 256
+
 export function isStoredRecord (value: any): value is StoredRecord {
   if (!isLiteralObject(value)) {
     return false
   }
-  const { type, id, name, rating, fields, refs } = value
-  if (!isStoredRecordType(type) || !IsStoredRecordId(id) || !isFields(fields) || !isStoredRecordRefs(refs)) {
-    return false
-  }
-  if (rating !== undefined && !IsStoredRecordRating(rating)) {
-    return false
-  }
-  if (name.length === 0) {
-    return false
-  }
-  // name, icon, touched
-  return true
+  const { type, id, name, icon, rating, touched, fields, refs } = value
+  return isStoredRecordType(type) &&
+    IsStoredRecordId(id) &&
+    isValidNonEmptyString(name, MAX_STOREDRECORDNAME_LENGTH) &&
+    (icon === undefined || isValidNonEmptyString(icon, MAX_STOREDRECORDICON_LENGTH)) &&
+    (rating === undefined || IsStoredRecordRating(rating)) &&
+    (touched === undefined || isDate(touched)) &&
+    isFields(fields) &&
+    isStoredRecordRefs(refs)
 }
