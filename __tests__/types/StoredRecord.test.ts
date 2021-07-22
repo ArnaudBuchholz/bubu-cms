@@ -11,7 +11,10 @@ import {
   MAX_STOREDRECORDID_LENGTH,
   IsStoredRecordId,
   IsStoredRecordRating,
-  isStoredRecordRefs
+  isStoredRecordRefs,
+  MAX_STOREDRECORDNAME_LENGTH,
+  MAX_STOREDRECORDICON_LENGTH,
+  isStoredRecord
 } from '../../src/types/StoredRecord'
 
 describe('types/StoredRecord', () => {
@@ -66,8 +69,106 @@ describe('types/StoredRecord', () => {
   ])
 
   testTypeGuardFunc('isStoredRecordRefs', isStoredRecordRefs, [
-    {}, { $type: [ '$tag' ] }, { any: [ '123', 'abc_$%?&' ] }, { $type: [ '$tag' ], any: [ '123', 'abc_$%?&' ] }
+    {}, { $type: ['$tag'] }, { any: ['123', 'abc_$%?&'] }, { $type: ['$tag'], any: ['123', 'abc_$%?&'] }
   ], [
     undefined, null, '', true, false, 0, new Date(), { ' a ': [] }, { $type: 0 }
   ])
+
+  testTypeGuardFunc('isStoredRecord', isStoredRecord, [{
+    type: $type,
+    id: '123',
+    name: 'Hello World',
+    fields: {},
+    refs: {}
+  }, {
+    type: $type,
+    id: '123',
+    name: ''.padEnd(MAX_STOREDRECORDNAME_LENGTH, 'Hello World'),
+    fields: {},
+    refs: {}
+  }, {
+    type: $type,
+    id: '123',
+    name: 'Hello World',
+    icon: 'test.jpg',
+    fields: {},
+    refs: {}
+  }, {
+    type: $type,
+    id: '123',
+    name: 'Hello World',
+    icon: ''.padEnd(MAX_STOREDRECORDICON_LENGTH, 'test.jpg'),
+    fields: {},
+    refs: {}
+  }, {
+    type: $type,
+    id: '123',
+    name: 'Hello World',
+    rating: 2,
+    fields: {},
+    refs: {}
+  }, {
+    type: $type,
+    id: '123',
+    name: 'Hello World',
+    touched: new Date(),
+    fields: {},
+    refs: {}
+  }], [undefined, null, '', true, false, 0, {
+  }, {
+    type: '$nope',
+    id: '123',
+    name: 'Hello World',
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '',
+    name: 'Hello World',
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: '',
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: ''.padEnd(MAX_STOREDRECORDNAME_LENGTH + 1, 'Hello World'),
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: 'Hello world',
+    icon: 123,
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: 'Hello world',
+    icon: ''.padEnd(MAX_STOREDRECORDICON_LENGTH + 1, 'test.jpg'),
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: 'Hello world',
+    touched: 123,
+    fields: {},
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: 'Hello world',
+    refs: {}
+  }, {
+    type: 'any',
+    id: '123',
+    name: 'Hello world',
+    fields: {}
+  }])
 })
