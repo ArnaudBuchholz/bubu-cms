@@ -35,8 +35,7 @@ describe('api/create', () => {
   const storage: Storage = new Storage()
 
   it('ensures the received body is a valid StoredRecord', async () => {
-    expect(async () => await create(storage, {
-    })).rejects.toThrow(Error)
+    expect(async () => await create(storage, {})).rejects.toThrow(Error)
     expect(storage.created).toEqual(undefined)
   })
 
