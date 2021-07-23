@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { StoredRecordType, StoredRecordId, StoredRecord, isStoredRecord } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
 import { create } from '../../src/api/create'
 
@@ -20,5 +20,8 @@ describe('api/create', () => {
 
   const storage: Storage = new Storage()
 
-  
+  it('ensures the received body is a valid StoredRecord', async () => {
+    expect(() => create(storage, {
+    })).rejects.toThrow(Error)
+  })
 })
