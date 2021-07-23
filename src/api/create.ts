@@ -5,5 +5,9 @@ export async function create (storage: IStorage, jsonBody: object): Promise<void
   if (!isStoredRecord(jsonBody)) {
     throw new Error('Not a record')
   }
+  const { type, id } = jsonBody
+  if (await storage.get(type, id) !== undefined) {
+    throw new Error('Already exists')
+  }
   await storage.create(jsonBody)
 }
