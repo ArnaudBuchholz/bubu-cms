@@ -1,4 +1,4 @@
-import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs, FieldValue } from '../types/StoredRecord'
+import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField, UpdateFieldValue } from '../types/IStorage'
 
 type TypeStore = Record<StoredRecordId, StoredRecord>
