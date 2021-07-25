@@ -17,12 +17,24 @@ export async function update (storage: IStorage, jsonBody: object): Promise<void
       del: {}
     }
   }
-  let updates: number = 0
+  let updated: boolean = false
   if (jsonBody.name !== record.name) {
     instructions.name = jsonBody.name
-    ++updates
+    updated = true
   }
-  if (updates > 0) {
+  if (jsonBody.icon !== undefined && jsonBody.icon !== record.icon) {
+    instructions.icon = jsonBody.icon
+    updated = true
+  }
+  if (jsonBody.rating !== undefined && jsonBody.rating !== record.rating) {
+    instructions.rating = jsonBody.rating
+    updated = true
+  }
+  if (jsonBody.touched !== undefined && (record.touched === undefined || jsonBody.touched.getTime() !== record.touched.getTime())) {
+    instructions.touched = jsonBody.touched
+    updated = true
+  }
+  if (updated) {
     await storage.update(type, id, instructions)
   }
 }
