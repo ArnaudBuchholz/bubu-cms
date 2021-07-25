@@ -1,13 +1,10 @@
 import { types } from 'util'
 const { isDate } = types
 
-export type FieldValue = undefined | string | number | Date
+export type FieldValue = string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
 export function isFieldValue (value: any): value is FieldValue {
   const typeofValue: string = typeof value
-  if (typeofValue === 'undefined') {
-    return true
-  }
   if (typeofValue === 'string') {
     return value.length <= MAX_FIELDVALUE_LENGTH
   }
