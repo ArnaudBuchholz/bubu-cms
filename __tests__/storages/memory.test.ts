@@ -254,7 +254,7 @@ describe('storages/memory', () => {
         await storage.update('lifecycle', 'lifecycle0', {
           fields: {
             a: 'A',
-            b: undefined,
+            b: null,
             c: 'c'
           },
           refs: { add: {}, del: {} }
