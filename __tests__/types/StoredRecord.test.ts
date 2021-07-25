@@ -26,9 +26,9 @@ describe('types/StoredRecord', () => {
   }
 
   testTypeGuardFunc('isFieldValue', isFieldValue, [
-    undefined, '', 'Hello World !', ''.padStart(MAX_FIELDVALUE_LENGTH, 'abc'), 0, 1, 2, -1, -2, new Date()
+    '', 'Hello World !', ''.padStart(MAX_FIELDVALUE_LENGTH, 'abc'), 0, 1, 2, -1, -2, new Date()
   ], [
-    null, false, true, ''.padStart(MAX_FIELDVALUE_LENGTH + 1, 'abc'), 0.5, {}, Symbol('whatever'), function () {}
+    undefined, null, false, true, ''.padStart(MAX_FIELDVALUE_LENGTH + 1, 'abc'), 0.5, {}, Symbol('whatever'), function () {}
   ])
 
   testTypeGuardFunc('isFieldName', isFieldName, [
@@ -40,14 +40,15 @@ describe('types/StoredRecord', () => {
   testTypeGuardFunc('isFields', isFields, [
     {},
     { a: 'a' },
-    { a: 'a', b: 1, c: new Date(), d: undefined }
+    { a: 'a', b: 1, c: new Date() }
   ], [
     null,
     undefined,
     new Date(),
     { '': false },
     { a: 3.5 },
-    { b: null }
+    { b: null },
+    { d: undefined }
   ])
 
   testTypeGuardFunc('isStoredRecordType', isStoredRecordType, [
