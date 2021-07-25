@@ -1,4 +1,4 @@
-import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, Fields, StoredRecord } from './StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, Fields, StoredRecord, FieldValue, FieldName } from './StoredRecord'
 
 export type SortableField = 'name' | 'rating' | 'touched'
 
@@ -21,12 +21,14 @@ export interface SearchResult {
   refs: Record<StoredRecordType, Record<StoredRecordId, StoredRecord>>
 }
 
+export type UpdateFieldValue = null | FieldValue
+export type UpdateFields = Record<FieldName, UpdateFieldValue>
 export interface UpdateInstructions {
   name?: string
   icon?: string
   rating?: StoredRecordRating
   touched?: Date
-  fields: Fields
+  fields: UpdateFields
   refs: {
     add: StoredRecordRefs
     del: StoredRecordRefs
