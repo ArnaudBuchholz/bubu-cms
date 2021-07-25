@@ -1,5 +1,5 @@
 import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs, FieldValue } from '../types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField } from '../types/IStorage'
+import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField, UpdateFieldValue } from '../types/IStorage'
 
 type TypeStore = Record<StoredRecordId, StoredRecord>
 type Store = Record<StoredRecordType, TypeStore>
@@ -155,8 +155,8 @@ export class MemoryStorage implements IStorage {
       return true
     })
     Object.keys(instructions.fields).forEach(field => {
-      const value: FieldValue = instructions.fields[field]
-      if (value === undefined) {
+      const value: UpdateFieldValue = instructions.fields[field]
+      if (value === null) {
         delete record.fields[field] // eslint-disable-line @typescript-eslint/no-dynamic-delete
       } else {
         record.fields[field] = value
