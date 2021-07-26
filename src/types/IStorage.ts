@@ -25,9 +25,9 @@ export type UpdateFieldValue = null | FieldValue
 export type UpdateFields = Record<FieldName, UpdateFieldValue>
 export interface UpdateInstructions {
   name?: string
-  icon?: string
-  rating?: StoredRecordRating
-  touched?: Date
+  icon?: null | string
+  rating?: null | StoredRecordRating
+  touched?: null | Date
   fields: UpdateFields
   refs: {
     add: StoredRecordRefs
