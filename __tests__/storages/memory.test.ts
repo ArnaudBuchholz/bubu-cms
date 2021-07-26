@@ -229,6 +229,16 @@ describe('storages/memory', () => {
         expect(record?.icon).toEqual('anything')
       })
 
+      it('removes icon', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          icon: null,
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: null | StoredRecord = await getLifecycle0()
+        expect(record?.icon).toEqual(undefined)
+      })
+
       it('updates rating', async () => {
         await storage.update('lifecycle', 'lifecycle0', {
           rating: 4,
@@ -237,6 +247,16 @@ describe('storages/memory', () => {
         })
         const record: null | StoredRecord = await getLifecycle0()
         expect(record?.rating).toEqual(4)
+      })
+
+      it('removes rating', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          rating: null,
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: null | StoredRecord = await getLifecycle0()
+        expect(record?.rating).toEqual(undefined)
       })
 
       it('updates touched', async () => {
@@ -248,6 +268,16 @@ describe('storages/memory', () => {
         })
         const record: null | StoredRecord = await getLifecycle0()
         expect(record?.touched).toEqual(touched)
+      })
+
+      it('removes touched', async () => {
+        await storage.update('lifecycle', 'lifecycle0', {
+          touched: null,
+          fields: {},
+          refs: { add: {}, del: {} }
+        })
+        const record: null | StoredRecord = await getLifecycle0()
+        expect(record?.touched).toEqual(undefined)
       })
 
       it('updates fields', async () => {
