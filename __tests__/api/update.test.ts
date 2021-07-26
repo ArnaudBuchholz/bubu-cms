@@ -7,10 +7,23 @@ import { update } from '../../src/api/update'
 describe('api/create', () => {
   const now = new Date()
 
-  const baseRecord: StoredRecord = {
+  const record1: StoredRecord = {
     type: 'modifiable',
     id: '1',
     name: 'initial',
+    fields: {
+      a: 'a',
+      b: 'b'
+    },
+    refs: {}
+  }
+
+  const record2: StoredRecord = {
+    type: 'modifiable',
+    id: '2',
+    name: 'initial',
+    icon: 'initial.jpg',
+    rating: 3,
     touched: now,
     fields: {
       a: 'a',
@@ -26,8 +39,13 @@ describe('api/create', () => {
     }
 
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
-      if (type === 'modifiable' && id === '1') {
-        return baseRecord
+      if (type === 'modifiable') {
+        if (id === '1') {
+          return record1
+        }
+        if (id === '2') {
+          return record2
+        }
       }
       return null
     }
@@ -46,6 +64,14 @@ describe('api/create', () => {
     storage.updateInstructions = null
   })
 
+  const baseInstructions: UpdateInstructions = {
+    fields: {},
+    refs: {
+      add: {},
+      del: {}
+    }
+  }
+
   it('ensures the received body is a valid StoredRecord', async () => {
     expect(async () => await update(storage, {})).rejects.toThrow(Error)
   })
@@ -61,125 +87,119 @@ describe('api/create', () => {
     expect(storage.updateInstructions).toEqual(null)
   })
 
-  it('computes the update instructions (none)', async () => {
+  it('computes the update instructions (none with record1)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
-      fields: {},
-      refs: {}
+      ...record1
+    })
+    expect(storage.updateInstructions).toEqual(null)
+  })
+
+  it('computes the update instructions (none with record2)', async () => {
+    await update(storage, {
+      ...record2
     })
     expect(storage.updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (name)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'modified',
-      fields: {},
-      refs: {}
+      ...record1,
+      name: 'modified'
     })
     expect(storage.updateInstructions).toEqual({
-      name: 'modified',
-      fields: {},
-      refs: {
-        add: {},
-        del: {}
-      }
+      ...baseInstructions,
+      name: 'modified'
     })
   })
 
-  it('computes the update instructions (icon)', async () => {
+  it('computes the update instructions (create icon)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
-      icon: 'test.jpg',
-      fields: {},
-      refs: {}
+      ...record1,
+      icon: 'test.jpg'
     })
     expect(storage.updateInstructions).toEqual({
-      icon: 'test.jpg',
-      fields: {},
-      refs: {
-        add: {},
-        del: {}
-      }
+      ...baseInstructions,
+      icon: 'test.jpg'
     })
   })
 
-  it('computes the update instructions (rating)', async () => {
+  it('computes the update instructions (remove icon)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
-      rating: 4,
-      fields: {},
-      refs: {}
+      ...record2,
+      icon: undefined
     })
     expect(storage.updateInstructions).toEqual({
-      rating: 4,
-      fields: {},
-      refs: {
-        add: {},
-        del: {}
-      }
+      ...baseInstructions,
+      icon: null
+    })
+  })
+
+  it('computes the update instructions (create rating)', async () => {
+    await update(storage, {
+      ...record1,
+      rating: 4
+    })
+    expect(storage.updateInstructions).toEqual({
+      ...baseInstructions,
+      rating: 4
+    })
+  })
+
+  it('computes the update instructions (remove rating)', async () => {
+    await update(storage, {
+      ...record2,
+      rating: undefined
+    })
+    expect(storage.updateInstructions).toEqual({
+      ...baseInstructions,
+      rating: null
     })
   })
 
   it('computes the update instructions (touched not changed)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
-      touched: new Date(now),
-      fields: {},
-      refs: {}
+      ...record2,
+      touched: new Date(now)
     })
     expect(storage.updateInstructions).toEqual(null)
   })
 
-  it('computes the update instructions (touched)', async () => {
+  it('computes the update instructions (create touched)', async () => {
     const touched = new Date(2021, 6, 25, 0, 10, 25, 0)
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
-      touched,
-      fields: {},
-      refs: {}
+      ...record1,
+      touched
     })
     expect(storage.updateInstructions).toEqual({
-      touched,
-      fields: {},
-      refs: {
-        add: {},
-        del: {}
-      }
+      ...baseInstructions,
+      touched
+    })
+  })
+
+  it('computes the update instructions (remove touched)', async () => {
+    await update(storage, {
+      ...record2,
+      touched: undefined
+    })
+    expect(storage.updateInstructions).toEqual({
+      ...baseInstructions,
+      touched: null
     })
   })
 
   it('computes the update instructions (fields)', async () => {
     await update(storage, {
-      type: 'modifiable',
-      id: '1',
-      name: 'initial',
+      ...record1,
       fields: {
         a: 'a',
-        b: null,
         c: 'c'
-      },
-      refs: {}
+      }
     })
     expect(storage.updateInstructions).toEqual({
+      ...baseInstructions,
       fields: {
         b: null,
         c: 'c'
-      },
-      refs: {
-        add: {},
-        del: {}
       }
     })
   })
