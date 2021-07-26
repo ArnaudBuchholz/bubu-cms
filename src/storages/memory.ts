@@ -113,8 +113,8 @@ export class MemoryStorage implements IStorage {
     return result
   }
 
-  async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> {
-    return this.store[type]?.[id]
+  async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
+    return this.store[type]?.[id] ?? null
   }
 
   async create (record: StoredRecord): Promise<void> {
