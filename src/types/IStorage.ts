@@ -37,7 +37,7 @@ export interface UpdateInstructions {
 
 export interface IStorage {
   search: (options: SearchOptions) => Promise<SearchResult>
-  get: (type: StoredRecordType, id: StoredRecordId) => Promise<undefined | StoredRecord>
+  get: (type: StoredRecordType, id: StoredRecordId) => Promise<null | StoredRecord>
   create: (record: StoredRecord) => Promise<void>
   update: (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions) => Promise<void>
   delete: (type: StoredRecordType, id: StoredRecordId) => Promise<void>
