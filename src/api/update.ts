@@ -1,6 +1,14 @@
 import { IStorage, UpdateInstructions } from '../types/IStorage'
 import { isStoredRecord, StoredRecord } from '../types/StoredRecord'
 
+function compare (received: Record<string, any>, record: Record<string, any>, field: string, instructions: Record<string, any>): boolean {
+  if (received[field] !== record[field]) {
+    instructions[field] = received[field] ?? null
+    return true
+  }
+  return false
+}
+
 export async function update (storage: IStorage, jsonBody: object): Promise<void> {
   if (!isStoredRecord(jsonBody)) {
     throw new Error('Not a record')
@@ -18,22 +26,31 @@ export async function update (storage: IStorage, jsonBody: object): Promise<void
     }
   }
   let updated: boolean = false
-  if (jsonBody.name !== record.name) {
-    instructions.name = jsonBody.name
+  if (compare(jsonBody, record, 'name', instructions)) {
     updated = true
   }
-  if (jsonBody.icon !== undefined && jsonBody.icon !== record.icon) {
-    instructions.icon = jsonBody.icon
+  if (compare(jsonBody, record, 'icon', instructions)) {
     updated = true
   }
-  if (jsonBody.rating !== undefined && jsonBody.rating !== record.rating) {
-    instructions.rating = jsonBody.rating
+  if (compare(jsonBody, record, 'rating', instructions)) {
     updated = true
   }
-  if (jsonBody.touched !== undefined && (record.touched === undefined || jsonBody.touched.getTime() !== record.touched.getTime())) {
-    instructions.touched = jsonBody.touched
+  const jsonBodyTouched = jsonBody.touched?.getTime() ?? 0
+  const recordTouched = record.touched?.getTime() ?? 0
+  if (jsonBodyTouched !== recordTouched) {
+    if (jsonBodyTouched === 0) {
+      instructions.touched = null
+    } else {
+      instructions.touched = new Date(jsonBodyTouched)
+    }
     updated = true
   }
+  const fields = [...new Set([...Object.keys(record.fields), ...Object.keys(jsonBody.fields)])]
+  fields.forEach(name => {
+    if (compare(jsonBody.fields, record.fields, name, instructions.fields)) {
+      updated = true
+    }
+  })
   if (updated) {
     await storage.update(type, id, instructions)
   }
