@@ -141,7 +141,7 @@ describe('api/create', () => {
   })
 
   it('computes the update instructions (touched)', async () => {
-    const touched = new Date(2021,6,25,0,10,25,0)
+    const touched = new Date(2021, 6, 25, 0, 10, 25, 0)
     await update(storage, {
       type: 'modifiable',
       id: '1',
