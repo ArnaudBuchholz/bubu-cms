@@ -6,12 +6,12 @@ import { create } from '../../src/api/create'
 
 describe('api/create', () => {
   class Storage implements IStorage {
-    public created: undefined | StoredRecord = undefined
+    public created: null | StoredRecord = null
     async search (options: SearchOptions): Promise<SearchResult> {
       return { records: [], count: 0, refs: {} }
     }
 
-    async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> {
+    async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
         return {
           type: 'exists',
@@ -21,7 +21,7 @@ describe('api/create', () => {
           refs: {}
         }
       }
-      return undefined
+      return null
     }
 
     async create (record: StoredRecord): Promise<void> {
@@ -34,9 +34,13 @@ describe('api/create', () => {
 
   const storage: Storage = new Storage()
 
+  beforeAll(() => {
+    storage.created = null
+  })
+
   it('ensures the received body is a valid StoredRecord', async () => {
     expect(async () => await create(storage, {})).rejects.toThrow(Error)
-    expect(storage.created).toEqual(undefined)
+    expect(storage.created).toEqual(null)
   })
 
   it('ensures an existing StoredRecord can not be recreated', async () => {
@@ -47,7 +51,7 @@ describe('api/create', () => {
       fields: {},
       refs: {}
     })).rejects.toThrow(Error)
-    expect(storage.created).toEqual(undefined)
+    expect(storage.created).toEqual(null)
   })
 
   it('creates new StoredRecord', async () => {
@@ -58,6 +62,6 @@ describe('api/create', () => {
       fields: {},
       refs: {}
     })
-    expect(storage.created).not.toEqual(undefined)
+    expect(storage.created).not.toEqual(null)
   })
 })
