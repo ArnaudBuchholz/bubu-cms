@@ -134,13 +134,19 @@ export class MemoryStorage implements IStorage {
     if (instructions.name !== undefined) {
       record.name = instructions.name
     }
-    if (instructions.icon !== undefined) {
+    if (instructions.icon === null) {
+      delete record.icon
+    } else if (instructions.icon !== undefined) {
       record.icon = instructions.icon
     }
-    if (instructions.rating !== undefined) {
+    if (instructions.rating === null) {
+      delete record.rating
+    } else if (instructions.rating !== undefined) {
       record.rating = instructions.rating
     }
-    if (instructions.touched !== undefined) {
+    if (instructions.touched === null) {
+      delete record.touched
+    } else if (instructions.touched !== undefined) {
       record.touched = instructions.touched
     }
     forEachRef(instructions.refs.add, (type: StoredRecordType, id: StoredRecordId) => {
