@@ -6,12 +6,12 @@ import { deleteRecord } from '../../src/api/delete'
 
 describe('api/create', () => {
   class Storage implements IStorage {
-    public deleted: undefined | StoredRecord = undefined
+    public deleted: null | StoredRecord = null
     async search (options: SearchOptions): Promise<SearchResult> {
       return { records: [], count: 0, refs: {} }
     }
 
-    async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> {
+    async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
         return {
           type: 'exists',
@@ -21,7 +21,7 @@ describe('api/create', () => {
           refs: {}
         }
       }
-      return undefined
+      return null
     }
 
     async create (record: StoredRecord): Promise<void> {}
@@ -34,13 +34,17 @@ describe('api/create', () => {
 
   const storage: Storage = new Storage()
 
+  beforeAll(() => {
+    storage.deleted = null
+  })
+
   it('ensures the received type and id identifies an existing record', async () => {
     expect(async () => await deleteRecord(storage, 'unknown', '123')).rejects.toThrow(Error)
-    expect(storage.deleted).toEqual(undefined)
+    expect(storage.deleted).toEqual(null)
   })
 
   it('ensures the existing record is deleted', async () => {
     await deleteRecord(storage, 'exists', '123')
-    expect(storage.deleted).not.toEqual(undefined)
+    expect(storage.deleted).not.toEqual(null)
   })
 })
