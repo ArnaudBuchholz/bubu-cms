@@ -6,8 +6,8 @@ export async function update (storage: IStorage, jsonBody: object): Promise<void
     throw new Error('Not a record')
   }
   const { type, id } = jsonBody
-  const record: undefined | StoredRecord = await storage.get(type, id)
-  if (record === undefined) {
+  const record: null | StoredRecord = await storage.get(type, id)
+  if (record === null) {
     throw new Error('Not existing')
   }
   const instructions: UpdateInstructions = {
