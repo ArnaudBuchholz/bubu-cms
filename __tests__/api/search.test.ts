@@ -19,7 +19,7 @@ describe('api/search', () => {
       }
       return result
     },
-    async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> { return undefined },
+    async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> { return null },
     async create (record: StoredRecord): Promise<void> {},
     async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {},
     async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {}
