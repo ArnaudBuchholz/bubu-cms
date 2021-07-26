@@ -7,27 +7,29 @@ import { update } from '../../src/api/update'
 describe('api/create', () => {
   const now = new Date()
 
+  const baseRecord: StoredRecord = {
+    type: 'modifiable',
+    id: '1',
+    name: 'initial',
+    touched: now,
+    fields: {
+      a: 'a',
+      b: 'b'
+    },
+    refs: {}
+  }
+
   class Storage implements IStorage {
-    public updateInstructions: undefined | UpdateInstructions = undefined
+    public updateInstructions: null | UpdateInstructions = null
     async search (options: SearchOptions): Promise<SearchResult> {
       return { records: [], count: 0, refs: {} }
     }
 
-    async get (type: StoredRecordType, id: StoredRecordId): Promise<undefined | StoredRecord> {
+    async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'modifiable' && id === '1') {
-        return {
-          type: 'modifiable',
-          id: '1',
-          name: 'initial',
-          touched: now,
-          fields: {
-            a: 'a',
-            b: 'b'
-          },
-          refs: {}
-        }
+        return baseRecord
       }
-      return undefined
+      return null
     }
 
     async create (record: StoredRecord): Promise<void> {}
@@ -41,7 +43,7 @@ describe('api/create', () => {
   const storage: Storage = new Storage()
 
   beforeEach(() => {
-    storage.updateInstructions = undefined
+    storage.updateInstructions = null
   })
 
   it('ensures the received body is a valid StoredRecord', async () => {
@@ -56,7 +58,7 @@ describe('api/create', () => {
       fields: {},
       refs: {}
     })).rejects.toThrow(Error)
-    expect(storage.updateInstructions).toEqual(undefined)
+    expect(storage.updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (none)', async () => {
@@ -67,7 +69,7 @@ describe('api/create', () => {
       fields: {},
       refs: {}
     })
-    expect(storage.updateInstructions).toEqual(undefined)
+    expect(storage.updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (name)', async () => {
@@ -135,7 +137,7 @@ describe('api/create', () => {
       fields: {},
       refs: {}
     })
-    expect(storage.updateInstructions).toEqual(undefined)
+    expect(storage.updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (touched)', async () => {
