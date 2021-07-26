@@ -70,23 +70,23 @@ describe('storages/memory', () => {
 
   describe('get', () => {
     it('retreives any record by type and id (record)', async () => {
-      const retreived: undefined | StoredRecord = await storage.get('record', 'record0')
+      const retreived: null | StoredRecord = await storage.get('record', 'record0')
       expect(retreived).toEqual(record0)
     })
 
     it('retreives any record by type and id (tag)', async () => {
-      const retreived: undefined | StoredRecord = await storage.get('tag', 'tag7')
+      const retreived: null | StoredRecord = await storage.get('tag', 'tag7')
       expect(retreived).toEqual(tags[7])
     })
 
-    it('returns undefined if not found (invalid id)', async () => {
-      const retreived: undefined | StoredRecord = await storage.get('tag', 'tag12')
-      expect(retreived).toEqual(undefined)
+    it('returns null if not found (invalid id)', async () => {
+      const retreived: null | StoredRecord = await storage.get('tag', 'tag12')
+      expect(retreived).toEqual(null)
     })
 
-    it('returns undefined if not found (invalid type)', async () => {
-      const retreived: undefined | StoredRecord = await storage.get('unknwon', '123')
-      expect(retreived).toEqual(undefined)
+    it('returns null if not found (invalid type)', async () => {
+      const retreived: null | StoredRecord = await storage.get('unknwon', '123')
+      expect(retreived).toEqual(null)
     })
   })
 
@@ -199,12 +199,12 @@ describe('storages/memory', () => {
       }
     }
 
-    const getLifecycle0 = async (): Promise<undefined | StoredRecord> => await storage.get('lifecycle', 'lifecycle0')
+    const getLifecycle0 = async (): Promise<null | StoredRecord> => await storage.get('lifecycle', 'lifecycle0')
 
     beforeAll(async () => await storage.create(lifecycle0))
 
     it('created the lifecycle record', async () => {
-      const record: undefined | StoredRecord = await getLifecycle0()
+      const record: null | StoredRecord = await getLifecycle0()
       expect(record).toEqual(lifecycle0)
     })
 
@@ -215,7 +215,7 @@ describe('storages/memory', () => {
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle0()
         expect(record?.name).toEqual('New name')
       })
 
@@ -225,7 +225,7 @@ describe('storages/memory', () => {
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle0()
         expect(record?.icon).toEqual('anything')
       })
 
@@ -235,7 +235,7 @@ describe('storages/memory', () => {
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle0()
         expect(record?.rating).toEqual(4)
       })
 
@@ -246,7 +246,7 @@ describe('storages/memory', () => {
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle0()
         expect(record?.touched).toEqual(touched)
       })
 
@@ -259,9 +259,9 @@ describe('storages/memory', () => {
           },
           refs: { add: {}, del: {} }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
-        expect(record).not.toEqual(undefined)
-        if (record !== undefined) {
+        const record: null | StoredRecord = await getLifecycle0()
+        expect(record).not.toEqual(null)
+        if (record !== null) {
           expect(record.fields.a).toEqual('A')
           expect(record.fields.c).toEqual('c')
           expect(Object.keys(record.fields).length).toEqual(2)
@@ -280,7 +280,7 @@ describe('storages/memory', () => {
             }
           }
         })
-        const record: undefined | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle0()
         expect(record?.refs).toEqual({
           tag: ['tag9', 'tag8', 'tag1']
         })
@@ -290,8 +290,8 @@ describe('storages/memory', () => {
     describe('deleting', () => {
       it('removes the record', async () => {
         await storage.delete('lifecycle', 'lifecycle0')
-        const record: undefined | StoredRecord = await getLifecycle0()
-        expect(record).toEqual(undefined)
+        const record: null | StoredRecord = await getLifecycle0()
+        expect(record).toEqual(null)
       })
     })
   })
