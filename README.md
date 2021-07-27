@@ -1,6 +1,8 @@
 # bubu-cms
 Small, simple &amp; standalone Content Management System.
 
+[![Node.js CI](https://github.com/ArnaudBuchholz/bubu-cms/actions/workflows/node.js.yml/badge.svg)](https://github.com/ArnaudBuchholz/bubu-cms/actions/workflows/node.js.yml)
+
 ## Setup
 
 * `npm install bubu-cms -g`
@@ -36,8 +38,8 @@ qualified with tags (which are exposed separately) and may have a content (initi
     "id": "record_id",
     "type": "type",
     "name": "name",
-    "fields": { "...": "..." },
-    "refs": { "$tag": [ "..." ], "$type": [ "type" ] }
+    "fields": { "...": "..." },
+    "refs": { "$tag": [ "..." ], "$type": [ "type" ] }
   }]
 }
 ```
@@ -49,8 +51,8 @@ qualified with tags (which are exposed separately) and may have a content (initi
     "id": "record_id",
     "type": "<type>",
     "name": "name",
-    "fields": { "...": "..." },
-    "refs": { "$tag": [ "..." ], "$type": [ "<type>" ] }
+    "fields": { "...": "..." },
+    "refs": { "$tag": [ "..." ], "$type": [ "<type>" ] }
 }
 ```
 
