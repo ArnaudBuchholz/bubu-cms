@@ -13,7 +13,8 @@ describe('api/create', () => {
     name: 'initial',
     fields: {
       a: 'a',
-      b: 'b'
+      b: 'b',
+      date: now
     },
     refs: {}
   }
@@ -187,20 +188,51 @@ describe('api/create', () => {
     })
   })
 
-  it('computes the update instructions (fields)', async () => {
-    await update(storage, {
-      ...record1,
-      fields: {
-        a: 'a',
-        c: 'c'
-      }
+  describe('fields update', () => {
+    it('computes new and removed fields', async () => {
+      await update(storage, {
+        ...record1,
+        fields: {
+          a: 'a',
+          c: 'c',
+          date: now
+        }
+      })
+      expect(storage.updateInstructions).toEqual({
+        ...baseInstructions,
+        fields: {
+          b: null,
+          c: 'c'
+        }
+      })
     })
-    expect(storage.updateInstructions).toEqual({
-      ...baseInstructions,
-      fields: {
-        b: null,
-        c: 'c'
-      }
+
+    it('handles date fields (not changed)', async () => {
+      await update(storage, {
+        ...record1,
+        fields: {
+          ...record1.fields,
+          date: new Date(now)
+        }
+      })
+      expect(storage.updateInstructions).toEqual(null)
+    })
+
+    it('handles date fields (changed)', async () => {
+      const changed = new Date(2021, 6, 27, 0, 13, 18, 0)
+      await update(storage, {
+        ...record1,
+        fields: {
+          ...record1.fields,
+          date: changed
+        }
+      })
+      expect(storage.updateInstructions).toEqual({
+        ...baseInstructions,
+        fields: {
+          date: changed
+        }
+      })
     })
   })
 })
