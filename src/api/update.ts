@@ -1,10 +1,27 @@
 import { IStorage, UpdateInstructions } from '../types/IStorage'
 import { isStoredRecord, StoredRecord } from '../types/StoredRecord'
+import { types } from 'util'
+const { isDate } = types
 
-function compare (received: Record<string, any>, record: Record<string, any>, field: string, instructions: Record<string, any>): boolean {
-  if (received[field] !== record[field]) {
-    instructions[field] = received[field] ?? null
-    return true
+function buildInstructions (received: Record<string, any>, record: Record<string, any>, field: string, instructions: Record<string, any>): boolean {
+  const receivedValue: any = received[field]
+  const recordValue: any = record[field]
+  if (isDate(receivedValue) || isDate(recordValue)) {
+    const receivedTime: number = receivedValue?.getTime() ?? 0
+    const recordTime: number = recordValue?.getTime() ?? 0
+    if (receivedTime !== recordTime) {
+      if (receivedTime === 0) {
+        instructions[field] = null
+      } else {
+        instructions[field] = new Date(receivedTime)
+      }
+      return true
+    }
+  } else {
+    if (receivedValue !== recordValue) {
+      instructions[field] = receivedValue ?? null
+      return true
+    }
   }
   return false
 }
@@ -26,28 +43,15 @@ export async function update (storage: IStorage, jsonBody: object): Promise<void
     }
   }
   let updated: boolean = false
-  if (compare(jsonBody, record, 'name', instructions)) {
-    updated = true
-  }
-  if (compare(jsonBody, record, 'icon', instructions)) {
-    updated = true
-  }
-  if (compare(jsonBody, record, 'rating', instructions)) {
-    updated = true
-  }
-  const jsonBodyTouched = jsonBody.touched?.getTime() ?? 0
-  const recordTouched = record.touched?.getTime() ?? 0
-  if (jsonBodyTouched !== recordTouched) {
-    if (jsonBodyTouched === 0) {
-      instructions.touched = null
-    } else {
-      instructions.touched = new Date(jsonBodyTouched)
+  const basicFields = ['name', 'icon', 'rating', 'touched']
+  basicFields.forEach((name: string) => {
+    if (buildInstructions(jsonBody, record, name, instructions)) {
+      updated = true
     }
-    updated = true
-  }
-  const fields = [...new Set([...Object.keys(record.fields), ...Object.keys(jsonBody.fields)])]
-  fields.forEach(name => {
-    if (compare(jsonBody.fields, record.fields, name, instructions.fields)) {
+  })
+  const typeFields = [...new Set([...Object.keys(record.fields), ...Object.keys(jsonBody.fields)])]
+  typeFields.forEach((name: string) => {
+    if (buildInstructions(jsonBody.fields, record.fields, name, instructions.fields)) {
       updated = true
     }
   })
