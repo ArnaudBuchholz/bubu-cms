@@ -20,17 +20,11 @@ describe('api/create', () => {
   }
 
   const record2: StoredRecord = {
-    type: 'modifiable',
+    ...record1,
     id: '2',
-    name: 'initial',
     icon: 'initial.jpg',
     rating: 3,
-    touched: now,
-    fields: {
-      a: 'a',
-      b: 'b'
-    },
-    refs: {}
+    touched: now
   }
 
   class Storage implements IStorage {
@@ -234,5 +228,8 @@ describe('api/create', () => {
         }
       })
     })
+  })
+
+  describe('refs update', () => {
   })
 })
