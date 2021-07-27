@@ -80,7 +80,8 @@
     "collectCoverageFrom": [
       "./src/types/*.ts",
       "./src/storages/*.ts",
-      "./src/api/*.ts"
+      "./src/api/*.ts",
+      "./src/util/*.ts"
     ],
     "coverageThreshold": {
       "global": {
