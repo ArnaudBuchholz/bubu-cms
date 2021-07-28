@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { StoredRecordType, StoredRecordId, StoredRecord } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
 import { update } from '../../src/api/update'
 
@@ -16,7 +16,10 @@ describe('api/create', () => {
       b: 'b',
       date: now
     },
-    refs: {}
+    refs: {
+      [$tag]: ['tag0', 'tag1', 'tag2'],
+      any: ['any0', 'any1']
+    }
   }
 
   const record2: StoredRecord = {
@@ -231,5 +234,38 @@ describe('api/create', () => {
   })
 
   describe('refs update', () => {
+    it('ignores refs order', async () => {
+      await update(storage, {
+        ...record1,
+        refs: {
+          any: ['any1', 'any0'],
+          [$tag]: ['tag2', 'tag0', 'tag1']
+        }
+      })
+      expect(storage.updateInstructions).toEqual(null)
+    })
+
+    it('adds and removes refs', async () => {
+      await update(storage, {
+        ...record1,
+        refs: {
+          [$tag]: ['tag2', 'tag3', 'tag4'],
+          another: ['another1', 'another2']
+        }
+      })
+      expect(storage.updateInstructions).toEqual({
+        ...baseInstructions,
+        refs: {
+          del: {
+            [$tag]: ['tag0', 'tag1'],
+            any: ['any0', 'any1']
+          },
+          add: {
+            [$tag]: ['tag3', 'tag4'],
+            another: ['another1', 'another2']
+          }
+        }
+      })
+    })
   })
 })
