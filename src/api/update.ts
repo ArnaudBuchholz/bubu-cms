@@ -1,5 +1,6 @@
 import { IStorage, UpdateInstructions } from '../types/IStorage'
 import { isStoredRecord, StoredRecord } from '../types/StoredRecord'
+import { join } from '../util/array'
 import { types } from 'util'
 const { isDate } = types
 
@@ -26,11 +27,11 @@ function buildInstructions (received: Record<string, any>, record: Record<string
   return false
 }
 
-export async function update (storage: IStorage, jsonBody: object): Promise<void> {
-  if (!isStoredRecord(jsonBody)) {
+export async function update (storage: IStorage, received: object): Promise<void> {
+  if (!isStoredRecord(received)) {
     throw new Error('Not a record')
   }
-  const { type, id } = jsonBody
+  const { type, id } = received
   const record: null | StoredRecord = await storage.get(type, id)
   if (record === null) {
     throw new Error('Not existing')
@@ -45,15 +46,49 @@ export async function update (storage: IStorage, jsonBody: object): Promise<void
   let updated: boolean = false
   const basicFields = ['name', 'icon', 'rating', 'touched']
   basicFields.forEach((name: string) => {
-    if (buildInstructions(jsonBody, record, name, instructions)) {
+    if (buildInstructions(received, record, name, instructions)) {
       updated = true
     }
   })
-  const typeFields = [...new Set([...Object.keys(record.fields), ...Object.keys(jsonBody.fields)])]
+  const typeFields = join(Object.keys(record.fields), Object.keys(received.fields))
   typeFields.forEach((name: string) => {
-    if (buildInstructions(jsonBody.fields, record.fields, name, instructions.fields)) {
+    if (buildInstructions(received.fields, record.fields, name, instructions.fields)) {
       updated = true
     }
+  })
+  const refTypes = join(Object.keys(record.refs), Object.keys(received.refs))
+  refTypes.forEach((type: string) => {
+    const receivedRefs: undefined | string[] = received.refs[type]
+    const recordRefs: undefined | string[] = record.refs[type]
+    if (receivedRefs === undefined) {
+      instructions.refs.del[type] = recordRefs
+      updated = true
+      return
+    }
+    if (recordRefs === undefined) {
+      instructions.refs.add[type] = receivedRefs
+      updated = true
+      return
+    }
+    join(receivedRefs, recordRefs)
+      .sort((id1: string, id2: string) => id1.localeCompare(id2)) // Ensure testable result
+      .forEach((id: string) => {
+        if (!recordRefs.includes(id)) {
+          if (instructions.refs.add[type] === undefined) {
+            instructions.refs.add[type] = []
+          }
+          instructions.refs.add[type].push(id)
+          updated = true
+          return
+        }
+        if (!receivedRefs.includes(id)) {
+          if (instructions.refs.del[type] === undefined) {
+            instructions.refs.del[type] = []
+          }
+          instructions.refs.del[type].push(id)
+          updated = true
+        }
+      })
   })
   if (updated) {
     await storage.update(type, id, instructions)
