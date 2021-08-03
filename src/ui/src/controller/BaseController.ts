@@ -1,25 +1,27 @@
 import Component from '../Component'
 import Router from 'sap/m/routing/Router'
 import Controller from 'sap/ui/core/mvc/Controller'
+import { StoredRecordRating } from '../../../types/StoredRecord'
 
 /**
  * @namespace bubu-cms.controller
  */
 export default class BaseController extends Controller {
 
-  private getComponent(): Component {
+  protected getComponent(): Component {
     return this.getOwnerComponent() as Component
   }
 
-  private getRouter (): Router {
+  protected getRouter (): Router {
     return this.getComponent().getRouter() as Router
   }
 
+/*
   getTextIfInI18n (resourceBundle, key, params) {
     if (resourceBundle.hasText(key)) {
       return resourceBundle.getText(key, params)
     }
-  },
+  }
 
     _getResourceBundle: function (modelName) {
       return this.getOwnerComponent().getModel('db.i18n')._oResourceBundle
@@ -71,11 +73,13 @@ export default class BaseController extends Controller {
     formatStatus2: function (type) {
       return this.i18n(type, 'status2')
     }
+*/
 
-    public renderRating (value) {
-      return new Array(value + 1).join('\u2605') + new Array(6 - value).join('\u2606')
-    },
+    public renderRating (rating: StoredRecordRating) {
+      return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
+    }
 
+/*
     renderTags: function (tags) {
       // First tag is always object type
       return tags
@@ -94,6 +98,5 @@ export default class BaseController extends Controller {
     unescapeSearch: function (search) {
       return decodeURIComponent(search).replace(/__tag__/g, '#')
     }
-
-  })
-})
+*/
+}
