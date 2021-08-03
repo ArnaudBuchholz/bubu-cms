@@ -1,15 +1,20 @@
-/* global sap */
-sap.ui.define([
-  './BaseController',
-  'sap/m/MenuItem',
-  'sap/ui/core/routing/HashChanger',
-  'sap/ui/model/json/JSONModel',
-  'sap/ui/model/Sorter'
+import BaseController from './BaseController'
+import MenuItem from 'sap/m/MenuItem'
+import HashChanger from 'sap/ui/core/routing/HashChanger'
+import JSONModel from 'sap/ui/model/json/JSONModel'
+import Sorter from 'sap/ui/model/Sorter'
+import Event from 'sap/ui/base/Event'
+import SearchField from 'sap/m/SearchField'
+import { StoredRecord, $tag } from '../../../types/StoredRecord'
+import ObjectListItem from 'sap/m/ObjectListItem'
 
-], function (BaseController, MenuItem, HashChanger, JSONModel, Sorter) {
-  'use strict'
+/**
+ * @namespace bubu-cms.controller
+ */
+ export default class ListController extends BaseController {
 
-  return BaseController.extend('bubu-cms.controller.List', {
+  /*
+    TODO Sort menu is static
 
     _buildSortingMenu: function () {
       const sortMenu = this.byId('sortMenu')
@@ -56,13 +61,14 @@ sap.ui.define([
           }))
         })
     },
+*/
 
-    onInit: function () {
-      this._getRouter().getRoute('list').attachPatternMatched(this._onDisplayList, this)
-      this._buildSortingMenu()
+    onInit  () {
+      this.getRouter().getRoute('list').attachPatternMatched(this._onDisplayList, this)
       this.byId('records').focus()
-    },
+    }
 
+/*
     _queryParameters: {},
 
     _onDisplayList: function (event) {
@@ -106,29 +112,28 @@ sap.ui.define([
 
     onSearch: function (event) {
       this._setQueryParameter('search', this.escapeSearch(this.byId('search').getValue()))
-    },
+    }
+*/
 
-    onSuggest: function (event) {
-      event.getSource().suggest()
-    },
+    onSuggest (event: Event) {
+      (event.getSource() as SearchField).suggest()
+    }
 
-    onSort: function (event) {
+    onSort (event: Event) {
       const sortItem = event.getParameter('item')
 
-      const sort = /(\w+)(Asc|Desc)/.exec(sortItem.getId())
-      this._setQueryParameter('sort', sort[0])
-    },
-
-    onRecordPress: function (event) {
-      const record = event.getSource().getBindingContext().getObject()
-      if (record.type === 'tag') {
-        this._setQueryParameter('search', this.escapeSearch('#' + record.name))
-      } else {
-        this._getRouter().navTo('record', {
-          recordId: record.id
-        })
+      const sort: null | RegExpExecArray = /(\w+)(Asc|Desc)/.exec(sortItem.getId())
+      if (sort !== null) {
+        this._setQueryParameter('sort', sort[0])
       }
     }
 
-  })
-})
+    onRecordPress (event: Event) {
+      const record: StoredRecord = (event.getSource() as ObjectListItem).getBindingContext().getObject() as StoredRecord
+      if (record.type === $tag) {
+        this._setQueryParameter('search', this.escapeSearch('#' + record.name))
+      } else {
+        this.getRouter().navTo('record', record)
+      }
+    }
+}
