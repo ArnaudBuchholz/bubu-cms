@@ -21,8 +21,15 @@
 						<SuggestionItem text="#{name}" description="{count}" key="{id}" />
 					</suggestionItems>
 				</SearchField>
-				<MenuButton id="sortButton" text="{i18n>sort.name}" icon="sap-icon://sort-ascending">
-					<Menu id="sortMenu" itemSelected="onSort" />
+				<MenuButton id="sortButton" text="{state>sort.fieldLabel}" icon="icon://sort-{= ${state>sort.ascending} ? 'ascending' : 'descending' }">
+					<Menu id="sortMenu" itemSelected="onSort">
+						<MenuItem id="nameAsc" text="{i18n>sort.name}" icon="sap-icon://sort-ascending" />
+						<MenuItem id="nameDesc" text="{i18n>sort.name}" icon="sap-icon://sort-descending" />
+						<MenuItem id="ratingAsc" text="{i18n>sort.rating}" icon="sap-icon://sort-ascending" />
+						<MenuItem id="ratingDesc" text="{i18n>sort.rating}" icon="sap-icon://sort-descending" />
+						<MenuItem id="touchedAsc" text="{i18n>sort.touched}" icon="sap-icon://sort-ascending" />
+						<MenuItem id="touchedDesc" text="{i18n>sort.touched}" icon="sap-icon://sort-descending" />
+					</Menu>
 				</MenuButton>
 			</Toolbar>
 		</subHeader>
