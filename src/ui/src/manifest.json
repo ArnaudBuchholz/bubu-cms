@@ -83,7 +83,7 @@
 				"name": "list",
 				"target": "list"
 			}, {
-				"pattern": "record/{recordId}",
+				"pattern": "record/{type}/{id}",
   				"name": "record",
   				"target": "record"
 			}],
