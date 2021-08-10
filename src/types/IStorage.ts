@@ -1,6 +1,9 @@
 import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, StoredRecord, FieldValue, FieldName } from './StoredRecord'
 
 export type SortableField = 'name' | 'rating' | 'touched'
+export function isSortableField (value: any): value is SortableField {
+  return ['name', 'rating', 'touched'].includes(value)
+}
 
 export interface SearchOptions {
   paging: {
