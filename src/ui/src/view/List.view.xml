@@ -16,12 +16,13 @@
 						path: '/TagSet'
 					}"
 					suggest="onSuggest"
+					value="{state>/search}"
 				>
 					<suggestionItems>
 						<SuggestionItem text="#{name}" description="{count}" key="{id}" />
 					</suggestionItems>
 				</SearchField>
-				<MenuButton id="sortButton" text="{state>sort.fieldLabel}" icon="icon://sort-{= ${state>sort.ascending} ? 'ascending' : 'descending' }">
+				<MenuButton id="sortButton" text="{state>sortingFieldLabel}" icon="icon://sort-{= ${state>sortingAscending} ? 'ascending' : 'descending' }">
 					<Menu id="sortMenu" itemSelected="onSort">
 						<MenuItem id="nameAsc" text="{i18n>sort.name}" icon="sap-icon://sort-ascending" />
 						<MenuItem id="nameDesc" text="{i18n>sort.name}" icon="sap-icon://sort-descending" />
