@@ -7,55 +7,55 @@ import Event from 'sap/ui/base/Event'
 import SearchField from 'sap/m/SearchField'
 import { StoredRecord, $tag } from '../../../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
-import { SortableField } from '../../../types/IStorage'
+import { SearchOptions, SortableField, isSortableField } from '../../../types/IStorage'
+import ListViewState from './List.state'
 
 type QueryParameters = {
   search?: string
   sort?: string
 }
 
-type ViewState = {
-  sort: {
-    fieldLabel: string
-    ascending: boolean
-  }
-}
-
 /**
  * @namespace bubu-cms.controller
  */
  export default class ListController extends BaseController {
-    private viewState: ViewState = {
-      sort: {
-        fieldLabel: 'name',
-        ascending: true
-      }
-    }
+    private viewState: ListViewState = new ListViewState()
 
     onInit  () {
       this.getRouter().getRoute('list').attachPatternMatched(this.onDisplayList, this)
       this.byId('records').focus()
-      this.getView().setModel(new JSONModel(this.viewState), 'state')
+      this.getView().setModel(this.viewState, 'state')
     }
 
-    private queryParameters: QueryParameters = {}
-
     private onDisplayList (event: Event) {
-      const binding = this.byId('records').getBinding('items')
-      this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
-
-      if (this.queryParameters.search !== undefined) {
-
-        const unescapedSearch = this.unescapeSearch(this._queryParameters.search)
-        this.byId('search').setValue(unescapedSearch)
-        binding.sCustomParams = 'search=' + encodeURIComponent(unescapedSearch)
-
-      } else {
-        this.byId('search').setValue('')
-        binding.sCustomParams = ''
+      const queryParameters: QueryParameters = event.getParameter('arguments')['?query'] ?? {}
+      const searchOptions: SearchOptions = {
+        paging: {
+          skip: 0,
+          top: 20
+        },
+        refs: {}
       }
-      const sort = this.queryParameters.sort ?? 'nameAsc'
-      const sortParts = /(\w+)(Asc|Desc)/.exec(sort)
+      this.viewState.search = queryParameters.search
+      if (queryParameters.search !== undefined) {
+        searchOptions.search = queryParameters.search
+      }
+
+      const sort = queryParameters.sort ?? 'nameAsc'
+      let [, sortingFieldName, sortingAscending] = /(\w+)(Asc|Desc)/.exec(sort) ?? [, 'name', 'Asc']
+
+      if (!isSortableField(sortingFieldName)) {
+        sortingFieldName = 'name' as SortableField
+      }
+
+      this.viewState.sortingFieldLabel = this.i18n(`sort.field.${sortingFieldName}`)
+      this.viewState.sortingAscending = sortingAscending === 'Asc'
+      searchOptions.sort = {
+        field: sortingFieldName,
+        ascending: sortingAscending === 'Asc'
+      }
+
+
 
       const sortButton = this.byId('sortButton')
       this.byId('sortMenu').getItems().every(function (menuItem) {
