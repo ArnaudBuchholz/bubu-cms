@@ -1,6 +1,7 @@
 import Component from '../Component'
 import Router from 'sap/m/routing/Router'
 import Controller from 'sap/ui/core/mvc/Controller'
+import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../../../types/StoredRecord'
 
 /**
@@ -14,6 +15,11 @@ export default class BaseController extends Controller {
 
   protected getRouter (): Router {
     return this.getComponent().getRouter() as Router
+  }
+
+  protected i18n (key: string, ...params: string[]): string {
+    const resourceBundle: ResourceBundle = this.getOwnerComponent().getModel('i18n')._oResourceBundle
+    return resourceBundle.getText(key, params)
   }
 
 /*
