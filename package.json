@@ -31,7 +31,8 @@
   "dependencies": {
     "colors": "^1.4.0",
     "mime": "^2.5.2",
-    "reserve": "^1.11.4"
+    "reserve": "^1.11.4",
+    "ui5-test-runner": "^1.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
