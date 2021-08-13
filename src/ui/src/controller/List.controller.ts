@@ -8,7 +8,7 @@ import SearchField from 'sap/m/SearchField'
 import { StoredRecord, $tag } from '../../../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
 import { SearchOptions, SortableField, isSortableField } from '../../../types/IStorage'
-import ListViewState from './List.state'
+import ListViewState from '../model/ListViewState'
 
 type QueryParameters = {
   search?: string
