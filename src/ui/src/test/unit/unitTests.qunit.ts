@@ -1,4 +1,4 @@
-QUnit.config.autostart = false;
+QUnit.config.autostart = false
 
 sap.ui.getCore().attachInit(() => sap.ui.require([
   'test/model/ListViewState'
