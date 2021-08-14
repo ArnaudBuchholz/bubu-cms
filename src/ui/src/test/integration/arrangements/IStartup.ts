@@ -1,9 +1,8 @@
-export type ApplicationStartupOptions = {
+export interface ApplicationStartupOptions {
   serverDelay?: number
   hash?: string
 }
 
 export interface IStartup {
-  iStartMyApp (): void
-  iStartMyApp (options: ApplicationStartupOptions): void
+  iStartMyApp: (() => void) & ((options: ApplicationStartupOptions) => void)
 }
