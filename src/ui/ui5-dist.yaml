@@ -5,7 +5,7 @@ type: application
 resources:
   configuration:
     paths:
-      webapp: dist
+      webapp: "dist/ui"
 framework:
   name: SAPUI5
   version: "1.90.0"
