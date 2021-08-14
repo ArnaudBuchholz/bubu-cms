@@ -8,8 +8,7 @@ import { StoredRecordRating } from '../../../types/StoredRecord'
  * @namespace bubu-cms.controller
  */
 export default class BaseController extends Controller {
-
-  protected getComponent(): Component {
+  protected getComponent (): Component {
     return this.getOwnerComponent() as Component
   }
 
@@ -22,7 +21,7 @@ export default class BaseController extends Controller {
     return resourceBundle.getText(key, params)
   }
 
-/*
+  /*
   getTextIfInI18n (resourceBundle, key, params) {
     if (resourceBundle.hasText(key)) {
       return resourceBundle.getText(key, params)
@@ -81,9 +80,9 @@ export default class BaseController extends Controller {
     }
 */
 
-    public renderRating (rating: StoredRecordRating) {
-      return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
-    }
+  public renderRating (rating: StoredRecordRating): string {
+    return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
+  }
 
 /*
     renderTags: function (tags) {
