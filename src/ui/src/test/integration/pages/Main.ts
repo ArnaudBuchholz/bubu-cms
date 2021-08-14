@@ -3,13 +3,12 @@ import { convert } from '../opaPage'
 
 export class MainPageActions extends Opa5 {
   and: MainPageActions = this
-
 }
 
 export class MainPageAssertions extends Opa5 {
   and: MainPageAssertions = this
 
-  iSeeThePage () : MainPageAssertions {
+  iSeeThePage (): MainPageAssertions {
     return this.waitFor({
       id: 'page',
       success: () => Opa5.assert.ok(true, 'The main page is visible')
