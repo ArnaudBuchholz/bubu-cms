@@ -8,7 +8,7 @@ export default class Component extends UIComponent {
     manifest: 'json'
   }
 
-  public init () {
+  public init (): void {
     super.init()
     this.getRouter().initialize()
   }
