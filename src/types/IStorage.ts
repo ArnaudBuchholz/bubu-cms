@@ -5,15 +5,17 @@ export function isSortableField (value: any): value is SortableField {
   return ['name', 'rating', 'touched'].includes(value)
 }
 
+export interface SortingOptions {
+  field: SortableField
+  ascending: boolean
+}
+
 export interface SearchOptions {
   paging: {
     skip: number
     top: number
   }
-  sort?: {
-    field: SortableField
-    ascending: boolean
-  }
+  sort?: SortingOptions
   refs: StoredRecordRefs
   search?: string
 }
