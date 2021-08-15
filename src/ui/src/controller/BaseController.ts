@@ -16,8 +16,8 @@ export default class BaseController extends Controller {
     return this.getComponent().getRouter() as Router
   }
 
-  protected i18n (key: string, ...params: string[]): string {
-    const resourceBundle: ResourceBundle = this.getOwnerComponent().getModel('i18n')._oResourceBundle
+  public i18n (key: string, ...params: string[]): string {
+    const resourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as any)._oResourceBundle
     return resourceBundle.getText(key, params)
   }
 
@@ -95,13 +95,21 @@ export default class BaseController extends Controller {
         }, this)
         .join(' ')
     },
-
-    escapeSearch: function (search) {
-      return encodeURIComponent(search.replace(/#/g, '__tag__'))
-    },
-
-    unescapeSearch: function (search) {
-      return decodeURIComponent(search).replace(/__tag__/g, '#')
-    }
 */
+
+  protected escapeSearch (search: string): string {
+    return encodeURIComponent(search.replace(/#/g, '__tag__'))
+  }
+
+  protected unescapeSearch (search: string): string {
+    return decodeURIComponent(search).replace(/__tag__/g, '#')
+  }
+
+  public navigateToListFilteredByTag (tag: string): void {
+    this.getRouter().navTo('list', {
+      query: {
+        search: this.escapeSearch('#' + tag)
+      }
+    }, undefined, false)
+  }
 }
