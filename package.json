@@ -66,6 +66,7 @@
     ],
     "project": "./tsconfig.json",
     "ignore": [
+      ".vscode/",
       "./dist/",
       "./test/"
     ]
