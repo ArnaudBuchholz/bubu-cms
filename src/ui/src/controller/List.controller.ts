@@ -1,10 +1,6 @@
 import BaseController from './BaseController'
-import MenuItem from 'sap/m/MenuItem'
-import HashChanger from 'sap/ui/core/routing/HashChanger'
-import JSONModel from 'sap/ui/model/json/JSONModel'
-import Sorter from 'sap/ui/model/Sorter'
 import Event from 'sap/ui/base/Event'
-import SearchField from 'sap/m/SearchField'
+// import SearchField from 'sap/m/SearchField'
 import { StoredRecord, $tag } from '../../../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
 import { SearchOptions, SortableField, isSortableField, SortingOptions } from '../../../types/IStorage'
@@ -21,7 +17,7 @@ interface QueryParameters {
 export default class ListController extends BaseController {
   private viewState: ListViewState = new ListViewState()
 
-  onInit () {
+  onInit (): void {
     this.getRouter().getRoute('list').attachPatternMatched(this.onDisplayList, this)
     this.byId('records').focus()
     this.getView().setModel(this.viewState, 'state')
@@ -30,7 +26,7 @@ export default class ListController extends BaseController {
   private queryParameters: QueryParameters = {}
 
   private readSortingCriteria (criteria: undefined | string): SortingOptions {
-    const [, rawFieldName, rawAscending] = /(\w+)(Asc|Desc)/.exec(criteria ?? 'nameAsc') ?? [, 'name', 'Asc']
+    const [, rawFieldName, rawAscending] = /(\w+)(Asc|Desc)/.exec(criteria ?? 'nameAsc') ?? [0, 'name', 'Asc']
 
     let field: SortableField
     if (!isSortableField(rawFieldName)) {
@@ -45,7 +41,7 @@ export default class ListController extends BaseController {
     }
   }
 
-  private onDisplayList (event: Event) {
+  private onDisplayList (event: Event): void {
     const searchOptions: SearchOptions = {
       paging: {
         skip: 0,
@@ -65,17 +61,16 @@ export default class ListController extends BaseController {
     this.viewState.sortingFieldLabel = this.i18n(`sort.field.${searchOptions.sort.field}`)
     this.viewState.sortingAscending = searchOptions.sort.ascending
 
-    // binding.sort(new Sorter(sortParts[1], sortParts[2] === 'Desc'))
     // binding.refresh()
   }
 
-  private reload () {
+  private reload (): void {
     this.getRouter().navTo('list', {
       query: this.queryParameters
     }, undefined, true)
   }
 
-  onSearch (event: Event) {
+  onSearch (event: Event): void {
     this.queryParameters.search = this.viewState.search
     this.reload()
   }
@@ -86,7 +81,7 @@ export default class ListController extends BaseController {
     }
   */
 
-  onSort (event: Event) {
+  onSort (event: Event): void {
     const sortItem = event.getParameter('item')
     const sort: null | RegExpExecArray = /(\w+)(Asc|Desc)/.exec(sortItem.getId())
     if (sort !== null) {
@@ -95,7 +90,7 @@ export default class ListController extends BaseController {
     }
   }
 
-  onRecordPress (event: Event) {
+  onRecordPress (event: Event): void {
     const record: StoredRecord = (event.getSource() as ObjectListItem).getBindingContext().getObject() as StoredRecord
     if (record.type === $tag) {
       this.navigateToListFilteredByTag(record.name)
