@@ -1,49 +1,30 @@
-/* global sap, history */
-sap.ui.define([
-  './BaseController',
-  'sap/m/Token',
-  'sap/ui/model/json/JSONModel',
-  'sap/m/MessageBox',
-  'sap/ui/core/Fragment',
-  'sap/ui/core/CustomData'
+import BaseController from './BaseController'
+import Event from 'sap/ui/base/Event'
+import Token from 'sap/m/Token'
+import JSONModel from 'sap/ui/model/json/JSONModel'
+import MessageBox from 'sap/m/MessageBox'
+import Fragment from 'sap/ui/core/Fragment'
+import CustomData from 'sap/ui/core/CustomData'
+import ObjectPageLayout from 'sap/m/ObjectPageLayout'
+import ObjectPageSection from 'sap/m/ObjectPageSection'
+import StandardListItem from 'sap/m/StandardListItem'
+import SectionAPI from './SectionAPI'
+import { StoredRecord, StoredRecordType } from 'src/types/StoredRecord'
 
-], function (BaseController, Token, JSONModel, MessageBox, Fragment, CustomData) {
-  'use strict'
+export default class RecordController extends BaseController {
+    content: SectionAPI = new SectionAPI(this)
 
-  return BaseController.extend('bubu-cms.controller.Record', {
+    onInit (): void {
+      this.getRouter().getRoute('record').attachPatternMatched(this.onDisplayRecord, this)
+    }
 
-    // content API for records' sections
-    content: {
-      translateTag: function (tag) {
-        return this.i18n('tag', tag) || tag
-      },
-      navigateToListFilteredByTag: function (tag) {
-        return this._navigateToListFilteredByTag(tag)
-      },
-      redirect: function (url) {
-        sap.m.URLHelper.redirect(url)
-      }
-    },
-
-    _buildBoundContent: function () {
-      const boundContent = {}
-      Object.keys(this.content).forEach(function (method) {
-        boundContent[method] = this.content[method].bind(this)
-      }, this)
-      this.content = boundContent
-    },
-
-    onInit: function () {
-      this._getRouter().getRoute('record').attachPatternMatched(this._onDisplayRecord, this)
-      this._buildBoundContent()
-    },
-
-    _onDisplayRecord: function (event) {
+    private onDisplayRecord (event: Event): void {
       const recordId = event.getParameter('arguments').recordId
+      const page = this.byId('page')
+/*      
       const sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
         id: recordId
       })
-      const page = this.byId('page')
       this.getView().bindElement({
         path: sPath,
         parameters: {
@@ -56,35 +37,39 @@ sap.ui.define([
           }
         }
       })
-    },
+*/
+    }
 
-    _setContent: function (content) {
+    _setContent (content: any): void {
       this.getView().setModel(new JSONModel(content), 'content')
-    },
+    }
 
-    _showSection: function (section) {
-      this.byId('page').setSelectedSection(section)
-    },
+    private showSection (section: ObjectPageSection): void {
+      (this.byId('page') as ObjectPageLayout).setSelectedSection(section)
+    }
 
-    _isContentSectionVisible: function (expectedType, record) {
+    private isContentSectionVisible (expectedType: StoredRecordType, record: StoredRecord): boolean {
       return record.type === expectedType && this.getModel('content').getProperty('/recordId')
-    },
+    }
 
-    _displayContent: function (record) {
+    private displayContent (record: StoredRecord): void {
+/*
       let content = record.toContent
       if (content.__ref) {
         content = this.getView().getModel().getObject('/' + content.__ref)
       }
       this._setContent(JSON.parse(content.data))
-      const objectPage = this.byId('page')
-      const section = objectPage.getSections().filter(function (candidate) {
-        return candidate.getCustomData().some(function (customData) {
+*/
+      const objectPage: ObjectPageLayout = this.byId('page') as ObjectPageLayout
+      const section: ObjectPageSection = objectPage.getSections().filter(function (candidate: ObjectPageSection) {
+        return candidate.getCustomData().some(function (customData: CustomData) {
           return customData.getKey() === 'recordType' && customData.getValue() === record.type
         })
       })[0]
       if (section) {
-        this._showSection(section)
+        this.showSection(section)
       } else {
+/*
         Fragment.load({
           id: 'section.json.' + record.type,
           name: 'bubu-cms/api/' + record.type,
@@ -102,9 +87,10 @@ sap.ui.define([
           this.byId('page').insertSection(section, 0)
           this._showSection(section)
         }.bind(this))
+*/
       }
-    },
-
+    }
+/*
     _handleContent: function (record) {
       if (!record.toContent) {
         this._setContent({})
@@ -112,7 +98,9 @@ sap.ui.define([
       }
       return this._displayContent(record)
     },
+*/
 
+/*
     _onBindingChanged: function () {
       const page = this.byId('page')
       const binding = this.getView().getElementBinding()
@@ -138,38 +126,31 @@ sap.ui.define([
       this._handleContent(record)
       page.setBusy(false)
     },
+*/
 
-    onBack: function () {
+    onBack () {
       if (history.length > 1) {
         history.back()
       } else {
-        this._getRouter().navTo('list', {}, true)
+        this.getRouter().navTo('list', {}, undefined, true)
       }
-    },
+    }
 
-    _navigateToListFilteredByTag: function (tag) {
-      this._getRouter().navTo('list', {
-        query: {
-          search: this.escapeSearch('#' + tag)
-        }
-      }, false)
-    },
-
-    onTagPress: function (event) {
-      const tag = event.getSource().getBindingContext('tags').getObject()
-      this._navigateToListFilteredByTag(tag.id)
-    },
-
-    _updateRecord: function (body) {
+    onTagPress (event: Event): void {
+      const tag: any = (event.getSource() as StandardListItem).getBindingContext('tags').getObject()
+      this.navigateToListFilteredByTag(tag.id)
+    }
+/*
+    _updateRecord (body) {
       const view = this.getView()
       view.getModel().update(view.getBindingContext().getPath(), body, {
-        error: function () {
+        error: () => {
           MessageBox.show(this.i18n('record', 'submitChanges.error'), {
             icon: MessageBox.Icon.ERROR,
             title: this.i18n('db', 'title'),
             actions: [MessageBox.Action.CLOSE]
           })
-        }.bind(this)
+        }
       })
     },
 
@@ -180,6 +161,5 @@ sap.ui.define([
     onTouch: function () {
       this._updateRecord({ touched: '/Date(' + new Date().getTime() + ')/' })
     }
-
-  })
-})
+*/
+}
