@@ -3,6 +3,7 @@ import Router from 'sap/m/routing/Router'
 import Controller from 'sap/ui/core/mvc/Controller'
 import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../../../types/StoredRecord'
+import Model from 'sap/ui/model/Model'
 
 /**
  * @namespace bubu-cms.controller
@@ -14,6 +15,10 @@ export default class BaseController extends Controller {
 
   protected getRouter (): Router {
     return this.getComponent().getRouter() as Router
+  }
+
+  protected getModel (name: string | undefined = undefined): Model {
+    return this.getView().getModel(name)
   }
 
   public i18n (key: string, ...params: string[]): string {
@@ -84,7 +89,7 @@ export default class BaseController extends Controller {
     return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
   }
 
-/*
+  /*
     renderTags: function (tags) {
       // First tag is always object type
       return tags
