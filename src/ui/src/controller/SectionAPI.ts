@@ -5,7 +5,11 @@ export default class SectionAPI {
   private readonly owner: BaseController
 
   translateTag (tag: string): string {
-    return this.owner.i18n(`tag.${tag}`) || tag
+    const translated = this.owner.i18n(`tag.${tag}`)
+    if (translated === '') {
+      return tag
+    }
+    return translated
   }
 
   navigateToListFilteredByTag (tag: string): void {
