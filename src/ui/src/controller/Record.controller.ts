@@ -1,9 +1,6 @@
 import BaseController from './BaseController'
 import Event from 'sap/ui/base/Event'
-import Token from 'sap/m/Token'
 import JSONModel from 'sap/ui/model/json/JSONModel'
-import MessageBox from 'sap/m/MessageBox'
-import Fragment from 'sap/ui/core/Fragment'
 import CustomData from 'sap/ui/core/CustomData'
 import ObjectPageLayout from 'sap/m/ObjectPageLayout'
 import ObjectPageSection from 'sap/m/ObjectPageSection'
@@ -12,17 +9,19 @@ import SectionAPI from './SectionAPI'
 import { StoredRecord, StoredRecordType } from 'src/types/StoredRecord'
 
 export default class RecordController extends BaseController {
-    content: SectionAPI = new SectionAPI(this)
+  section: SectionAPI = new SectionAPI(this)
 
-    onInit (): void {
-      this.getRouter().getRoute('record').attachPatternMatched(this.onDisplayRecord, this)
-    }
+  onInit (): void {
+    this.getRouter().getRoute('record').attachPatternMatched(this.onDisplayRecord, this)
+  }
 
-    private onDisplayRecord (event: Event): void {
-      const recordId = event.getParameter('arguments').recordId
-      const page = this.byId('page')
-/*      
-      const sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
+  private onDisplayRecord (event: Event): void {
+    /*
+    const recordType = event.getParameter('arguments').type
+    const recordId = event.getParameter('arguments').id
+    const page = this.byId('page')
+
+    const sPath = '/' + this.getOwnerComponent().getModel().createKey('RecordSet', {
         id: recordId
       })
       this.getView().bindElement({
@@ -38,38 +37,38 @@ export default class RecordController extends BaseController {
         }
       })
 */
-    }
+  }
 
-    _setContent (content: any): void {
-      this.getView().setModel(new JSONModel(content), 'content')
-    }
+  _setContent (content: any): void {
+    this.getView().setModel(new JSONModel(content), 'content')
+  }
 
-    private showSection (section: ObjectPageSection): void {
-      (this.byId('page') as ObjectPageLayout).setSelectedSection(section)
-    }
+  private showSection (section: ObjectPageSection): void {
+    (this.byId('page') as ObjectPageLayout).setSelectedSection(section)
+  }
 
-    private isContentSectionVisible (expectedType: StoredRecordType, record: StoredRecord): boolean {
-      return record.type === expectedType && this.getModel('content').getProperty('/recordId')
-    }
+  private isContentSectionVisible (expectedType: StoredRecordType, record: StoredRecord): boolean {
+    return record.type === expectedType && this.getModel('content').getProperty('/recordId')
+  }
 
-    private displayContent (record: StoredRecord): void {
-/*
+  private displayContent (record: StoredRecord): void {
+    /*
       let content = record.toContent
       if (content.__ref) {
         content = this.getView().getModel().getObject('/' + content.__ref)
       }
       this._setContent(JSON.parse(content.data))
 */
-      const objectPage: ObjectPageLayout = this.byId('page') as ObjectPageLayout
-      const section: ObjectPageSection = objectPage.getSections().filter(function (candidate: ObjectPageSection) {
-        return candidate.getCustomData().some(function (customData: CustomData) {
-          return customData.getKey() === 'recordType' && customData.getValue() === record.type
-        })
-      })[0]
-      if (section) {
-        this.showSection(section)
-      } else {
-/*
+    const objectPage: ObjectPageLayout = this.byId('page') as ObjectPageLayout
+    const section: ObjectPageSection | undefined = objectPage.getSections().filter(function (candidate: ObjectPageSection) {
+      return candidate.getCustomData().some(function (customData: CustomData) {
+        return customData.getKey() === 'recordType' && customData.getValue() === record.type
+      })
+    })[0]
+    if (section !== undefined) {
+      this.showSection(section)
+    } else {
+      /*
         Fragment.load({
           id: 'section.json.' + record.type,
           name: 'bubu-cms/api/' + record.type,
@@ -88,9 +87,9 @@ export default class RecordController extends BaseController {
           this._showSection(section)
         }.bind(this))
 */
-      }
     }
-/*
+  }
+  /*
     _handleContent: function (record) {
       if (!record.toContent) {
         this._setContent({})
@@ -100,7 +99,7 @@ export default class RecordController extends BaseController {
     },
 */
 
-/*
+  /*
     _onBindingChanged: function () {
       const page = this.byId('page')
       const binding = this.getView().getElementBinding()
@@ -128,18 +127,18 @@ export default class RecordController extends BaseController {
     },
 */
 
-    onBack () {
-      if (history.length > 1) {
-        history.back()
-      } else {
-        this.getRouter().navTo('list', {}, undefined, true)
-      }
+  onBack (): void {
+    if (history.length > 1) {
+      history.back()
+    } else {
+      this.getRouter().navTo('list', {}, undefined, true)
     }
+  }
 
-    onTagPress (event: Event): void {
-      const tag: any = (event.getSource() as StandardListItem).getBindingContext('tags').getObject()
-      this.navigateToListFilteredByTag(tag.id)
-    }
+  onTagPress (event: Event): void {
+    const tag: any = (event.getSource() as StandardListItem).getBindingContext('tags').getObject()
+    this.navigateToListFilteredByTag(tag.id)
+  }
 /*
     _updateRecord (body) {
       const view = this.getView()
