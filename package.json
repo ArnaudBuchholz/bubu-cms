@@ -5,6 +5,7 @@
   "description": "Small, simple & flat CMS for bubu's family",
   "directories": {},
   "scripts": {
+    "preinstall": "npm-force-resolutions",
     "tsc": "tsc",
     "start": "node ./dist/index.js",
     "debug": "node --inspect-brk ./dist/index.js",
@@ -48,14 +49,17 @@
     "babel-preset-transform-ui5": "^7.0.5",
     "jest": "^27.0.6",
     "ncp": "^2.0.0",
+    "npm-force-resolutions": "^0.0.10",
     "npm-run-all": "^4.1.5",
-    "tar": "^4.4.19",
     "ts-jest": "^27.0.5",
     "ts-standard": "^10.0.0",
     "tsc": "^2.0.3",
     "typescript": "^4.3.5",
     "ui5-middleware-livereload": "^0.5.5"
   },
+  "resolutions": {
+    "tar": "4.4.19"
+  },  
   "ui5": {
     "dependencies": [
       "ui5-middleware-livereload"
