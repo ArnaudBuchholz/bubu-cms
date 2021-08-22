@@ -13,11 +13,8 @@
     "test": "jest",
     "test:debug": "jest --runInBand",
     "build": "npm-run-all build:ui5.ts build:ui5",
-    "build:ui5.ts": "babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files",
-    "build:ui5": "ui5 build --clean-dest",
-    "watch:ui5.ts": "babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files --watch",
-    "start:ui5": "ui5 serve --port 8080 -o index.html --config src/ui/ui5.yaml",
-    "start:dist": "ui5 serve --port 8080 -o index.html --config src/ui/ui5-dist.yaml"
+    "build:ui5.ts": "ncp src/types src/ui/src/types && babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files",
+    "build:ui5": "ui5 build --clean-dest"
   },
   "repository": {
     "type": "git",
