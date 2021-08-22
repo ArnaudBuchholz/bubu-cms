@@ -2,7 +2,7 @@ import Component from '../Component'
 import Router from 'sap/m/routing/Router'
 import Controller from 'sap/ui/core/mvc/Controller'
 import ResourceBundle from 'sap/base/i18n/ResourceBundle'
-import { StoredRecordRating } from '../../../types/StoredRecord'
+import { StoredRecordRating } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
 
 /**
