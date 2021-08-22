@@ -1,8 +1,6 @@
 import { IStorage, UpdateInstructions } from '../types/IStorage'
-import { isStoredRecord, StoredRecord } from '../types/StoredRecord'
+import { isDate, isStoredRecord, StoredRecord } from '../types/StoredRecord'
 import { join } from '../util/array'
-import { types } from 'util'
-const { isDate } = types
 
 function buildInstructions (received: Record<string, any>, record: Record<string, any>, field: string, instructions: Record<string, any>): boolean {
   const receivedValue: any = received[field]
