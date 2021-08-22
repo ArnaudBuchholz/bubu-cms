@@ -1,9 +1,9 @@
 import BaseController from './BaseController'
 import Event from 'sap/ui/base/Event'
 // import SearchField from 'sap/m/SearchField'
-import { StoredRecord, $tag } from '../../../types/StoredRecord'
+import { StoredRecord, $tag } from '../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
-import { SearchOptions, SortableField, isSortableField, SortingOptions } from '../../../types/IStorage'
+import { SearchOptions, SortableField, isSortableField, SortingOptions } from '../types/IStorage'
 import ListViewState from '../model/ListViewState'
 
 interface QueryParameters {
