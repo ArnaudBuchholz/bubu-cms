@@ -1,5 +1,8 @@
-import { types } from 'util'
-const { isDate } = types
+export function isDate (value: any): value is Date {
+  return typeof value === 'object' &&
+    value !== null &&
+    Object.prototype.toString.call(value) === '[object Date]'
+}
 
 export type FieldValue = string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
