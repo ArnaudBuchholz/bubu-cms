@@ -30,3 +30,4 @@ db/*
 # UI5
 cache/
 src/ui/webapp/
+src/ui/src/types/
