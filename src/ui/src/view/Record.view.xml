@@ -20,9 +20,9 @@
 		<headerTitle>
 			<ObjectPageHeader
 				objectImageURI="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
-			  objectTitle="{name}"
-			  isObjectTitleAlwaysVisible="false"
-			  isObjectSubtitleAlwaysVisible="false"
+				objectTitle="{name}"
+				isObjectTitleAlwaysVisible="false"
+				isObjectSubtitleAlwaysVisible="false"
 			>
 				<actions>
 					<ObjectPageHeaderActionButton icon="sap-icon://nav-back" press="onBack" type="Transparent" />
