@@ -30,12 +30,10 @@ const movieType = declareType(storage, {
     name: 'page',
     type: 'number'
   }],
-  attributes: {
-    number: '$book / $page',
-    numberUnit: '',
-    status1: '$release',
-    status2: 'Math.floor($length / 60) + \':\' + ($length % 60).padStart(2, \'0\')'
-  }
+  number: '$book / $page',
+  numberUnit: '',
+  status1: '$release',
+  status2: 'Math.floor($length / 60) + \':\' + ($length % 60).padStart(2, \'0\')'
 })
 
 const horror = declareRecord(storage, {
