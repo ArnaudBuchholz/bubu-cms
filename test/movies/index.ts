@@ -1,4 +1,4 @@
-import { TypeDefinition, IStorage, StoredRecordType, StoredRecord, StoredRecordId } from '../../src/index'
+import { TypeDefinition, IStorage, StoredRecordType, StoredRecord, StoredRecordId, $tag } from '../../src/index'
 import { MemoryStorage } from '../../src/storages/memory'
 
 function declareType (storage: IStorage, type: TypeDefinition): StoredRecordType {
@@ -18,12 +18,40 @@ const movieType = declareType(storage, {
     name: 'imdb',
     type: 'string'
   }, {
+    name: 'release',
+    type: 'number'
+  }, {
+    name: 'length',
+    type: 'number'
+  }, {
     name: 'book',
     type: 'number'
   }, {
     name: 'page',
     type: 'number'
-  }]
+  }],
+  attributes: {
+    number: '$book / $page',
+    numberUnit: '',
+    status1: '$release',
+    status2: 'Math.floor($length / 60) + \':\' + ($length % 60).padStart(2, \'0\')'
+  }
+})
+
+const horror = declareRecord(storage, {
+  type: $tag,
+  id: '',
+  name: 'horror',
+  fields: {},
+  refs: {}
+})
+
+const scifi = declareRecord(storage, {
+  type: $tag,
+  id: '',
+  name: 'scifi',
+  fields: {},
+  refs: {}
 })
 
 declareRecord(storage, {
@@ -31,9 +59,13 @@ declareRecord(storage, {
   id: '',
   name: 'Alien',
   fields: {
-    imdb: '1324',
+    imdb: 'tt0078748',
+    release: 1979,
+    length: 117,
     book: 1,
     page: 1
   },
-  refs: {}
+  refs: {
+    [$tag]: [horror, scifi]
+  }
 })
