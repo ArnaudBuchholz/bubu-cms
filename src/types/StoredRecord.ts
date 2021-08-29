@@ -39,10 +39,12 @@ export function isFields (value: any): value is Fields {
 
 export type StoredRecordType = string
 export const MAX_STOREDRECORDTYPE_LENGTH: number = 32
-export const $type: StoredRecordType = '$type'
 export const $tag: StoredRecordType = '$tag'
+export const $type: StoredRecordType = '$type'
+export const $typefield: StoredRecordType = '$typefield'
+export const $typeattr: StoredRecordType = '$typeattr'
 export function isStoredRecordType (value: any): value is StoredRecordType {
-  return [$type, $tag].includes(value) || isValidName(value, MAX_STOREDRECORDTYPE_LENGTH)
+  return [$tag, $type, $typefield, $typeattr].includes(value) || isValidName(value, MAX_STOREDRECORDTYPE_LENGTH)
 }
 
 export type StoredRecordId = string
