@@ -1,5 +1,5 @@
 import JSONModel from 'sap/ui/model/json/JSONModel'
-import { StoredRecordType, StoredRecordId, StoredRecord } from '../types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../types/IStorage'
 
 export default class StorageModel extends JSONModel implements IStorage {
@@ -21,7 +21,8 @@ export default class StorageModel extends JSONModel implements IStorage {
     return json as StoredRecord
   }
 
-  async create (record: StoredRecord): Promise<void> {
+  async create (record: StorableRecord): Promise<StoredRecordId> {
+    return ''
   }
 
   async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
