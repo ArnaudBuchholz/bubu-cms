@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { StoredRecordType, StoredRecordId, StoredRecord } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
 import { create } from '../../src/api/create'
 
@@ -24,8 +24,9 @@ describe('api/create', () => {
       return null
     }
 
-    async create (record: StoredRecord): Promise<void> {
-      this.created = record
+    async create (record: StorableRecord): Promise<StoredRecordId> {
+      this.created = { ...record, id: '123' }
+      return '123'
     }
 
     async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {}
@@ -38,30 +39,19 @@ describe('api/create', () => {
     storage.created = null
   })
 
-  it('ensures the received body is a valid StoredRecord', async () => {
+  it('ensures the received body is a valid StorableRecord', async () => {
     expect(async () => await create(storage, {})).rejects.toThrow(Error)
     expect(storage.created).toEqual(null)
   })
 
-  it('ensures an existing StoredRecord can not be recreated', async () => {
-    expect(async () => await create(storage, {
-      type: 'exists',
-      id: '123',
-      name: 'Attempt',
-      fields: {},
-      refs: {}
-    })).rejects.toThrow(Error)
-    expect(storage.created).toEqual(null)
-  })
-
   it('creates new StoredRecord', async () => {
-    await create(storage, {
+    const id = await create(storage, {
       type: 'new',
-      id: '123',
       name: 'Should work',
       fields: {},
       refs: {}
     })
+    expect(id).toEqual('123')
     expect(storage.created).not.toEqual(null)
   })
 })
