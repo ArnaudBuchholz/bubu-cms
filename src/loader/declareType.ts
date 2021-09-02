@@ -3,7 +3,7 @@ import { TypeDefinition } from '../types/TypeDefinition'
 import { StoredRecord, $type } from '../types/StoredRecord'
 
 async function createType (storage: IStorage, typeDefinition: TypeDefinition): Promise<void> {
-  
+
 }
 
 async function updateType (storage: IStorage, typeDefinition: TypeDefinition, existing: StoredRecord): Promise<void> {
