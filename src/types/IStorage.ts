@@ -1,4 +1,4 @@
-import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, StoredRecord, FieldValue, FieldName } from './StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, StorableRecord, StoredRecord, FieldValue, FieldName } from './StoredRecord'
 
 export type SortableField = 'name' | 'rating' | 'touched'
 export function isSortableField (value: any): value is SortableField {
@@ -43,7 +43,7 @@ export interface UpdateInstructions {
 export interface IStorage {
   search: (options: SearchOptions) => Promise<SearchResult>
   get: (type: StoredRecordType, id: StoredRecordId) => Promise<null | StoredRecord>
-  create: (record: StoredRecord) => Promise<void>
+  create: (record: StorableRecord) => Promise<StoredRecordId>
   update: (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions) => Promise<void>
   delete: (type: StoredRecordType, id: StoredRecordId) => Promise<void>
 }
