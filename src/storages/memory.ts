@@ -1,4 +1,5 @@
-import { StoredRecordId, StoredRecordType, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
+import { nanoid } from 'nanoid'
+import { MAX_STOREDRECORDID_LENGTH, StoredRecordId, StoredRecordType, StorableRecord, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField, UpdateFieldValue } from '../types/IStorage'
 
 type TypeStore = Record<StoredRecordId, StoredRecord>
@@ -117,16 +118,19 @@ export class MemoryStorage implements IStorage {
     return this.store[type]?.[id] ?? null
   }
 
-  async create (record: StoredRecord): Promise<void> {
-    const { type, id } = record
+  async create (record: StorableRecord): Promise<StoredRecordId> {
+    const { type } = record
+    const id: StoredRecordId = nanoid(MAX_STOREDRECORDID_LENGTH)
     if (this.store[type] === undefined) {
       this.store[type] = {}
     }
-    this.store[type][id] = record
+    const stored: StoredRecord = { ...record, id }
+    this.store[type][id] = stored
     forEachRef(record.refs, (refType: StoredRecordType, refId: StoredRecordId) => {
-      this.addRef(refType, refId, record)
+      this.addRef(refType, refId, stored)
       return true
     })
+    return id
   }
 
   async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
