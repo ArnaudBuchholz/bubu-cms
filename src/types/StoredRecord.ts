@@ -75,9 +75,8 @@ export function isStoredRecordRefs (value: any): value is StoredRecordRefs {
     })
 }
 
-export interface StoredRecord {
+export interface StorableRecord {
   type: StoredRecordType
-  id: StoredRecordId
   name: string
   icon?: string
   rating?: StoredRecordRating
@@ -86,20 +85,27 @@ export interface StoredRecord {
   refs: StoredRecordRefs
 }
 
+export interface StoredRecord extends StorableRecord {
+  id: StoredRecordId
+}
+
 export const MAX_STOREDRECORDNAME_LENGTH: number = 256
 export const MAX_STOREDRECORDICON_LENGTH: number = 256
 
-export function isStoredRecord (value: any): value is StoredRecord {
+export function isStorableRecord (value: any): value is StorableRecord {
   if (!isLiteralObject(value)) {
     return false
   }
-  const { type, id, name, icon, rating, touched, fields, refs } = value
+  const { type, name, icon, rating, touched, fields, refs } = value
   return isStoredRecordType(type) &&
-    IsStoredRecordId(id) &&
     isValidNonEmptyString(name, MAX_STOREDRECORDNAME_LENGTH) &&
     (icon === undefined || isValidNonEmptyString(icon, MAX_STOREDRECORDICON_LENGTH)) &&
     (rating === undefined || IsStoredRecordRating(rating)) &&
     (touched === undefined || isDate(touched)) &&
     isFields(fields) &&
     isStoredRecordRefs(refs)
+}
+
+export function isStoredRecord (value: any): value is StoredRecord {
+  return isStorableRecord(value) && IsStoredRecordId(value.id)
 }
