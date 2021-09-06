@@ -1,15 +1,15 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../../src/types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
+import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
 import { create } from '../../src/api/create'
+import fakeStorage from './fakeStorage'
 
 describe('api/create', () => {
-  class Storage implements IStorage {
-    public created: null | StoredRecord = null
+  let created: null | StoredRecord = null
+
+  const storage: IStorage = Object.assign(fakeStorage, {
     async search (options: SearchOptions): Promise<SearchResult> {
       return { records: [], count: 0, refs: {} }
-    }
+    },
 
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
@@ -22,26 +22,21 @@ describe('api/create', () => {
         }
       }
       return null
-    }
+    },
 
     async create (record: StorableRecord): Promise<StoredRecordId> {
-      this.created = { ...record, id: '123' }
+      created = { ...record, id: '123' }
       return '123'
     }
-
-    async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {}
-    async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {}
-  }
-
-  const storage: Storage = new Storage()
+  })
 
   beforeAll(() => {
-    storage.created = null
+    created = null
   })
 
   it('ensures the received body is a valid StorableRecord', async () => {
-    expect(async () => await create(storage, {})).rejects.toThrow(Error)
-    expect(storage.created).toEqual(null)
+    await expect(create(storage, {})).rejects.toThrow(Error)
+    expect(created).toEqual(null)
   })
 
   it('creates new StoredRecord', async () => {
@@ -52,6 +47,6 @@ describe('api/create', () => {
       refs: {}
     })
     expect(id).toEqual('123')
-    expect(storage.created).not.toEqual(null)
+    expect(created).not.toEqual(null)
   })
 })
