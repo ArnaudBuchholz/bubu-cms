@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
-import { StoredRecordType, StoredRecordId, StoredRecordRefs, StoredRecord } from '../../src/types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
+import { StoredRecordRefs } from '../../src/types/StoredRecord'
+import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
 import { DEFAULT_PAGE_SIZE, search } from '../../src/api/search'
+import fakeStorage from './fakeStorage'
 
 type SearchResultAndOptions = SearchResult & {
   options: SearchOptions
 }
 
 describe('api/search', () => {
-  const storage: IStorage = {
+  const storage: IStorage = Object.assign(fakeStorage, {
     async search (options: SearchOptions): Promise<SearchResult> {
       const result: SearchResultAndOptions = {
         records: [],
@@ -18,12 +17,8 @@ describe('api/search', () => {
         options
       }
       return result
-    },
-    async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> { return null },
-    async create (record: StoredRecord): Promise<void> {},
-    async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {},
-    async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {}
-  }
+    }
+  })
 
   function genTests (baseUrl: string, baseRefs: StoredRecordRefs, label: string): void {
     it(`searches ${label}`, async () => {
@@ -106,24 +101,24 @@ describe('api/search', () => {
     })
 
     describe('errors', () => {
-      it('validates parameters', () => {
-        expect(async () => await search(storage, `${baseUrl}?unknown=abc&skip=20`)).rejects.toThrow(Error)
+      it('validates parameters', async () => {
+        return await expect(search(storage, `${baseUrl}?unknown=abc&skip=20`)).rejects.toThrow(Error)
       })
 
-      it('validates top parameter', () => {
-        expect(async () => await search(storage, `${baseUrl}?top=abc&skip=20`)).rejects.toThrow(Error)
+      it('validates top parameter', async () => {
+        return await expect(search(storage, `${baseUrl}?top=abc&skip=20`)).rejects.toThrow(Error)
       })
 
-      it('validates skip parameter', () => {
-        expect(async () => await search(storage, `${baseUrl}?top=50&skip=abc`)).rejects.toThrow(Error)
+      it('validates skip parameter', async () => {
+        return await expect(search(storage, `${baseUrl}?top=50&skip=abc`)).rejects.toThrow(Error)
       })
 
-      it('validates sort parameter', () => {
-        expect(async () => await search(storage, `${baseUrl}?sort=any`)).rejects.toThrow(Error)
+      it('validates sort parameter', async () => {
+        return await expect(search(storage, `${baseUrl}?sort=any`)).rejects.toThrow(Error)
       })
 
-      it('validates sort direction', () => {
-        expect(async () => await search(storage, `${baseUrl}?sort=name any`)).rejects.toThrow(Error)
+      it('validates sort direction', async () => {
+        return await expect(search(storage, `${baseUrl}?sort=name any`)).rejects.toThrow(Error)
       })
     })
   }
@@ -135,19 +130,19 @@ describe('api/search', () => {
 
   describe('errors', () => {
     it('validates syntax', async () => {
-      expect(async () => await search(storage, '/anything')).rejects.toThrow(Error)
+      return await expect(search(storage, '/anything')).rejects.toThrow(Error)
     })
 
     it('validates syntax (too many steps)', async () => {
-      expect(async () => await search(storage, '/records/any/thing')).rejects.toThrow(Error)
+      return await expect(search(storage, '/records/any/thing')).rejects.toThrow(Error)
     })
 
     it('rejects invalid types ($any)', async () => {
-      expect(async () => await search(storage, '/records/$any')).rejects.toThrow(Error)
+      return await expect(search(storage, '/records/$any')).rejects.toThrow(Error)
     })
 
     it('rejects invalid types (123)', async () => {
-      expect(async () => await search(storage, '/records/123')).rejects.toThrow(Error)
+      return await expect(search(storage, '/records/123')).rejects.toThrow(Error)
     })
   })
 })
