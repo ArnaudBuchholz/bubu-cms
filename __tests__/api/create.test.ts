@@ -1,5 +1,5 @@
 import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../../src/types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
+import { IStorage } from '../../src/types/IStorage'
 import { create } from '../../src/api/create'
 import fakeStorage from './fakeStorage'
 
@@ -7,10 +7,6 @@ describe('api/create', () => {
   let created: null | StoredRecord = null
 
   const storage: IStorage = Object.assign(fakeStorage, {
-    async search (options: SearchOptions): Promise<SearchResult> {
-      return { records: [], count: 0, refs: {} }
-    },
-
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
         return {
