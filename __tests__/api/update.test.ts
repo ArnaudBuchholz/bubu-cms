@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
+import { IStorage, UpdateInstructions } from '../../src/types/IStorage'
 import { update } from '../../src/api/update'
+import fakeStorage from './fakeStorage'
 
 describe('api/create', () => {
   const now = new Date()
@@ -30,12 +29,9 @@ describe('api/create', () => {
     touched: now
   }
 
-  class Storage implements IStorage {
-    public updateInstructions: null | UpdateInstructions = null
-    async search (options: SearchOptions): Promise<SearchResult> {
-      return { records: [], count: 0, refs: {} }
-    }
+  let updateInstructions: null | UpdateInstructions = null
 
+  const storage: IStorage = Object.assign(fakeStorage, {
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'modifiable') {
         if (id === '1') {
@@ -46,20 +42,15 @@ describe('api/create', () => {
         }
       }
       return null
-    }
+    },
 
-    async create (record: StoredRecord): Promise<void> {}
     async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
-      this.updateInstructions = instructions
+      updateInstructions = instructions
     }
-
-    async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {}
-  }
-
-  const storage: Storage = new Storage()
+  })
 
   beforeEach(() => {
-    storage.updateInstructions = null
+    updateInstructions = null
   })
 
   const baseInstructions: UpdateInstructions = {
@@ -71,115 +62,115 @@ describe('api/create', () => {
   }
 
   it('ensures the received body is a valid StoredRecord', async () => {
-    expect(async () => await update(storage, {})).rejects.toThrow(Error)
+    return await expect(update(storage, {})).rejects.toThrow(Error)
   })
 
   it('ensures the received type and id identifies an existing record', async () => {
-    expect(async () => await update(storage, {
+    await expect(update(storage, {
       type: 'unknown',
       id: '123',
       name: 'initial',
       fields: {},
       refs: {}
     })).rejects.toThrow(Error)
-    expect(storage.updateInstructions).toEqual(null)
+    expect(updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (none with record1)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record1
-    })
-    expect(storage.updateInstructions).toEqual(null)
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (none with record2)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record2
-    })
-    expect(storage.updateInstructions).toEqual(null)
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (name)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record1,
       name: 'modified'
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       name: 'modified'
     })
   })
 
   it('computes the update instructions (create icon)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record1,
       icon: 'test.jpg'
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       icon: 'test.jpg'
     })
   })
 
   it('computes the update instructions (remove icon)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record2,
       icon: undefined
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       icon: null
     })
   })
 
   it('computes the update instructions (create rating)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record1,
       rating: 4
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       rating: 4
     })
   })
 
   it('computes the update instructions (remove rating)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record2,
       rating: undefined
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       rating: null
     })
   })
 
   it('computes the update instructions (touched not changed)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record2,
       touched: new Date(now)
-    })
-    expect(storage.updateInstructions).toEqual(null)
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual(null)
   })
 
   it('computes the update instructions (create touched)', async () => {
     const touched = new Date(2021, 6, 25, 0, 10, 25, 0)
-    await update(storage, {
+    await expect(update(storage, {
       ...record1,
       touched
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       touched
     })
   })
 
   it('computes the update instructions (remove touched)', async () => {
-    await update(storage, {
+    await expect(update(storage, {
       ...record2,
       touched: undefined
-    })
-    expect(storage.updateInstructions).toEqual({
+    })).resolves.toBeUndefined()
+    expect(updateInstructions).toEqual({
       ...baseInstructions,
       touched: null
     })
@@ -187,15 +178,15 @@ describe('api/create', () => {
 
   describe('fields update', () => {
     it('computes new and removed fields', async () => {
-      await update(storage, {
+      await expect(update(storage, {
         ...record1,
         fields: {
           a: 'a',
           c: 'c',
           date: now
         }
-      })
-      expect(storage.updateInstructions).toEqual({
+      })).resolves.toBeUndefined()
+      expect(updateInstructions).toEqual({
         ...baseInstructions,
         fields: {
           b: null,
@@ -205,26 +196,26 @@ describe('api/create', () => {
     })
 
     it('handles date fields (not changed)', async () => {
-      await update(storage, {
+      await expect(update(storage, {
         ...record1,
         fields: {
           ...record1.fields,
           date: new Date(now)
         }
-      })
-      expect(storage.updateInstructions).toEqual(null)
+      })).resolves.toBeUndefined()
+      expect(updateInstructions).toEqual(null)
     })
 
     it('handles date fields (changed)', async () => {
       const changed = new Date(2021, 6, 27, 0, 13, 18, 0)
-      await update(storage, {
+      await expect(update(storage, {
         ...record1,
         fields: {
           ...record1.fields,
           date: changed
         }
-      })
-      expect(storage.updateInstructions).toEqual({
+      })).resolves.toBeUndefined()
+      expect(updateInstructions).toEqual({
         ...baseInstructions,
         fields: {
           date: changed
@@ -235,25 +226,25 @@ describe('api/create', () => {
 
   describe('refs update', () => {
     it('ignores refs order', async () => {
-      await update(storage, {
+      await expect(update(storage, {
         ...record1,
         refs: {
           any: ['any1', 'any0'],
           [$tag]: ['tag2', 'tag0', 'tag1']
         }
-      })
-      expect(storage.updateInstructions).toEqual(null)
+      })).resolves.toBeUndefined()
+      expect(updateInstructions).toEqual(null)
     })
 
     it('adds and removes refs', async () => {
-      await update(storage, {
+      await expect(update(storage, {
         ...record1,
         refs: {
           [$tag]: ['tag2', 'tag3', 'tag4'],
           another: ['another1', 'another2']
         }
-      })
-      expect(storage.updateInstructions).toEqual({
+      })).resolves.toBeUndefined()
+      expect(updateInstructions).toEqual({
         ...baseInstructions,
         refs: {
           del: {
