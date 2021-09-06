@@ -107,5 +107,8 @@ export function isStorableRecord (value: any): value is StorableRecord {
 }
 
 export function isStoredRecord (value: any): value is StoredRecord {
-  return isStorableRecord(value) && IsStoredRecordId(value.id)
+  if (!isStorableRecord(value)) {
+    return false
+  }
+  return IsStoredRecordId((value as any).id)
 }
