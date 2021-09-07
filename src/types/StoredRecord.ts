@@ -37,15 +37,6 @@ export function isFields (value: any): value is Fields {
     Object.keys(value).every((name: string) => isFieldName(name) && isFieldValue(value[name]))
 }
 
-export type StoredRecordType = string
-export const MAX_STOREDRECORDTYPE_LENGTH: number = 32
-export const $tag: StoredRecordType = '$tag'
-export const $type: StoredRecordType = '$type'
-export const $typefield: StoredRecordType = '$typefield'
-export function isStoredRecordType (value: any): value is StoredRecordType {
-  return [$tag, $type, $typefield].includes(value) || isValidName(value, MAX_STOREDRECORDTYPE_LENGTH)
-}
-
 export type StoredRecordId = string
 export const MAX_STOREDRECORDID_LENGTH: number = 16
 function isValidNonEmptyString (value: any, maxLength: number): value is string {
@@ -53,6 +44,15 @@ function isValidNonEmptyString (value: any, maxLength: number): value is string 
 }
 export function IsStoredRecordId (value: any): value is StoredRecordId {
   return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) && value.trim() === value
+}
+
+export type StoredRecordType = StoredRecordId
+export const MAX_STOREDRECORDTYPE_LENGTH: number = MAX_STOREDRECORDID_LENGTH
+export const $tag: StoredRecordType = '$tag'
+export const $type: StoredRecordType = '$type'
+export const $typefield: StoredRecordType = '$typefield'
+export function isStoredRecordType (value: any): value is StoredRecordType {
+  return [$tag, $type, $typefield].includes(value) || IsStoredRecordId(value)
 }
 
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
