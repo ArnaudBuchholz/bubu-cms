@@ -1,29 +1,40 @@
-import { SearchResult, SortableField } from '../../src/types/IStorage'
 import { MemoryStorage } from '../../src/storages/memory'
-import { StoredRecord } from '../../src/types/StoredRecord'
+import { SearchResult, SortableField } from '../../src/types/IStorage'
+import { TypeDefinition, saveTypeDefinition } from '../../src/types/TypeDefinition'
+import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
 
 describe('storages/memory', () => {
   let storage: MemoryStorage
 
-  const tags: Record<string, StoredRecord> = [...new Array(10).keys()]
-    .reduce((dictionary: Record<string, StoredRecord>, index: number): Record<string, StoredRecord> => {
-      dictionary[index] = {
-        type: 'tag',
-        id: `tag${index}`,
+  const tags: StoredRecord[] = [...new Array(10).keys()]
+    .map((index: number) => {
+      return {
+        type: $tag,
+        id: '',
         name: `Tag ${index}`,
         refs: {},
         fields: {}
       }
-      return dictionary
-    }, {})
+    })
+
+  const recordType: TypeDefinition = {
+    name: 'record',
+    fields: [{
+      name: 'a',
+      type: 'string'
+    }, {
+      name: 'b',
+      type: 'string'
+    }]
+  }
 
   const record0: StoredRecord = {
-    type: 'record',
-    id: 'record0',
+    type: '',
+    id: '',
     name: 'Record 0',
     rating: 5,
     touched: new Date('2021-06-12T12:14:23.000Z'),
-    refs: { tag: ['tag0', 'tag7'] },
+    refs: { [$tag]: ['0', '7'] },
     fields: {
       a: 'a',
       b: 'b'
@@ -31,11 +42,11 @@ describe('storages/memory', () => {
   }
 
   const record1: StoredRecord = {
-    type: 'record',
-    id: 'record1',
+    type: '',
+    id: '',
     name: 'Record 1',
     rating: 3,
-    refs: { tag: ['tag0', 'tag1', 'tag2'] },
+    refs: { [$tag]: ['0', '1', '2'] },
     fields: {
       a: 'A',
       b: 'B'
@@ -43,19 +54,21 @@ describe('storages/memory', () => {
   }
 
   const record2: StoredRecord = {
-    type: 'record',
-    id: 'record2',
+    type: '',
+    id: '',
     name: 'A record 2',
     touched: new Date('2021-05-26T08:21:00.000Z'),
-    refs: { tag: ['tag0', 'tag9', 'tag8'] },
+    refs: { [$tag]: ['0', '9', '8'] },
     fields: {
       a: 'bA',
       b: 'aB'
     }
   }
 
+  let recordTypeId: StoredRecordType
+
   const records: StoredRecord[] = [
-    ...Object.keys(tags).map(index => tags[index]),
+    ...tags,
     record0,
     record1,
     record2
@@ -63,24 +76,31 @@ describe('storages/memory', () => {
 
   beforeAll(async () => {
     storage = new MemoryStorage()
-    for await (const record of records) {
-      await storage.create(record)
+    recordTypeId = await saveTypeDefinition(storage, recordType)
+    for await (const tag of tags) {
+      tag.id = await storage.create(tag)
+    }
+    for await (const record of [record0, record1, record2]) {
+      record.type = recordTypeId
+      record.refs[$tag] = record.refs[$tag].map((index: string) => tags[parseInt(index, 10)].id)
+      record.id = await storage.create(record)
     }
   })
 
   describe('get', () => {
     it('retreives any record by type and id (record)', async () => {
-      const retreived: null | StoredRecord = await storage.get('record', 'record0')
+      const retreived: null | StoredRecord = await storage.get(recordTypeId, record0.id)
       expect(retreived).toEqual(record0)
     })
 
     it('retreives any record by type and id (tag)', async () => {
-      const retreived: null | StoredRecord = await storage.get('tag', 'tag7')
-      expect(retreived).toEqual(tags[7])
+      const tag7 = tags[7]
+      const retreived: null | StoredRecord = await storage.get($tag, tag7.id)
+      expect(retreived).toEqual(tag7)
     })
 
     it('returns null if not found (invalid id)', async () => {
-      const retreived: null | StoredRecord = await storage.get('tag', 'tag12')
+      const retreived: null | StoredRecord = await storage.get($tag, 'tag12')
       expect(retreived).toEqual(null)
     })
 
@@ -96,23 +116,23 @@ describe('storages/memory', () => {
         paging: { skip: 0, top: 100 },
         refs: {}
       })
-      expect(all.count).toEqual(records.length)
-      expect(all.refs.tag).not.toEqual(undefined)
-      expect(all.refs.tag.length).not.toEqual(0)
+      expect(all.count).toEqual(tags.length + 3 /* records */ + 3 /* typedef + fields */)
+      expect(all.refs[$tag]).not.toEqual(undefined)
+      expect(all.refs[$tag].length).not.toEqual(0)
     })
 
     it('searches through refs', async () => {
       const all: SearchResult = await storage.search({
         paging: { skip: 0, top: 100 },
         refs: {
-          tag: ['tag7']
+          [$tag]: [tags[7].id]
         }
       })
       expect(all.count).toEqual(1)
       expect(all.records[0]).toEqual(record0)
-      expect(all.refs.tag).toEqual({
-        tag0: tags[0],
-        tag7: tags[7]
+      expect(all.refs[$tag]).toEqual({
+        [tags[0].id]: tags[0],
+        [tags[7].id]: tags[7]
       })
     })
 
@@ -120,14 +140,14 @@ describe('storages/memory', () => {
       const all: SearchResult = await storage.search({
         paging: { skip: 0, top: 100 },
         refs: {
-          tag: ['tag0', 'tag7']
+          [$tag]: [tags[0].id, tags[7].id]
         }
       })
       expect(all.count).toEqual(1)
       expect(all.records[0]).toEqual(record0)
-      expect(all.refs.tag).toEqual({
-        tag0: tags[0],
-        tag7: tags[7]
+      expect(all.refs[$tag]).toEqual({
+        [tags[0].id]: tags[0],
+        [tags[7].id]: tags[7]
       })
     })
 
@@ -139,9 +159,9 @@ describe('storages/memory', () => {
       })
       expect(all.count).toEqual(1)
       expect(all.records[0]).toEqual(record0)
-      expect(all.refs.tag).toEqual({
-        tag0: tags[0],
-        tag7: tags[7]
+      expect(all.refs[$tag]).toEqual({
+        [tags[0].id]: tags[0],
+        [tags[7].id]: tags[7]
       })
     })
 
