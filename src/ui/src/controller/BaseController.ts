@@ -4,6 +4,7 @@ import Controller from 'sap/ui/core/mvc/Controller'
 import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
+import ResourceModel from 'sap/ui/model/resource/ResourceModel'
 
 /**
  * @namespace bubu-cms.controller
@@ -21,9 +22,10 @@ export default class BaseController extends Controller {
     return this.getView().getModel(name)
   }
 
+  private i18nResourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
+
   public i18n (key: string, ...params: string[]): string {
-    const resourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as any)._oResourceBundle
-    return resourceBundle.getText(key, params)
+    return this.i18nResourceBundle.getText(key, params)
   }
 
   /*
