@@ -77,6 +77,7 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
+      "fake.*\\.ts",
       "\\.js$"
     ],
     "collectCoverage": true,
