@@ -1,7 +1,7 @@
 import { StoredRecordType, StoredRecordId, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
 import { deleteRecord } from '../../src/api/delete'
-import fakeStorage from './fakeStorage'
+import fakeStorage from './fakeStorage.helper'
 
 describe('api/create', () => {
   let deleted: null | StoredRecord = null

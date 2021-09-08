@@ -1,7 +1,7 @@
 import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
 import { IStorage, UpdateInstructions } from '../../src/types/IStorage'
 import { update } from '../../src/api/update'
-import fakeStorage from './fakeStorage'
+import fakeStorage from './fakeStorage.helper'
 
 describe('api/create', () => {
   const now = new Date()

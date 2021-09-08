@@ -1,7 +1,7 @@
 import { StoredRecordRefs } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
 import { DEFAULT_PAGE_SIZE, search } from '../../src/api/search'
-import fakeStorage from './fakeStorage'
+import fakeStorage from './fakeStorage.helper'
 
 type SearchResultAndOptions = SearchResult & {
   options: SearchOptions
