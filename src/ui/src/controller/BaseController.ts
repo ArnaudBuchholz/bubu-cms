@@ -22,7 +22,7 @@ export default class BaseController extends Controller {
     return this.getView().getModel(name)
   }
 
-  private i18nResourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
+  private readonly i18nResourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
 
   public i18n (key: string, ...params: string[]): string {
     return this.i18nResourceBundle.getText(key, params)
