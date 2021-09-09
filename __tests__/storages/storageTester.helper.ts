@@ -1,6 +1,6 @@
 import { IStorage, SearchResult, SortableField } from '../../src/types/IStorage'
 import { TypeDefinition, saveTypeDefinition } from '../../src/types/TypeDefinition'
-import { StoredRecordType, StoredRecord, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, isStoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
 
 export default function testStorage (storage: IStorage): void {
   const tags: StoredRecord[] = [...new Array(10).keys()]
@@ -198,10 +198,10 @@ export default function testStorage (storage: IStorage): void {
 
   describe('record lifecycle', () => {
     const lifecycle: StoredRecord = {
-      type: recordTypeId,
+      type: '',
       id: '',
       name: 'A new record',
-      refs: { [$tag]: [tags[0].id, tags[9].id, tags[8].id] },
+      refs: {},
       fields: {
         a: 'a',
         b: 'b'
@@ -211,6 +211,9 @@ export default function testStorage (storage: IStorage): void {
     const getLifecycle = async (): Promise<null | StoredRecord> => await storage.get(recordTypeId, lifecycle.id)
 
     beforeAll(async () => {
+      lifecycle.type = recordTypeId
+      lifecycle.refs = { [$tag]: [tags[0].id, tags[9].id, tags[8].id] }
+      expect(lifecycle.type).not.toBeUndefined()
       lifecycle.id = await storage.create(lifecycle)
     })
 
@@ -322,9 +325,19 @@ export default function testStorage (storage: IStorage): void {
           }
         })
         const record: null | StoredRecord = await getLifecycle()
-        expect(record?.refs).toEqual({
-          [$tag]: [tags[9].id, tags[8].id, tags[1].id]
-        })
+        expect(record).not.toBeNull()
+
+        function compare (id1: StoredRecordId, id2: StoredRecordId): number {
+          expect(isStoredRecordId(id1)).toStrictEqual(true)
+          expect(isStoredRecordId(id2)).toStrictEqual(true)
+          return id1.localeCompare(id2)
+        }
+
+        if (record !== null) {
+          expect(Object.keys(record.refs).length).toStrictEqual(1)
+          expect(record.refs[$tag]).not.toBeUndefined()
+          expect([...record.refs[$tag]].sort(compare)).toEqual([tags[9].id, tags[8].id, tags[1].id].sort(compare))
+        }
       })
     })
 
