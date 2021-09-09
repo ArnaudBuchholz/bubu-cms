@@ -1,6 +1,6 @@
 import { IStorage, SearchResult, SortableField } from '../../src/types/IStorage'
 import { TypeDefinition, saveTypeDefinition } from '../../src/types/TypeDefinition'
-import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecord, $tag } from '../../src/types/StoredRecord'
 
 export default function testStorage (storage: IStorage): void {
   const tags: StoredRecord[] = [...new Array(10).keys()]
@@ -184,7 +184,7 @@ export default function testStorage (storage: IStorage): void {
         it(`sort by ${field} (${ascending ? 'ascending' : 'descending'})`, async () => {
           const all: SearchResult = await storage.search({
             paging: { skip: 0, top: 100 },
-            refs: { tag: ['tag0'] },
+            refs: { [$tag]: [tags[0].id] },
             sort: {
               field: field as SortableField,
               ascending
@@ -197,100 +197,102 @@ export default function testStorage (storage: IStorage): void {
   })
 
   describe('record lifecycle', () => {
-    const lifecycle0: StoredRecord = {
-      type: 'lifecycle',
-      id: 'lifecycle0',
+    const lifecycle: StoredRecord = {
+      type: recordTypeId,
+      id: '',
       name: 'A new record',
-      refs: { tag: ['tag0', 'tag9', 'tag8'] },
+      refs: { [$tag]: [tags[0].id, tags[9].id, tags[8].id] },
       fields: {
         a: 'a',
         b: 'b'
       }
     }
 
-    const getLifecycle0 = async (): Promise<null | StoredRecord> => await storage.get('lifecycle', 'lifecycle0')
+    const getLifecycle = async (): Promise<null | StoredRecord> => await storage.get(recordTypeId, lifecycle.id)
 
-    beforeAll(async () => await storage.create(lifecycle0))
+    beforeAll(async () => {
+      lifecycle.id = await storage.create(lifecycle)
+    })
 
     it('created the lifecycle record', async () => {
-      const record: null | StoredRecord = await getLifecycle0()
-      expect(record).toEqual(lifecycle0)
+      const record: null | StoredRecord = await getLifecycle()
+      expect(record).toEqual(lifecycle)
     })
 
     describe('updating', () => {
       it('updates name', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           name: 'New name',
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.name).toEqual('New name')
       })
 
       it('updates icon', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           icon: 'anything',
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.icon).toEqual('anything')
       })
 
       it('removes icon', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           icon: null,
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.icon).toEqual(undefined)
       })
 
       it('updates rating', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           rating: 4,
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.rating).toEqual(4)
       })
 
       it('removes rating', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           rating: null,
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.rating).toEqual(undefined)
       })
 
       it('updates touched', async () => {
         const touched = new Date()
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           touched,
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.touched).toEqual(touched)
       })
 
       it('removes touched', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           touched: null,
           fields: {},
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.touched).toEqual(undefined)
       })
 
       it('updates fields', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           fields: {
             a: 'A',
             b: null,
@@ -298,7 +300,7 @@ export default function testStorage (storage: IStorage): void {
           },
           refs: { add: {}, del: {} }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record).not.toEqual(null)
         if (record !== null) {
           expect(record.fields.a).toEqual('A')
@@ -308,28 +310,28 @@ export default function testStorage (storage: IStorage): void {
       })
 
       it('updates references', async () => {
-        await storage.update('lifecycle', 'lifecycle0', {
+        await storage.update(recordTypeId, lifecycle.id, {
           fields: {},
           refs: {
             add: {
-              tag: ['tag1']
+              [$tag]: [tags[1].id]
             },
             del: {
-              tag: ['tag0']
+              [$tag]: [tags[0].id]
             }
           }
         })
-        const record: null | StoredRecord = await getLifecycle0()
+        const record: null | StoredRecord = await getLifecycle()
         expect(record?.refs).toEqual({
-          tag: ['tag9', 'tag8', 'tag1']
+          [$tag]: [tags[9].id, tags[8].id, tags[1].id]
         })
       })
     })
 
     describe('deleting', () => {
       it('removes the record', async () => {
-        await storage.delete('lifecycle', 'lifecycle0')
-        const record: null | StoredRecord = await getLifecycle0()
+        await storage.delete(recordTypeId, lifecycle.id)
+        const record: null | StoredRecord = await getLifecycle()
         expect(record).toEqual(null)
       })
     })
