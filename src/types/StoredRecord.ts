@@ -42,8 +42,10 @@ export const MAX_STOREDRECORDID_LENGTH: number = 16
 function isValidNonEmptyString (value: any, maxLength: number): value is string {
   return typeof value === 'string' && value.length > 0 && value.length <= maxLength
 }
-export function IsStoredRecordId (value: any): value is StoredRecordId {
-  return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) && value.trim() === value
+export function isStoredRecordId (value: any): value is StoredRecordId {
+  return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) &&
+    value.match(/^[A-Z0-9_-]+$/i) !== null &&
+    value.trim() === value
 }
 
 export type StoredRecordType = StoredRecordId
@@ -52,11 +54,11 @@ export const $tag: StoredRecordType = '$tag'
 export const $type: StoredRecordType = '$type'
 export const $typefield: StoredRecordType = '$typefield'
 export function isStoredRecordType (value: any): value is StoredRecordType {
-  return [$tag, $type, $typefield].includes(value) || IsStoredRecordId(value)
+  return [$tag, $type, $typefield].includes(value) || isStoredRecordId(value)
 }
 
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
-export function IsStoredRecordRating (value: any): value is StoredRecordRating {
+export function isStoredRecordRating (value: any): value is StoredRecordRating {
   return typeof value === 'number' && [1, 2, 3, 4, 5].includes(value)
 }
 
@@ -71,7 +73,7 @@ export function isStoredRecordRefs (value: any): value is StoredRecordRefs {
       if (!Array.isArray(ids)) {
         return false
       }
-      return ids.every((id: any) => IsStoredRecordId)
+      return ids.every((id: any) => isStoredRecordId)
     })
 }
 
@@ -100,7 +102,7 @@ export function isStorableRecord (value: any): value is StorableRecord {
   return isStoredRecordType(type) &&
     isValidNonEmptyString(name, MAX_STOREDRECORDNAME_LENGTH) &&
     (icon === undefined || isValidNonEmptyString(icon, MAX_STOREDRECORDICON_LENGTH)) &&
-    (rating === undefined || IsStoredRecordRating(rating)) &&
+    (rating === undefined || isStoredRecordRating(rating)) &&
     (touched === undefined || isDate(touched)) &&
     isFields(fields) &&
     isStoredRecordRefs(refs)
@@ -110,5 +112,5 @@ export function isStoredRecord (value: any): value is StoredRecord {
   if (!isStorableRecord(value)) {
     return false
   }
-  return IsStoredRecordId((value as any).id)
+  return isStoredRecordId((value as any).id)
 }

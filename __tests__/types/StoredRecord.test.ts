@@ -9,8 +9,8 @@ import {
   $tag,
   isStoredRecordType,
   MAX_STOREDRECORDID_LENGTH,
-  IsStoredRecordId,
-  IsStoredRecordRating,
+  isStoredRecordId,
+  isStoredRecordRating,
   isStoredRecordRefs,
   MAX_STOREDRECORDNAME_LENGTH,
   MAX_STOREDRECORDICON_LENGTH,
@@ -52,18 +52,18 @@ describe('types/StoredRecord', () => {
   ])
 
   testTypeGuardFunc('isStoredRecordType', isStoredRecordType, [
-    $tag, $type, 'a', 'anyField', 'AVeryLongFieldName', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH, 'abc')
+    $tag, $type, 'a', 'anyType', 'aVeryLongTypeId', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH, 'abc')
   ], [
-    '', ' a', 'a ', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH + 1, 'abc'), '_abc', '$abc'
+    '', ' a', 'a ', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH + 1, 'abc'), '#abc', '$abc'
   ])
 
-  testTypeGuardFunc('IsStoredRecordId', IsStoredRecordId, [
-    $tag, $type, 'a', 'anyField', ''.padStart(MAX_STOREDRECORDID_LENGTH, 'abc')
+  testTypeGuardFunc('isStoredRecordId', isStoredRecordId, [
+    'a', 'anyId', ''.padStart(MAX_STOREDRECORDID_LENGTH, 'abc')
   ], [
-    '', ' a', 'a ', 'AVeryLongFieldName', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
+    $tag, $type, '', ' a', 'a ', 'aReallyVeryLongId', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
   ])
 
-  testTypeGuardFunc('IsStoredRecordRating', IsStoredRecordRating, [
+  testTypeGuardFunc('isStoredRecordRating', isStoredRecordRating, [
     1, 2, 3, 4, 5
   ], [
     undefined, null, '', true, false, 0, 6, -1, -2
