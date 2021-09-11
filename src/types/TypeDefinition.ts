@@ -38,7 +38,6 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
 const mappableTypeDefinitionFields = ['labelKey']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
-/*
 export async function loadTypeDefinition (storage: IStorage, name: string): Promise<TypeDefinition | null> {
   const result: SearchResult = await storage.search({
     paging: { skip: 0, top: 1 },
@@ -58,21 +57,17 @@ export async function loadTypeDefinition (storage: IStorage, name: string): Prom
   map(mappableTypeDefinitionFields, type.fields, typeDefinition)
   if (type.refs[$typefield] !== undefined) {
     const fieldRecords: StoredRecord[] = type.refs[$typefield].map(id => result.refs[$typefield][id])
-
-    (await Promise.all(record.refs[$typefield].map(async id => await storage.get($typefield, id))))
-      .filter((result: StoredRecord | null) => result !== null) as StoredRecord[]
     fieldRecords.forEach(fieldRecord => {
       const fieldDefinition: FieldDefinition = {
         name: fieldRecord?.name,
         type: fieldRecord.fields.type as FieldType
       }
-      map(['labelKey', 'regexp', 'placeholderKey'], record.fields, fieldDefinition)
+      map(mappableFieldDefinitionFields, fieldRecord.fields, fieldDefinition)
       typeDefinition.fields.push(fieldDefinition)
     })
   }
   return typeDefinition
 }
-*/
 
 export async function saveTypeDefinition (storage: IStorage, typeDefinition: TypeDefinition): Promise<StoredRecordType> {
   const type: StorableRecord = {
@@ -88,7 +83,9 @@ export async function saveTypeDefinition (storage: IStorage, typeDefinition: Typ
     const record: StorableRecord = {
       type: $typefield,
       name: fieldDefinition.name,
-      fields: {},
+      fields: {
+        type: fieldDefinition.type
+      },
       refs: {}
     }
     map(mappableFieldDefinitionFields, fieldDefinition, record.fields)
