@@ -19,7 +19,7 @@ export function isFieldValue (value: any): value is FieldValue {
 
 export type FieldName = string
 export const MAX_FIELDNAME_LENGTH: number = 64
-function isValidName (value: any, maxLength: number): boolean {
+export function isValidName (value: any, maxLength: number): boolean {
   return typeof value === 'string' && value.match(/^[a-zA-Z]+$/) !== null && value.length <= maxLength
 }
 export function isFieldName (value: any): value is FieldName {
@@ -27,7 +27,7 @@ export function isFieldName (value: any): value is FieldName {
 }
 
 export type Fields = Record<FieldName, FieldValue>
-function isLiteralObject (value: any): value is Record<string, any> {
+export function isLiteralObject (value: any): value is Record<string, any> {
   return value instanceof Object &&
     Object.prototype.toString.call(value) === '[object Object]' &&
     Object.getPrototypeOf(value) === Object.getPrototypeOf({})
@@ -39,7 +39,7 @@ export function isFields (value: any): value is Fields {
 
 export type StoredRecordId = string
 export const MAX_STOREDRECORDID_LENGTH: number = 16
-function isValidNonEmptyString (value: any, maxLength: number): value is string {
+export function isValidNonEmptyString (value: any, maxLength: number): value is string {
   return typeof value === 'string' && value.length > 0 && value.length <= maxLength
 }
 export function isStoredRecordId (value: any): value is StoredRecordId {
