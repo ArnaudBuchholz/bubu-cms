@@ -1,7 +1,11 @@
 import { SearchResult, IStorage } from '../types/IStorage'
-import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord, $type, $typefield } from '../types/StoredRecord'
+import { isLiteralObject, isValidNonEmptyString, isValidName, isFieldName, StoredRecordType, StoredRecordId, StorableRecord, StoredRecord, $type, $typefield } from '../types/StoredRecord'
 
 export type FieldType = 'string' | 'number' | 'date'
+
+export function isFieldType (value: any): value is FieldType {
+  return ['string', 'number', 'date'].includes(value)
+}
 
 export interface FieldDefinition {
   name: string
@@ -11,19 +15,55 @@ export interface FieldDefinition {
   placeholderKey?: string
 }
 
+export const MAX_TRANSLATIONKEY_LENGTH: number = 64
+export const MAX_REGEXP_LENGTH: number = 128
+
+export function isFieldDefinition (value: any): value is FieldDefinition {
+  if (!isLiteralObject(value)) {
+    return false
+  }
+  const { name, type, labelKey, regexp, placeholderKey } = value
+  return isFieldName(name) &&
+    isFieldType(type) &&
+    (labelKey === undefined || isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)) &&
+    (regexp === undefined || isValidNonEmptyString(labelKey, MAX_REGEXP_LENGTH)) &&
+    (placeholderKey === undefined || isValidNonEmptyString(placeholderKey, MAX_TRANSLATIONKEY_LENGTH))
+}
+
+export type TypeName = string
+export const MAX_TYPENAME_LENGTH = 64
+export function isTypeName (value: any): value is TypeName {
+  return isValidName(value, MAX_TYPENAME_LENGTH)
+}
+
+export type DefaultIcon = string
+export const MAX_DEFAULTICON_LENGTH = 64
+export function isDefaultIcon (value: any): value is DefaultIcon {
+  return isValidNonEmptyString(value, MAX_DEFAULTICON_LENGTH)
+}
+
 export interface TypeDefinition {
-  name: string
+  name: TypeName
   labelKey?: string
   defaultIcon?: string
   fields: FieldDefinition[]
+/*
   number?: string
   numberUnit?: string
   status1?: string
   status2?: string
+*/
 }
 
 export function isTypeDefinition (value: any): value is TypeDefinition {
-  return true
+  if (!isLiteralObject(value)) {
+    return false
+  }
+  const { name, labelKey, defaultIcon, fields } = value
+  return isTypeName(name) &&
+    (labelKey === undefined || isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)) &&
+    (defaultIcon === undefined || isDefaultIcon(defaultIcon)) &&
+    (Array.isArray(fields) && fields.every(isFieldDefinition))
 }
 
 function map (fields: string[], source: Record<string, any>, destination: any): void {
@@ -35,7 +75,7 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
   })
 }
 
-const mappableTypeDefinitionFields = ['labelKey']
+const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
 export async function loadTypeDefinition (storage: IStorage, name: string): Promise<TypeDefinition | null> {
