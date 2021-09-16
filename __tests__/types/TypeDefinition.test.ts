@@ -127,8 +127,8 @@ describe('types/TypeDefinition', () => {
   describe('serialization', () => {
     const storage = new MemoryStorage()
 
-    const type1: TypeDefinition = {
-      name: 'type1',
+    const types: TypeDefinition[] = [{
+      name: 'simpleType',
       fields: [{
         name: 'a',
         type: 'string',
@@ -138,15 +138,44 @@ describe('types/TypeDefinition', () => {
         type: 'string',
         placeholderKey: 'b.placeholder'
       }]
-    }
+    }, {
+      name: 'noFieldsButIconType',
+      fields: [],
+      defaultIcon: 'abc'
+    }, {
+      name: 'complexType',
+      fields: [{
+        name: 'string',
+        type: 'string',
+        labelKey: 'string.label'
+      }, {
+        name: 'number',
+        type: 'number',
+        labelKey: 'number.label',
+        placeholderKey: 'number.placeholder'
+      }, {
+        name: 'date',
+        type: 'date',
+        labelKey: 'date.label',
+        regexp: 'date.regexp',
+        placeholderKey: 'date.placeholder'
+      }],
+      labelKey: 'abc',
+      defaultIcon: 'def'
+    }]
 
     beforeAll(async () => {
-      await saveTypeDefinition(storage, type1)
+      for await (const type of types) {
+        await saveTypeDefinition(storage, type)
+      }
     })
 
-    it('saves and loads type definition', async () => {
-      const savedType1 = await loadTypeDefinition(storage, 'type1')
-      expect(savedType1).toEqual(type1)
+    types.forEach(type => {
+      const { name } = type
+      it(`saves and loads type definition (${name})`, async () => {
+        const savedType = await loadTypeDefinition(storage, name)
+        expect(savedType).toEqual(type)
+      })
     })
 
     it('returns null if the type does not exist', async () => {
