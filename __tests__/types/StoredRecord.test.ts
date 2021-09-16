@@ -16,15 +16,9 @@ import {
   MAX_STOREDRECORDICON_LENGTH,
   isStoredRecord
 } from '../../src/types/StoredRecord'
+import testTypeGuardFunc from './testTypeGuard.helper'
 
 describe('types/StoredRecord', () => {
-  function testTypeGuardFunc (name: string, func: (value: any) => boolean, okValues: any[], koValues: any[]): void {
-    describe(name, () => {
-      okValues.forEach((value: any) => it(`accepts ${JSON.stringify(value)}`, () => expect(func(value)).toEqual(true)))
-      koValues.forEach((value: any) => it(`rejects ${JSON.stringify(value)}`, () => expect(func(value)).toEqual(false)))
-    })
-  }
-
   testTypeGuardFunc('isFieldValue', isFieldValue, [
     '', 'Hello World !', ''.padStart(MAX_FIELDVALUE_LENGTH, 'abc'), 0, 1, 2, -1, -2, new Date()
   ], [
@@ -32,7 +26,7 @@ describe('types/StoredRecord', () => {
   ])
 
   testTypeGuardFunc('isFieldName', isFieldName, [
-    'a', 'anyField', 'AVeryLongFieldName', ''.padStart(MAX_FIELDNAME_LENGTH, 'abc')
+    'a', 'anyField', 'AVeryLongFieldName', ''.padStart(MAX_FIELDNAME_LENGTH, 'abc'), 'test_1'
   ], [
     '', ' a', 'a ', ''.padStart(MAX_FIELDNAME_LENGTH + 1, 'abc'), '_abc', '$abc'
   ])
