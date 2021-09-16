@@ -26,7 +26,7 @@ export function isFieldDefinition (value: any): value is FieldDefinition {
   return isFieldName(name) &&
     isFieldType(type) &&
     (labelKey === undefined || isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)) &&
-    (regexp === undefined || isValidNonEmptyString(labelKey, MAX_REGEXP_LENGTH)) &&
+    (regexp === undefined || isValidNonEmptyString(regexp, MAX_REGEXP_LENGTH)) &&
     (placeholderKey === undefined || isValidNonEmptyString(placeholderKey, MAX_TRANSLATIONKEY_LENGTH))
 }
 
