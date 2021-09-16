@@ -95,17 +95,15 @@ export async function loadTypeDefinition (storage: IStorage, name: string): Prom
     fields: []
   }
   map(mappableTypeDefinitionFields, type.fields, typeDefinition)
-  if (type.refs[$typefield] !== undefined) {
-    const fieldRecords: StoredRecord[] = type.refs[$typefield].map(id => result.refs[$typefield][id])
-    fieldRecords.forEach(fieldRecord => {
-      const fieldDefinition: FieldDefinition = {
-        name: fieldRecord?.name,
-        type: fieldRecord.fields.type as FieldType
-      }
-      map(mappableFieldDefinitionFields, fieldRecord.fields, fieldDefinition)
-      typeDefinition.fields.push(fieldDefinition)
-    })
-  }
+  const fieldRecords: StoredRecord[] = type.refs[$typefield].map(id => result.refs[$typefield][id])
+  fieldRecords.forEach(fieldRecord => {
+    const fieldDefinition: FieldDefinition = {
+      name: fieldRecord.name,
+      type: fieldRecord.fields.type as FieldType
+    }
+    map(mappableFieldDefinitionFields, fieldRecord.fields, fieldDefinition)
+    typeDefinition.fields.push(fieldDefinition)
+  })
   return typeDefinition
 }
 
