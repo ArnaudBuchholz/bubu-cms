@@ -1,9 +1,9 @@
-title;book;page
-Alien;1;1
-The Alien Legacy;1;1
-Aliens;1;1
-Alien 3;1;1
-Alien Resurrection;1;2
-Predator;1;2
-Alien VS Predator;1;2
-Aliens VS Predator Requiem;1;2
+$name;$tags;imdb;release;length;book;page
+Alien;horror scifi;1;1
+The Alien Legacy;;1;1
+Aliens;;1;1
+Alien 3;;1;1
+Alien Resurrection;;1;2
+Predator;;1;2
+Alien VS Predator;;1;2
+Aliens VS Predator Requiem;;1;2
