@@ -1,0 +1,36 @@
+{
+  "serve": 3000,
+  "storage": "memory",
+  "types": [{
+    "name": "movie",
+    "defaultIcon": "sap-icon://video",
+    "fields": [{
+      "name": "imdb",
+      "type": "string"
+    }, {
+      "name": "release",
+      "type": "number"
+    }, {
+      "name": "length",
+      "type": "number"
+    }, {
+      "name": "book",
+      "type": "number"
+    }, {
+      "name": "page",
+      "type": "number"
+    }],
+    "number": "$book / $page",
+    "numberUnit": "",
+    "status1": "$release",
+    "status2": "${ Math.floor(this.length / 60) }:${ (this.length % 60).toString().padStart(2, '0') }"
+  }],
+  "records": [{
+    "$type": "$tag",
+    "csv": "tags.csv"
+  }, {
+    "loader": "movies.js",
+    "$type": "movie",
+    "csv": "movie.csv"
+  }]
+}
