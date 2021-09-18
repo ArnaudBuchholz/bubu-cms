@@ -10,10 +10,13 @@ import {
   TypeDefinition,
   isTypeDefinition,
   loadTypeDefinition,
-  saveTypeDefinition
+  findTypeDefinition,
+  saveTypeDefinition,
+  validateRecord
 } from '../../src/types/TypeDefinition'
 import { MemoryStorage } from '../../src/storages/memory'
 import testTypeGuard from './testTypeGuard.helper'
+import { StoredRecordType, StoredRecord, $type, $typefield } from '../../src/types/StoredRecord'
 
 describe('types/TypeDefinition', () => {
   testTypeGuard('isFieldType', isFieldType, [
@@ -124,7 +127,7 @@ describe('types/TypeDefinition', () => {
   }, {}, 1, 0, null, undefined
   ])
 
-  describe('serialization', () => {
+  describe('with storage', () => {
     const storage = new MemoryStorage()
 
     const types: TypeDefinition[] = [{
@@ -164,23 +167,70 @@ describe('types/TypeDefinition', () => {
       defaultIcon: 'def'
     }]
 
+    const typesId: StoredRecordType[] = []
+
     beforeAll(async () => {
       for await (const type of types) {
-        await saveTypeDefinition(storage, type)
+        const typeId = await saveTypeDefinition(storage, type)
+        expect(typeId).not.toBeUndefined()
+        typesId.push(typeId)
       }
     })
 
-    types.forEach(type => {
+    types.forEach((type, index) => {
       const { name } = type
+
+      it(`saves and finds type definition (${name})`, async () => {
+        const savedType = await findTypeDefinition(storage, name)
+        expect(savedType).toEqual(type)
+      })
+
       it(`saves and loads type definition (${name})`, async () => {
-        const savedType = await loadTypeDefinition(storage, name)
+        const typeId = typesId[index]
+        const savedType = await loadTypeDefinition(storage, typeId)
         expect(savedType).toEqual(type)
       })
     })
 
-    it('returns null if the type does not exist', async () => {
+    it('returns null if the type does not exist (find)', async () => {
+      const unknownType = await findTypeDefinition(storage, 'unknwon')
+      expect(unknownType).toBeNull()
+    })
+
+    it('returns null if the type does not exist (load)', async () => {
       const unknownType = await loadTypeDefinition(storage, 'unknwon')
       expect(unknownType).toBeNull()
+    })
+
+    it('returns null if the record gets corrupted', async () => {
+      const typeId = typesId[0]
+      const typeRecord: StoredRecord | null = await storage.get($type, typeId)
+      expect(typeRecord).not.toBeNull()
+      if (typeRecord !== null) {
+        await storage.delete($typefield, typeRecord.refs[$typefield][0])
+        const savedType: TypeDefinition | null = await loadTypeDefinition(storage, typeId)
+        expect(savedType).toBeNull()
+      }
+    })
+
+    it('validates record type (not existing)', async () => {
+      const valid: boolean = await validateRecord(storage, {
+        type: 'unknown',
+        name: 'abc',
+        fields: {},
+        refs: {}
+      })
+      expect(valid).toEqual(false)
+    })
+
+    it('validates record type (type existing, no further validation for now)', async () => {
+      const valid: boolean = await validateRecord(storage, {
+        type: typesId[1],
+        name: 'abc',
+        fields: {},
+        refs: {}
+      })
+      expect(valid).toEqual(true)
     })
   })
 })
