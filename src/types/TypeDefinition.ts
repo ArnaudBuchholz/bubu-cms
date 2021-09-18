@@ -1,5 +1,16 @@
 import { SearchResult, IStorage } from '../types/IStorage'
-import { isLiteralObject, isValidNonEmptyString, isValidName, isFieldName, StoredRecordType, StoredRecordId, StorableRecord, StoredRecord, $type, $typefield } from '../types/StoredRecord'
+import {
+  isLiteralObject,
+  isValidNonEmptyString,
+  isValidName,
+  isFieldName,
+  StoredRecordType,
+  StoredRecordId,
+  StorableRecord,
+  StoredRecord,
+  $type,
+  $typefield
+} from '../types/StoredRecord'
 
 export type FieldType = 'string' | 'number' | 'date'
 
@@ -78,7 +89,40 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
 const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
-export async function loadTypeDefinition (storage: IStorage, name: string): Promise<TypeDefinition | null> {
+function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): TypeDefinition {
+  const typeDefinition: TypeDefinition = {
+    name: typeRecord.name,
+    fields: []
+  }
+  map(mappableTypeDefinitionFields, typeRecord.fields, typeDefinition)
+  fieldRecords.forEach(fieldRecord => {
+    const fieldDefinition: FieldDefinition = {
+      name: fieldRecord.name,
+      type: fieldRecord.fields.type as FieldType
+    }
+    map(mappableFieldDefinitionFields, fieldRecord.fields, fieldDefinition)
+    typeDefinition.fields.push(fieldDefinition)
+  })
+  return typeDefinition
+}
+
+export async function loadTypeDefinition (storage: IStorage, type: string): Promise<TypeDefinition | null> {
+  const typeRecord: StoredRecord | null = await storage.get($type, type)
+  if (typeRecord === null) {
+    return null
+  }
+  const fieldRecords: StoredRecord[] = []
+  for await (const fieldId of typeRecord.refs[$typefield]) {
+    const fieldRecord: StoredRecord | null = await storage.get($typefield, fieldId)
+    if (fieldRecord === null) {
+      return null
+    }
+    fieldRecords.push(fieldRecord)
+  }
+  return deserializeTypeDefinition(typeRecord, fieldRecords)
+}
+
+export async function findTypeDefinition (storage: IStorage, name: string): Promise<TypeDefinition | null> {
   const result: SearchResult = await storage.search({
     paging: { skip: 0, top: 1 },
     search: name,
@@ -89,22 +133,9 @@ export async function loadTypeDefinition (storage: IStorage, name: string): Prom
   if (result.count !== 1) {
     return null
   }
-  const type: StoredRecord = result.records[0]
-  const typeDefinition: TypeDefinition = {
-    name,
-    fields: []
-  }
-  map(mappableTypeDefinitionFields, type.fields, typeDefinition)
-  const fieldRecords: StoredRecord[] = type.refs[$typefield].map(id => result.refs[$typefield][id])
-  fieldRecords.forEach(fieldRecord => {
-    const fieldDefinition: FieldDefinition = {
-      name: fieldRecord.name,
-      type: fieldRecord.fields.type as FieldType
-    }
-    map(mappableFieldDefinitionFields, fieldRecord.fields, fieldDefinition)
-    typeDefinition.fields.push(fieldDefinition)
-  })
-  return typeDefinition
+  const typeRecord: StoredRecord = result.records[0]
+  const fieldRecords: StoredRecord[] = typeRecord.refs[$typefield].map(id => result.refs[$typefield][id])
+  return deserializeTypeDefinition(typeRecord, fieldRecords)
 }
 
 export async function saveTypeDefinition (storage: IStorage, typeDefinition: TypeDefinition): Promise<StoredRecordType> {
@@ -132,4 +163,13 @@ export async function saveTypeDefinition (storage: IStorage, typeDefinition: Typ
   const fieldIds: StoredRecordId[] = await Promise.all(fields.map(async field => await storage.create(field)))
   type.refs[$typefield] = fieldIds
   return await storage.create(type)
+}
+
+export async function validateRecord (storage: IStorage, record: StorableRecord): Promise<boolean> {
+  const typeDef: TypeDefinition | null = await loadTypeDefinition(storage, record.type)
+  if (typeDef === null) {
+    return false
+  }
+  // At least type exists
+  return true
 }
