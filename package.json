@@ -5,7 +5,6 @@
   "description": "Small, simple & flat CMS for bubu's family",
   "directories": {},
   "scripts": {
-    "tsc": "tsc",
     "start": "node ./dist/index.js",
     "debug": "node --inspect-brk ./dist/index.js",
     "lint": "ts-standard --fix",
@@ -13,9 +12,10 @@
     "test:api": "jest",
     "test:ui": "ui5-test-runner -webapp:src/ui/webapp",
     "test:debug": "jest --runInBand",
-    "build": "npm-run-all build:ui5.ts build:ui5",
+    "build": "npm-run-all build:tsc build:ui5.ts build:ui5",
+    "build:tsc": "tsc",
     "build:ui5.ts": "ncp src/types src/ui/src/types && babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files && replace UI5_CDN https://ui5.sap.com/1.94.0 src/ui/webapp --include=*.html -r",
-    "build:ui5": "ui5 build --clean-dest"
+    "build:ui5": "ui5 build --dest ./dist/ui --clean-dest"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "reserve": "^1.11.7"
   },
   "devDependencies": {
-    "@babel/cli": "^7.15.4",
+    "@babel/cli": "^7.15.7",
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
@@ -42,24 +42,18 @@
     "@types/jest": "^27.0.1",
     "@types/jquery": "^3.5.6",
     "@types/nanoid": "^3.0.0",
-    "@types/node": "^16.9.1",
+    "@types/node": "^16.9.4",
     "@types/qunit": "^2.11.2",
     "@ui5/cli": "^2.12.1",
     "babel-preset-transform-ui5": "^7.0.5",
-    "jest": "^27.1.1",
+    "jest": "^27.2.0",
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "replace": "^1.2.1",
     "ts-jest": "^27.0.5",
     "ts-standard": "^10.0.0",
-    "tsc": "^2.0.3",
     "typescript": "^4.4.3",
     "ui5-test-runner": "^1.0.7"
-  },
-  "ui5": {
-    "dependencies": [
-      "ui5-middleware-livereload"
-    ]
   },
   "ts-standard": {
     "env": [
