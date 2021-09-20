@@ -1,5 +1,5 @@
 'use strict'
 
-import load from './loader'
+import { load } from './loader'
 
 load(process.cwd())
