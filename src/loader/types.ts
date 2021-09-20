@@ -1,4 +1,6 @@
+import { isLiteralObject } from '../types/StoredRecord'
 import { TypeDefinition } from '../types/TypeDefinition'
+import { isStorageType, StorageType } from '../storages'
 
 export interface RecordSet {
   $type: string
@@ -7,11 +9,16 @@ export interface RecordSet {
 
 export interface Configuration {
   serve?: number
-  storage: string
+  storage: StorageType
   types: TypeDefinition[]
   records: RecordSet[]
 }
 
 export function isConfiguration (value: any): value is Configuration {
-  return true
+  if (!isLiteralObject(value)) {
+    return false
+  }
+  const { serve, storage } = value
+  return (serve === undefined || typeof serve === 'number') &&
+    isStorageType(storage)
 }
