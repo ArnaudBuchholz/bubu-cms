@@ -41,7 +41,6 @@
     "@sapui5/ts-types-esm": "^1.94.0",
     "@types/jest": "^27.0.1",
     "@types/jquery": "^3.5.6",
-    "@types/nanoid": "^3.0.0",
     "@types/node": "^16.9.4",
     "@types/qunit": "^2.11.2",
     "@ui5/cli": "^2.12.1",
