@@ -1,7 +1,7 @@
 import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../types/IStorage'
 
-export class SQLLiteStorage implements IStorage {
+export class SQLiteStorage implements IStorage {
   // region IStorage
 
   async search (options: SearchOptions): Promise<SearchResult> {
