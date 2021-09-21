@@ -25,12 +25,10 @@
     "status1": "$release",
     "status2": "${ Math.floor(this.length / 60) }:${ (this.length % 60).toString().padStart(2, '0') }"
   }],
-  "records": [{
+  "loaders": [{
     "$type": "$tag",
     "csv": "tags.csv"
   }, {
-    "loader": "movies.js",
-    "$type": "movie",
-    "csv": "movie.csv"
+    "custom": "movies.js"
   }]
 }
