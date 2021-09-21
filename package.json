@@ -13,7 +13,7 @@
     "test:ui": "ui5-test-runner -webapp:src/ui/webapp",
     "test:debug": "jest --runInBand",
     "build": "npm-run-all build:tsc build:ui5.ts build:ui5",
-    "build:tsc": "tsc",
+    "build:tsc": "tsc --project tsconfig-build.json",
     "build:ui5.ts": "ncp src/types src/ui/src/types && babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files && replace UI5_CDN https://ui5.sap.com/1.94.0 src/ui/webapp --include=*.html -r",
     "build:ui5": "ui5 build --dest ./dist/ui --clean-dest"
   },
