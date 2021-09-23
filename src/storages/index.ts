@@ -7,11 +7,12 @@ export function isStorageType (value: any): value is StorageType {
   return ['memory', 'sqlite'].includes(value)
 }
 
-export function storageFactory (type: StorageType): IStorage | undefined {
+export function storageFactory (type: StorageType): IStorage | null {
   if (type === 'memory') {
     return new MemoryStorage()
   }
   if (type === 'sqlite') {
     return new SQLiteStorage()
   }
+  return null
 }
