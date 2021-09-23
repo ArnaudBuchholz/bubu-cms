@@ -10,7 +10,7 @@ export async function load (cwd: string): Promise<void> {
     throw new Error('Invalid configuration')
   }
   const storage = storageFactory(configuration.storage)
-  if (storage === undefined) {
+  if (storage === null) {
     throw new Error('Unknown storage')
   }
   for await (const type of configuration.types) {
@@ -20,7 +20,7 @@ export async function load (cwd: string): Promise<void> {
     if (isCsvLoader(loader)) {
 
     } else if (isCustomLoader(loader)) {
-      
+
     }
   }
 }
