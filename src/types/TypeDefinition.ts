@@ -89,7 +89,7 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
 const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
-function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): TypeDefinition {
+export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): TypeDefinition {
   const typeDefinition: TypeDefinition = {
     name: typeRecord.name,
     fields: []
@@ -106,7 +106,7 @@ function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: Stor
   return typeDefinition
 }
 
-export async function loadTypeDefinition (storage: IStorage, type: string): Promise<TypeDefinition | null> {
+export async function loadTypeDefinition (storage: IStorage, type: StoredRecordType): Promise<TypeDefinition | null> {
   const typeRecord: StoredRecord | null = await storage.get($type, type)
   if (typeRecord === null) {
     return null
