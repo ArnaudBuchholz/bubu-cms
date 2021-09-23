@@ -12,7 +12,7 @@ export async function getAllTypes (storage: IStorage): Promise<TypeDefinition[]>
         [$type]: [$type]
       }
     })
-    if (result.count === 0) {
+    if (result.records.length === 0) {
       break
     }
     skip += result.count
