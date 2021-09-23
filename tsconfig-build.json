@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.json",
+  "rootDir": "./src",
   "exclude": [
     "./src/ui/**/*",
     "./__tests__/**/*"
