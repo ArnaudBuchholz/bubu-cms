@@ -5,6 +5,7 @@ import { isStorageType, StorageType } from '../storages'
 export interface CsvLoader {
   $type: string
   csv: string
+  separator?: string // = ','
 }
 export function isCsvLoader (value: any): value is CsvLoader {
   if (!isLiteralObject(value)) {
