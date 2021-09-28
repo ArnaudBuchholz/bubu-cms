@@ -3,6 +3,8 @@ import { readFile } from 'fs/promises'
 import { isConfiguration, isCsvLoader, isCustomLoader } from './types'
 import { storageFactory } from '../storages'
 import { saveTypeDefinition } from 'src/types/TypeDefinition'
+import { Loader } from './loader'
+import { loadFromCSV } from './csv'
 
 export async function load (cwd: string): Promise<void> {
   const configuration = JSON.parse((await readFile(join(cwd, '.bubu-cms.json'))).toString())
@@ -16,11 +18,13 @@ export async function load (cwd: string): Promise<void> {
   for await (const type of configuration.types) {
     await saveTypeDefinition(storage, type)
   }
-  for await (const loader of configuration.loaders) {
-    if (isCsvLoader(loader)) {
-
-    } else if (isCustomLoader(loader)) {
-
+  const loader = new Loader(storage)
+  for await (const loaderSettings of configuration.loaders) {
+    if (isCsvLoader(loaderSettings)) {
+      await loadFromCSV(loader, loaderSettings)
+    } else if (isCustomLoader(loaderSettings)) {
+      const loaderFunc: Function = await import(loaderSettings.loader) as Function
+      await loaderFunc(loader)
     }
   }
 }
