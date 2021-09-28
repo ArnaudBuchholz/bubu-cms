@@ -54,6 +54,7 @@ export function isDefaultIcon (value: any): value is DefaultIcon {
 }
 
 export interface TypeDefinition {
+  id?: StoredRecordType
   name: TypeName
   labelKey?: string
   defaultIcon?: string
@@ -91,6 +92,7 @@ const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
 export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): TypeDefinition {
   const typeDefinition: TypeDefinition = {
+    id: typeRecord.id,
     name: typeRecord.name,
     fields: []
   }
