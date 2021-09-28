@@ -1,6 +1,8 @@
-import { NewTypedRecord, TypedRecord } from '../types/Record'
+import { StorableRecord, StoredRecordId } from '../types/StoredRecord'
+import { TypeName } from '../types/TypeDefinition'
 
 export interface ILoader {
   log: (...content: any[]) => void
-  add: (record: NewTypedRecord) => TypedRecord
+  getTypeId: (typeName: TypeName) => Promise<StoredRecordId | null>
+  create: (record: StorableRecord) => Promise<StoredRecordId>
 }
