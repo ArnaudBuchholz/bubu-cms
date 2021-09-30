@@ -57,6 +57,18 @@ export function isStoredRecordType (value: any): value is StoredRecordType {
   return [$tag, $type, $typefield].includes(value) || isStoredRecordId(value)
 }
 
+export const MAX_STOREDRECORDNAME_LENGTH: number = 256
+export type StoredRecordName = string
+function isStoredRecordName (value: any): value is StoredRecordName {
+  return isValidNonEmptyString(value, MAX_STOREDRECORDNAME_LENGTH)
+}
+
+export const MAX_STOREDRECORDICON_LENGTH: number = 256
+export type StoredRecordIcon = string
+function isStoredRecordIcon (value: any): value is StoredRecordIcon {
+  return isValidNonEmptyString(value, MAX_STOREDRECORDICON_LENGTH)
+}
+
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
 export function isStoredRecordRating (value: any): value is StoredRecordRating {
   return typeof value === 'number' && [1, 2, 3, 4, 5].includes(value)
@@ -79,8 +91,8 @@ export function isStoredRecordRefs (value: any): value is StoredRecordRefs {
 
 export interface StorableRecord {
   type: StoredRecordType
-  name: string
-  icon?: string
+  name: StoredRecordName
+  icon?: StoredRecordIcon
   rating?: StoredRecordRating
   touched?: Date
   fields: Fields
@@ -91,17 +103,13 @@ export interface StoredRecord extends StorableRecord {
   id: StoredRecordId
 }
 
-export const MAX_STOREDRECORDNAME_LENGTH: number = 256
-export const MAX_STOREDRECORDICON_LENGTH: number = 256
-
 export function isStorableRecord (value: any): value is StorableRecord {
   if (!isLiteralObject(value)) {
     return false
   }
   const { type, name, icon, rating, touched, fields, refs } = value
-  return isStoredRecordType(type) &&
-    isValidNonEmptyString(name, MAX_STOREDRECORDNAME_LENGTH) &&
-    (icon === undefined || isValidNonEmptyString(icon, MAX_STOREDRECORDICON_LENGTH)) &&
+  return isStoredRecordType(type) && isStoredRecordName(name) &&
+    (icon === undefined || isStoredRecordIcon(icon)) &&
     (rating === undefined || isStoredRecordRating(rating)) &&
     (touched === undefined || isDate(touched)) &&
     isFields(fields) &&
