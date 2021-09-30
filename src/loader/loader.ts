@@ -1,7 +1,7 @@
 import { ILoader } from './ILoader'
 import { IStorage } from '../types/IStorage'
 import { StorableRecord, StoredRecordId } from '../types/StoredRecord'
-import { TypeName } from '../types/TypeDefinition'
+import { TypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
 
 export class Loader implements ILoader {
@@ -11,7 +11,11 @@ export class Loader implements ILoader {
     console.log(...content)
   }
 
-  async getTypeId (typeName: TypeName): Promise<StoredRecordId | null> {
+  async getType (typeName: TypeName): Promise<TypeDefinition | null> {
+    return null
+  }
+
+  async getTagId (tagName: string): Promise<StoredRecordId | null> {
     return null
   }
 
