@@ -54,7 +54,6 @@ export function isDefaultIcon (value: any): value is DefaultIcon {
 }
 
 export interface TypeDefinition {
-  id?: StoredRecordType
   name: TypeName
   labelKey?: string
   defaultIcon?: string
@@ -65,6 +64,10 @@ export interface TypeDefinition {
   status1?: string
   status2?: string
 */
+}
+
+export interface StoredTypeDefinition extends TypeDefinition {
+  id: StoredRecordType
 }
 
 export function isTypeDefinition (value: any): value is TypeDefinition {
@@ -90,8 +93,8 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
 const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
-export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): TypeDefinition {
-  const typeDefinition: TypeDefinition = {
+export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): StoredTypeDefinition {
+  const typeDefinition: StoredTypeDefinition = {
     id: typeRecord.id,
     name: typeRecord.name,
     fields: []
@@ -108,7 +111,7 @@ export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecord
   return typeDefinition
 }
 
-export async function loadTypeDefinition (storage: IStorage, type: StoredRecordType): Promise<TypeDefinition | null> {
+export async function loadTypeDefinition (storage: IStorage, type: StoredRecordType): Promise<StoredTypeDefinition | null> {
   const typeRecord: StoredRecord | null = await storage.get($type, type)
   if (typeRecord === null) {
     return null
@@ -124,7 +127,7 @@ export async function loadTypeDefinition (storage: IStorage, type: StoredRecordT
   return deserializeTypeDefinition(typeRecord, fieldRecords)
 }
 
-export async function findTypeDefinition (storage: IStorage, name: string): Promise<TypeDefinition | null> {
+export async function findTypeDefinition (storage: IStorage, name: string): Promise<StoredTypeDefinition | null> {
   const result: SearchResult = await storage.search({
     paging: { skip: 0, top: 1 },
     search: name,
