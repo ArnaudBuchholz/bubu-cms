@@ -1,17 +1,31 @@
-import { ILoader } from './ILoader'
+import colors from 'colors/safe'
+import { LogType, ILoader } from './ILoader'
 import { IStorage } from '../types/IStorage'
 import { StorableRecord, StoredRecordId } from '../types/StoredRecord'
-import { TypeDefinition, TypeName } from '../types/TypeDefinition'
+import { StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
+
+const logTypes: Record<LogType, string> = {
+  [LogType.info]: '💬',
+  [LogType.warning]: '⚠️',
+  [LogType.error]: '❌',
+  [LogType.fatal]: '💀'
+}
 
 export class Loader implements ILoader {
   private readonly storage: IStorage
 
-  log (...content: any[]): void {
-    console.log(...content)
+  log (type: LogType, module: string, message: string, detail?: object): void {
+    const params: any[] = [
+      logTypes[type],
+      colors.magenta(module),
+      colors.gray(message),
+      detail
+    ]
+    console.log(...params)
   }
 
-  async getType (typeName: TypeName): Promise<TypeDefinition | null> {
+  async getType (typeName: TypeName): Promise<StoredTypeDefinition | null> {
     return null
   }
 
