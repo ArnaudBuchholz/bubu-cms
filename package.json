@@ -39,6 +39,7 @@
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
     "@sapui5/ts-types-esm": "^1.94.0",
+    "@types/colors": "^1.2.1",
     "@types/jest": "^27.0.2",
     "@types/jquery": "^3.5.6",
     "@types/node": "^16.10.2",
