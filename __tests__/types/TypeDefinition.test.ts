@@ -182,13 +182,13 @@ describe('types/TypeDefinition', () => {
 
       it(`saves and finds type definition (${name})`, async () => {
         const savedType = await findTypeDefinition(storage, name)
-        expect(savedType).toEqual(type)
+        expect({ ...savedType, id: undefined }).toEqual(type)
       })
 
       it(`saves and loads type definition (${name})`, async () => {
         const typeId = typesId[index]
         const savedType = await loadTypeDefinition(storage, typeId)
-        expect(savedType).toEqual(type)
+        expect({ ...savedType, id: undefined }).toEqual(type)
       })
     })
 
