@@ -76,13 +76,12 @@
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "./src/types/*.ts",
-      "./src/storages/*.ts",
-      "./src/api/*.ts",
-      "./src/util/*.ts"
+      "./src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
-      "sqlite\\.ts$"
+      "sqlite\\.ts$",
+      "./src/index\\.ts",
+      "./src/ui/.*"
     ],
     "coverageThreshold": {
       "global": {
