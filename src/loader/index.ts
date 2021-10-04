@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises'
 import { isConfiguration, isCsvLoader, isCustomLoader } from './types'
 import { storageFactory } from '../storages'
 import { saveTypeDefinition } from 'src/types/TypeDefinition'
-import { Loader } from './loader'
+import { Loader } from './Loader'
 import { loadFromCSV } from './csv'
 
 export async function load (cwd: string): Promise<void> {
