@@ -160,7 +160,9 @@ export async function saveTypeDefinition (storage: IStorage, typeDefinition: Typ
       fields: {
         type: fieldDefinition.type
       },
-      refs: {}
+      refs: {
+        [$type]: [$typefield]
+      }
     }
     map(mappableFieldDefinitionFields, fieldDefinition, record.fields)
     return record
