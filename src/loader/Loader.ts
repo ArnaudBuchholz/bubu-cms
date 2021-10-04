@@ -2,7 +2,7 @@ import colors from 'colors/safe'
 import { LogType, ILoader } from './ILoader'
 import { IStorage } from '../types/IStorage'
 import { StorableRecord, StoredRecordId } from '../types/StoredRecord'
-import { StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
+import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
 
 const logTypes: Record<LogType, string> = {
@@ -22,11 +22,15 @@ export class Loader implements ILoader {
       colors.gray(message),
       detail
     ]
-    console.log(...params)
+    if ([LogType.error, LogType.fatal].includes(type)) {
+      console.error(...params)
+    } else {
+      console.log(...params)
+    }
   }
 
   async getType (typeName: TypeName): Promise<StoredTypeDefinition | null> {
-    return null
+    return await findTypeDefinition(this.storage, typeName)
   }
 
   async getTagId (tagName: string): Promise<StoredRecordId | null> {
