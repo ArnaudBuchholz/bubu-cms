@@ -62,9 +62,9 @@ export class MemoryStorage implements IStorage {
     let records: StoredRecord[] = []
     let initial: boolean = true
     forEachRef(options.refs, (type: StoredRecordType, id: StoredRecordId) => {
-      const refRecords: StoredRecord[] = this.refs[type][id]
+      const refRecords: StoredRecord[] | undefined = this.refs[type][id]
       if (initial) {
-        records = refRecords
+        records = refRecords ?? []
         initial = false
       } else {
         records = records.filter(record => refRecords.includes(record))
