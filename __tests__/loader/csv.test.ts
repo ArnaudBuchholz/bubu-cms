@@ -1,18 +1,28 @@
 import { MemoryStorage } from '../../src/storages/memory'
 import { Loader } from '../../src/loader/Loader'
-import { readTextFile } from '../../src/loader/__mocks__/readTextFile'
 import { saveTypeDefinition } from '../../src/types/TypeDefinition'
 import { loadFromCSV } from '../../src/loader/csv'
 import { StoredRecordType, $type } from '../../src/types/StoredRecord'
+
+jest.mock('../../src/loader/readTextFile', () => {
+  return {
+    readTextFile: async function (path: string): Promise<string> {
+      return `$name,string,number,date
+record 1,abc,123,2021-10-03T21:56:00`
+    }
+  }
+})
 
 describe('csv/loader', () => {
   const storage = new MemoryStorage()
   const loader = new Loader(storage)
   let mockLog: jest.SpyInstance
+  let mockError: jest.SpyInstance
   let recordTypeId: StoredRecordType
 
   beforeAll(async () => {
     mockLog = jest.spyOn(console, 'log').mockImplementation()
+    mockError = jest.spyOn(console, 'error').mockImplementation()
     recordTypeId = await saveTypeDefinition(storage, {
       name: 'record',
       fields: [{
@@ -26,8 +36,6 @@ describe('csv/loader', () => {
         type: 'date'
       }]
     })
-    readTextFile.set('/test.csv', `$name,string,number,date
-record 1,abc,123,2021-10-03T21:56:00`)
     await loadFromCSV(loader, {
       $type: 'record',
       csv: '/test.csv'
@@ -41,10 +49,12 @@ record 1,abc,123,2021-10-03T21:56:00`)
         [$type]: [recordTypeId]
       }
     })
+    expect(mockError).not.toBeCalled()
     expect(results.count).toBe(1)
   })
 
   afterAll(() => {
     mockLog.mockRestore()
+    mockError.mockRestore()
   })
 })
