@@ -1,6 +1,6 @@
 import { readTextFile } from './readTextFile'
 import { FieldType, FieldDefinition, StoredTypeDefinition } from '../types/TypeDefinition'
-import { $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
+import { $type, $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
 import { LogType, ILoader } from './ILoader'
 import { CsvLoader } from './types'
 
@@ -14,12 +14,17 @@ function parseValue (value: string, fieldType: FieldType): FieldValue {
   return parsers[fieldType](value)
 }
 
-export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promise<void> {
+function fail (loader: ILoader, message: string, details?: object): Error {
+  loader.log(LogType.error, 'loader.csv', message, details)
+  return new Error(message)
+}
+
+export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promise<number> {
   loader.log(LogType.info, 'loader.csv', `Loading from '${settings.csv}'`)
   const separator: string = settings.separator ?? ','
   const typeDef: StoredTypeDefinition | null = await loader.getType(settings.$type)
   if (typeDef === null) {
-    return loader.log(LogType.error, 'loader.csv', `Unknown type ${settings.$type}`)
+    throw fail(loader, `Unknown type '${settings.$type}'`)
   }
   const lines = (await readTextFile(settings.csv))
     .split('\n')
@@ -27,7 +32,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
     .filter(line => line !== '' && !line.startsWith('#'))
   const columns = lines.shift()?.split(separator)
   if (columns === undefined) {
-    return loader.log(LogType.error, 'loader.csv', 'Empty file')
+    throw fail(loader, 'Empty file')
   }
   const columnType: Record<FieldName, FieldType> = typeDef.fields
     .reduce((mapping: Record<FieldName, FieldType>, field: FieldDefinition): Record<FieldName, FieldType> => {
@@ -36,7 +41,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
     }, {})
   const allowedColumns = ['$name', '$icon', '$rating', '$touched', '$tags', ...typeDef.fields.map(field => field.name)]
   if (!columns.every(column => allowedColumns.includes(column))) {
-    return loader.log(LogType.error, 'loader.csv', `Unknown column for type ${settings.$type}`)
+    throw fail(loader, `Unknown column for type ${settings.$type}`)
   }
   let recordIndex = 0
   for await (const line of lines) {
@@ -67,7 +72,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
     try {
       await loader.create(record)
     } catch (error) {
-      return loader.log(LogType.error, 'loader.csv', 'Error while storing record', {
+      throw fail(loader, 'Error while storing record', {
         error,
         recordIndex,
         record
@@ -75,4 +80,5 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
     }
     ++recordIndex
   }
+  return recordIndex
 }
