@@ -7,8 +7,11 @@ import { StoredRecordType, $type } from '../../src/types/StoredRecord'
 jest.mock('../../src/loader/readTextFile', () => {
   return {
     readTextFile: async function (path: string): Promise<string> {
-      return `$name,string,number,date
+      if (path === '/test.csv') {
+        return `$name,string,number,date
 record 1,abc,123,2021-10-03T21:56:00`
+      }
+      return ''
     }
   }
 })
@@ -51,6 +54,30 @@ describe('csv/loader', () => {
     })
     expect(mockError).not.toBeCalled()
     expect(results.count).toBe(1)
+  })
+
+  describe('error cases', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it('fails on invalid type', async () => {
+      await expect(loadFromCSV(loader, {
+        $type: 'unknown',
+        csv: '/test.csv'
+      })).rejects.toMatchObject({
+        message: 'Unknown type \'unknown\''
+      })
+    })
+
+    it('fails on empty file', async () => {
+      await expect(loadFromCSV(loader, {
+        $type: 'record',
+        csv: '/empty.csv'
+      })).rejects.toMatchObject({
+        message: 'Empty file'
+      })
+    })
   })
 
   afterAll(() => {
