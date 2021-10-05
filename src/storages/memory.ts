@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { MAX_STOREDRECORDID_LENGTH, StoredRecordId, StoredRecordType, StorableRecord, StoredRecord, StoredRecordRefs } from '../types/StoredRecord'
+import { MAX_STOREDRECORDID_LENGTH, StoredRecordId, StoredRecordType, StorableRecord, StoredRecord, StoredRecordRefs, $type } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions, SortableField, UpdateFieldValue } from '../types/IStorage'
 
 type TypeStore = Record<StoredRecordId, StoredRecord>
@@ -126,6 +126,7 @@ export class MemoryStorage implements IStorage {
     }
     const stored: StoredRecord = { ...record, id }
     this.store[type][id] = stored
+    this.addRef($type, type, stored)
     forEachRef(record.refs, (refType: StoredRecordType, refId: StoredRecordId) => {
       this.addRef(refType, refId, stored)
       return true
