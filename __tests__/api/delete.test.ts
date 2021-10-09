@@ -1,11 +1,13 @@
 import { StoredRecordType, StoredRecordId, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
 import { deleteRecord } from '../../src/api/delete'
-import fakeStorage from './fakeStorage.helper'
+import { fakeStorage } from './fakeStorage.helper'
 
 describe('api/create', () => {
   let deleted: null | StoredRecord = null
-  const storage: IStorage = Object.assign(fakeStorage, {
+  const storage: IStorage = {
+    ...fakeStorage,
+
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
         return {
@@ -22,7 +24,7 @@ describe('api/create', () => {
     async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {
       deleted = await this.get(type, id)
     }
-  })
+  }
 
   beforeAll(() => {
     deleted = null
