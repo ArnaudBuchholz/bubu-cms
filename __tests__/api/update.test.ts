@@ -1,7 +1,7 @@
 import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
 import { IStorage, UpdateInstructions } from '../../src/types/IStorage'
 import { update } from '../../src/api/update'
-import fakeStorage from './fakeStorage.helper'
+import { fakeStorage } from './fakeStorage.helper'
 
 describe('api/create', () => {
   const now = new Date()
@@ -31,7 +31,9 @@ describe('api/create', () => {
 
   let updateInstructions: null | UpdateInstructions = null
 
-  const storage: IStorage = Object.assign(fakeStorage, {
+  const storage: IStorage = {
+    ...fakeStorage,
+
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'modifiable') {
         if (id === '1') {
@@ -47,7 +49,7 @@ describe('api/create', () => {
     async update (type: StoredRecordType, id: StoredRecordId, instructions: UpdateInstructions): Promise<void> {
       updateInstructions = instructions
     }
-  })
+  }
 
   beforeEach(() => {
     updateInstructions = null
