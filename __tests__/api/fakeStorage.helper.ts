@@ -1,7 +1,7 @@
 import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, UpdateInstructions } from '../../src/types/IStorage'
 
-const fakeStorage: IStorage = {
+export const fakeStorage: IStorage = {
   async search (options: SearchOptions): Promise<SearchResult> {
     const result: SearchResult = {
       records: [],
@@ -25,5 +25,3 @@ const fakeStorage: IStorage = {
   async delete (type: StoredRecordType, id: StoredRecordId): Promise<void> {
   }
 }
-
-export default fakeStorage
