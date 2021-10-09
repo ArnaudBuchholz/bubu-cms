@@ -1,14 +1,16 @@
 import { StoredRecordRefs } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
 import { DEFAULT_PAGE_SIZE, search } from '../../src/api/search'
-import fakeStorage from './fakeStorage.helper'
+import { fakeStorage } from './fakeStorage.helper'
 
 type SearchResultAndOptions = SearchResult & {
   options: SearchOptions
 }
 
 describe('api/search', () => {
-  const storage: IStorage = Object.assign(fakeStorage, {
+  const storage: IStorage = {
+    ...fakeStorage,
+
     async search (options: SearchOptions): Promise<SearchResult> {
       const result: SearchResultAndOptions = {
         records: [],
@@ -18,7 +20,7 @@ describe('api/search', () => {
       }
       return result
     }
-  })
+  }
 
   function genTests (baseUrl: string, baseRefs: StoredRecordRefs, label: string): void {
     it(`searches ${label}`, async () => {
