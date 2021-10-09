@@ -1,12 +1,14 @@
 import { StoredRecordType, StoredRecordId, StorableRecord, StoredRecord } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
 import { create } from '../../src/api/create'
-import fakeStorage from './fakeStorage.helper'
+import { fakeStorage } from './fakeStorage.helper'
 
 describe('api/create', () => {
   let created: null | StoredRecord = null
 
-  const storage: IStorage = Object.assign(fakeStorage, {
+  const storage: IStorage = {
+    ...fakeStorage,
+
     async get (type: StoredRecordType, id: StoredRecordId): Promise<null | StoredRecord> {
       if (type === 'exists' && id === '123') {
         return {
@@ -24,7 +26,7 @@ describe('api/create', () => {
       created = { ...record, id: '123' }
       return '123'
     }
-  })
+  }
 
   beforeAll(() => {
     created = null
