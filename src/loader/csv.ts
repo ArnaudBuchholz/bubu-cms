@@ -1,6 +1,6 @@
 import { readTextFile } from './readTextFile'
 import { FieldType, FieldDefinition, StoredTypeDefinition } from '../types/TypeDefinition'
-import { $type, $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
+import { $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
 import { LogType, ILoader } from './ILoader'
 import { CsvLoader } from './types'
 
@@ -41,7 +41,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
     }, {})
   const allowedColumns = ['$name', '$icon', '$rating', '$touched', '$tags', ...typeDef.fields.map(field => field.name)]
   if (!columns.every(column => allowedColumns.includes(column))) {
-    throw fail(loader, `Unknown column for type ${settings.$type}`)
+    throw fail(loader, `Unknown column for type '${settings.$type}'`)
   }
   let recordIndex = 0
   for await (const line of lines) {
