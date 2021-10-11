@@ -2,11 +2,11 @@ import { IStorage, SearchOptions, SearchResult, SortableField } from '../types/I
 
 export const DEFAULT_PAGE_SIZE: number = 50
 
-type urlParameterName = 'skip' | 'top' | 'sort' | 'search'
+type urlParameterName = 'skip' | 'top' | 'sort' | 'search' | 'name'
 type urlParameters = Record<urlParameterName, string>
 
 function isValidUrlParameterName (name: string): name is urlParameterName {
-  return ['skip', 'top', 'sort', 'search'].includes(name)
+  return ['skip', 'top', 'sort', 'search', 'name'].includes(name)
 }
 
 function isANumber (value: string): void {
@@ -22,14 +22,24 @@ function isASortField (value: string): void {
   }
 }
 
-function isAValidSearch (value: string): void {
+function isAValidSearch (value: string, parameters: urlParameters): void {
+  if (parameters.name !== '') {
+    throw new Error('Invalid combination of name and search')
+  }
 }
 
-const urlParameterValidators: Record<urlParameterName, (value: string) => void> = {
+function isAValidName (value: string, parameters: urlParameters): void {
+  if (parameters.search !== '') {
+    throw new Error('Invalid combination of name and search')
+  }
+}
+
+const urlParameterValidators: Record<urlParameterName, (value: string, parameters: urlParameters) => void> = {
   skip: isANumber,
   top: isANumber,
   sort: isASortField,
-  search: isAValidSearch
+  search: isAValidSearch,
+  name: isAValidName
 }
 
 function extractUrlParameters (search: string): urlParameters {
@@ -37,13 +47,14 @@ function extractUrlParameters (search: string): urlParameters {
     skip: '0',
     top: DEFAULT_PAGE_SIZE.toString(),
     sort: '',
-    search: ''
+    search: '',
+    name: ''
   }
   if (search !== undefined) {
     search.replace(/&?(\w+)=([^&]+)/gy, (match: string, name: string, value: string): string => {
       if (isValidUrlParameterName(name)) {
         const decodedValue: string = decodeURIComponent(value)
-        urlParameterValidators[name](decodedValue)
+        urlParameterValidators[name](decodedValue, parameters)
         parameters[name] = decodedValue
       } else {
         throw new Error('Invalid request parameter name')
@@ -56,7 +67,7 @@ function extractUrlParameters (search: string): urlParameters {
 
 export async function search (storage: IStorage, url: string): Promise<SearchResult> {
   const [pathname, urlSearch] = url.split('?')
-  const { skip, top, sort, search } = extractUrlParameters(urlSearch)
+  const { skip, top, sort, search, name } = extractUrlParameters(urlSearch)
   const options: SearchOptions = {
     paging: {
       skip: parseInt(skip, 10),
@@ -73,6 +84,10 @@ export async function search (storage: IStorage, url: string): Promise<SearchRes
   }
   if (search !== '') {
     options.search = search
+  }
+  if (name !== '') {
+    options.search = name
+    options.fullNameOnly = true
   }
   if (pathname === '/records') {
     return await storage.search(options)
