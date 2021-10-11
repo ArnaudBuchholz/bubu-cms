@@ -2,7 +2,7 @@ import { MemoryStorage } from '../../src/storages/memory'
 import { Loader } from '../../src/loader/Loader'
 import { saveTypeDefinition } from '../../src/types/TypeDefinition'
 import { loadFromCSV } from '../../src/loader/csv'
-import { StoredRecordType, $type, StoredRecordId, StorableRecord } from '../../src/types/StoredRecord'
+import { StoredRecordType, $type, StoredRecordId, StorableRecord, $tag } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
 
 jest.mock('../../src/loader/readTextFile', () => {
@@ -27,6 +27,8 @@ describe('csv/loader', () => {
   let mockLog: jest.SpyInstance
   let mockError: jest.SpyInstance
   let recordTypeId: StoredRecordType
+  const tags: string[] = ['tag 1', 'tag 2']
+  const tagIds: StoredRecordId[] = []
 
   beforeAll(async () => {
     mockLog = jest.spyOn(console, 'log').mockImplementation()
@@ -44,10 +46,24 @@ describe('csv/loader', () => {
         type: 'date'
       }]
     })
+    for await (const tag of tags) {
+      tagIds.push(await storage.create({
+        type: $tag,
+        name: tag,
+        fields: {},
+        refs: {}
+      }))
+    }
     await loadFromCSV(loader, {
       $type: 'record',
       csv: '/full.csv'
     })
+  })
+
+  it('has access to tag Ids', async () => {
+    await expect(loader.getTagId('tag 1')).resolves.toBe(tagIds[0])
+    await expect(loader.getTagId('tag 2')).resolves.toBe(tagIds[1])
+    await expect(loader.getTagId('tag 3')).resolves.toBe(null)
   })
 
   it('loads records from CSV file', async () => {
