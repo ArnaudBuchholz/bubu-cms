@@ -131,16 +131,17 @@ export async function findTypeDefinition (storage: IStorage, name: string): Prom
   const result: SearchResult = await storage.search({
     paging: { skip: 0, top: 1 },
     search: name,
+    fullNameOnly: true,
     refs: {
       [$type]: [$type]
     }
   })
-  if (result.count !== 1) {
-    return null
+  if (result.count === 1) {
+    const typeRecord: StoredRecord = result.records[0]
+    const fieldRecords: StoredRecord[] = typeRecord.refs[$typefield].map(id => result.refs[$typefield][id])
+    return deserializeTypeDefinition(typeRecord, fieldRecords)
   }
-  const typeRecord: StoredRecord = result.records[0]
-  const fieldRecords: StoredRecord[] = typeRecord.refs[$typefield].map(id => result.refs[$typefield][id])
-  return deserializeTypeDefinition(typeRecord, fieldRecords)
+  return null
 }
 
 export async function saveTypeDefinition (storage: IStorage, typeDefinition: TypeDefinition): Promise<StoredRecordType> {
