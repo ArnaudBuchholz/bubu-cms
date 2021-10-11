@@ -18,6 +18,7 @@ export interface SearchOptions {
   sort?: SortingOptions
   refs: StoredRecordRefs
   search?: string
+  fullNameOnly?: boolean
 }
 
 export interface SearchResult {
