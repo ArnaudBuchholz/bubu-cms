@@ -140,17 +140,39 @@ export default function testStorage (storage: IStorage): void {
       })
     })
 
-    it('searches using text', async () => {
-      const all: SearchResult = await storage.search({
-        paging: { skip: 0, top: 100 },
-        refs: {},
-        search: 'record 0'
+    describe('text / name', () => {
+      it('generic text search', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {},
+          search: 'record'
+        })
+        expect(all.count).toEqual(4)
       })
-      expect(all.count).toEqual(1)
-      expect(all.records[0]).toEqual(record0)
-      expect(all.refs[$tag]).toEqual({
-        [tags[0].id]: tags[0],
-        [tags[7].id]: tags[7]
+
+      it('searches using text (case insensitive)', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {},
+          search: 'record 0'
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0]).toEqual(record0)
+        expect(all.refs[$tag]).toEqual({
+          [tags[0].id]: tags[0],
+          [tags[7].id]: tags[7]
+        })
+      })
+
+      it('searches using perfect name match', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {},
+          search: 'record',
+          fullNameOnly: true
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0].id).toEqual(recordTypeId)
       })
     })
 
