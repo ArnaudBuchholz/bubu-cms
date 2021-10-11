@@ -1,9 +1,10 @@
 import colors from 'colors/safe'
 import { LogType, ILoader } from './ILoader'
 import { IStorage } from '../types/IStorage'
-import { StorableRecord, StoredRecordId } from '../types/StoredRecord'
+import { StorableRecord, StoredRecordId, $type, $tag } from '../types/StoredRecord'
 import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
+import { SearchResult } from 'src/ui/src/types/IStorage'
 
 const logTypes: Record<LogType, string> = {
   [LogType.info]: '💬',
@@ -34,6 +35,20 @@ export class Loader implements ILoader {
   }
 
   async getTagId (tagName: string): Promise<StoredRecordId | null> {
+    const result: SearchResult = await this.storage.search({
+      paging: {
+        skip: 0,
+        top: 1
+      },
+      refs: {
+        [$type]: [$tag]
+      },
+      search: tagName,
+      fullNameOnly: true
+    })
+    if (result.count === 1) {
+      return result.records[0].id
+    }
     return null
   }
 
