@@ -22,6 +22,7 @@ function fail (loader: ILoader, message: string, details?: object): Error {
 export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promise<number> {
   loader.log(LogType.info, 'loader.csv', `Loading from '${settings.csv}'`)
   const separator: string = settings.separator ?? ','
+  const tagSeparator: string = settings.tagSeparator ?? '|'
   const typeDef: StoredTypeDefinition | null = await loader.getType(settings.$type)
   if (typeDef === null) {
     throw fail(loader, `Unknown type '${settings.$type}'`)
@@ -52,7 +53,8 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
       fields: {},
       refs: {}
     }
-    columns.forEach((column: string, index: number) => {
+    let index: number = 0
+    for await (const column of columns) {
       const value = values[index]
       if (column === '$name') {
         record.name = value
@@ -63,12 +65,24 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
       } else if (column === '$touched') {
         record.touched = new Date(value)
       } else if (column === '$tags') {
-        // Process tags (assuming a list of space separated values)
-        record.refs[$tag] = value.split(' ') // asynchronous...
+        record.refs[$tag] = []
+        const listOfTagNames = value.split(tagSeparator)
+        for await (const tagName of listOfTagNames) {
+          const tagId: string | null = await loader.getTagId(tagName)
+          if (tagId === null) {
+            throw fail(loader, 'Unknown tag', {
+              tagName,
+              recordIndex,
+              record
+            })
+          }
+          record.refs[$tag].push(tagId)
+        }
       } else {
         record.fields[column] = parseValue(value, columnType[column])
       }
-    })
+      ++index
+    }
     try {
       await loader.create(record)
     } catch (error) {
