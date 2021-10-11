@@ -90,7 +90,7 @@ describe('api/search', () => {
       })
     })
 
-    it(`searches ${label} with text criteria`, async () => {
+    it(`searches ${label} with generic text criteria`, async () => {
       const result: SearchResultAndOptions = await search(storage, `${baseUrl}?search=Hello%20World!`) as SearchResultAndOptions
       expect(result.options).toEqual({
         paging: {
@@ -98,6 +98,19 @@ describe('api/search', () => {
           top: DEFAULT_PAGE_SIZE
         },
         search: 'Hello World!',
+        refs: baseRefs
+      })
+    })
+
+    it(`searches ${label} with exact name criteria`, async () => {
+      const result: SearchResultAndOptions = await search(storage, `${baseUrl}?name=Hello%20World!`) as SearchResultAndOptions
+      expect(result.options).toEqual({
+        paging: {
+          skip: 0,
+          top: DEFAULT_PAGE_SIZE
+        },
+        search: 'Hello World!',
+        fullNameOnly: true,
         refs: baseRefs
       })
     })
@@ -121,6 +134,14 @@ describe('api/search', () => {
 
       it('validates sort direction', async () => {
         return await expect(search(storage, `${baseUrl}?sort=name any`)).rejects.toThrow(Error)
+      })
+
+      it('validates exclusive search vs name', async () => {
+        return await expect(search(storage, `${baseUrl}?search=a&name=b`)).rejects.toThrow(Error)
+      })
+
+      it('validates exclusive name vs search', async () => {
+        return await expect(search(storage, `${baseUrl}?name=a&search=b`)).rejects.toThrow(Error)
       })
     })
   }
