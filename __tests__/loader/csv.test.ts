@@ -9,8 +9,8 @@ jest.mock('../../src/loader/readTextFile', () => {
   return {
     readTextFile: async function (path: string): Promise<string> {
       if (path === '/full.csv') {
-        return `$name,string,number,date,$icon,$rating,$touched
-record 1,abc,123,2021-10-03T21:56:00,test.ico,4,2021-10-08T23:15:00`
+        return `$name,string,number,date,$icon,$rating,$touched,$tag
+record 1,abc,123,2021-10-03T21:56:00,test.ico,4,2021-10-08T23:15:00,tag 1|tag 2`
       }
       if (path === '/wrong_column.csv') {
         return `$name,string1,number,date
