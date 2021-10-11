@@ -80,8 +80,12 @@ export class MemoryStorage implements IStorage {
     }
 
     if (options.search !== undefined) {
-      const lowerCaseSearch = options.search.toLowerCase()
-      records = records.filter(record => record.name.toLowerCase().includes(lowerCaseSearch))
+      if (options.fullNameOnly === true) {
+        records = records.filter(record => record.name === options.search)
+      } else {
+        const lowerCaseSearch = options.search.toLowerCase()
+        records = records.filter(record => record.name.toLowerCase().includes(lowerCaseSearch))
+      }
     }
 
     if (options.sort !== undefined) {
