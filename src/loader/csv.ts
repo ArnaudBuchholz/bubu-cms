@@ -20,7 +20,7 @@ function fail (loader: ILoader, message: string, details?: object): Error {
 }
 
 export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promise<number> {
-  loader.log(LogType.info, 'loader.csv', `Loading from '${settings.csv}'`)
+  loader.log(LogType.info, 'loader.csv', `Loading '${settings.$type}' from '${settings.csv}'`)
   const separator: string = settings.separator ?? ','
   const tagSeparator: string = settings.tagSeparator ?? '|'
   const typeDef: StoredTypeDefinition | null = await loader.getType(settings.$type)
@@ -70,7 +70,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
         for await (const tagName of listOfTagNames) {
           const tagId: string | null = await loader.getTagId(tagName)
           if (tagId === null) {
-            throw fail(loader, 'Unknown tag', {
+            throw fail(loader, `Unknown tag '${tagName}'`, {
               tagName,
               recordIndex,
               record
