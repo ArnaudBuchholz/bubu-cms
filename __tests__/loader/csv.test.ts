@@ -12,16 +12,24 @@ jest.mock('../../src/loader/readTextFile', () => {
         return `$name,string,number,date,$icon,$rating,$touched,$tags
 record 1,abc,123,2021-10-03T21:56:00,test.ico,4,2021-10-08T23:15:00,tag 1|tag 2`
       }
+      if (path === '/full_sep.csv') {
+        return `$name;string;number;date;$icon;$rating;$touched;$tags
+record 2;def;456;2021-12-03T05:46:00;test.ico;4;2021-10-08T23:15:00;tag 1,tag 2`
+      }
       if (path === '/wrong_column.csv') {
         return `$name,string1,number,date
 record 1,abc,123,2021-10-03T21:56:00`
+      }
+      if (path === '/unknown_tag.csv') {
+        return `$name,string,number,date,$tags
+record 1,abc,123,2021-10-03T21:56:00,tag 3`
       }
       return ''
     }
   }
 })
 
-describe('csv/loader', () => {
+describe('loader/csv', () => {
   const storage = new MemoryStorage()
   const loader = new Loader(storage)
   let mockLog: jest.SpyInstance
@@ -87,6 +95,25 @@ describe('csv/loader', () => {
         date: new Date('2021-10-03T21:56:00')
       }
     })
+    expect(record.refs[$tag].length).toBe(2)
+    expect(record.refs[$tag].includes(tagIds[0])).toBe(true)
+    expect(record.refs[$tag].includes(tagIds[1])).toBe(true)
+  })
+
+  it('supports different separators', async () => {
+    await loadFromCSV(loader, {
+      $type: 'record',
+      csv: '/full_sep.csv',
+      separator: ';',
+      tagSeparator: ','
+    })
+    const results = await storage.search({
+      paging: { top: 100, skip: 0 },
+      refs: {
+        [$type]: [recordTypeId]
+      }
+    })
+    expect(results.count).toBe(2)
   })
 
   describe('error cases', () => {
@@ -118,6 +145,15 @@ describe('csv/loader', () => {
         csv: '/wrong_column.csv'
       })).rejects.toMatchObject({
         message: 'Unknown column for type \'record\''
+      })
+    })
+
+    it('fails on invalid tag', async () => {
+      await expect(loadFromCSV(loader, {
+        $type: 'record',
+        csv: '/unknown_tag.csv'
+      })).rejects.toMatchObject({
+        message: 'Unknown tag \'tag 3\''
       })
     })
 
