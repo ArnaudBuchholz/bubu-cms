@@ -9,6 +9,7 @@ import {
   StorableRecord,
   StoredRecord,
   $type,
+  $tag,
   $typefield
 } from '../types/StoredRecord'
 
@@ -70,6 +71,12 @@ export interface StoredTypeDefinition extends TypeDefinition {
   id: StoredRecordType
 }
 
+const $TagTypeDefinition: StoredTypeDefinition = {
+  id: $tag,
+  name: $tag,
+  fields: []
+}
+
 export function isTypeDefinition (value: any): value is TypeDefinition {
   if (!isLiteralObject(value)) {
     return false
@@ -128,6 +135,9 @@ export async function loadTypeDefinition (storage: IStorage, type: StoredRecordT
 }
 
 export async function findTypeDefinition (storage: IStorage, name: string): Promise<StoredTypeDefinition | null> {
+  if (name === $tag) {
+    return $TagTypeDefinition
+  }
   const result: SearchResult = await storage.search({
     paging: { skip: 0, top: 1 },
     search: name,
