@@ -1,6 +1,6 @@
 import colors from 'colors/safe'
 import { LogType, ILoader } from './ILoader'
-import { IStorage } from '../types/IStorage'
+import { IStorage, SearchOptions } from '../types/IStorage'
 import { StorableRecord, StoredRecordId, $type, $tag } from '../types/StoredRecord'
 import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
@@ -20,9 +20,11 @@ export class Loader implements ILoader {
     const params: any[] = [
       logTypes[type],
       colors.magenta(module),
-      colors.gray(message),
-      detail
+      colors.gray(message)
     ]
+    if (detail !== undefined) {
+      params.push(detail)
+    }
     if ([LogType.error, LogType.fatal].includes(type)) {
       console.error(...params)
     } else {
@@ -54,6 +56,10 @@ export class Loader implements ILoader {
 
   async create (record: StorableRecord): Promise<StoredRecordId> {
     return await create(this.storage, record)
+  }
+
+  async search (options: SearchOptions): Promise<SearchResult> {
+    return await this.storage.search(options)
   }
 
   constructor (storage: IStorage) {
