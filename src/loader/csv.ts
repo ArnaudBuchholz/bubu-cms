@@ -1,7 +1,7 @@
 import { readTextFile } from './readTextFile'
 import { FieldType, FieldDefinition, StoredTypeDefinition } from '../types/TypeDefinition'
 import { $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
-import { LogType, ILoader } from './ILoader'
+import { ILoader } from './ILoader'
 import { CsvLoader } from './types'
 
 const parsers: Record<FieldType, (value: string) => FieldValue> = {
@@ -15,12 +15,12 @@ function parseValue (value: string, fieldType: FieldType): FieldValue {
 }
 
 function fail (loader: ILoader, message: string, details?: object): Error {
-  loader.log(LogType.error, 'loader.csv', message, details)
+  loader.log('error', 'loader.csv', message, details)
   return new Error(message)
 }
 
 export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promise<number> {
-  loader.log(LogType.info, 'loader.csv', `Loading '${settings.$type}' from '${settings.csv}'`)
+  loader.log('info', 'loader.csv', `Loading '${settings.$type}' from '${settings.csv}'`)
   const separator: string = settings.separator ?? ','
   const tagSeparator: string = settings.tagSeparator ?? '|'
   const typeDef: StoredTypeDefinition | null = await loader.getType(settings.$type)
