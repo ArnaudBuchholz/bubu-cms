@@ -125,6 +125,16 @@ export default function testStorage (storage: IStorage): void {
       })
     })
 
+    it('searches through refs (non existing)', async () => {
+      const all: SearchResult = await storage.search({
+        paging: { skip: 0, top: 100 },
+        refs: {
+          [$tag]: ['unknown']
+        }
+      })
+      expect(all.count).toEqual(0)
+    })
+
     it('searches through multiple refs', async () => {
       const all: SearchResult = await storage.search({
         paging: { skip: 0, top: 100 },
