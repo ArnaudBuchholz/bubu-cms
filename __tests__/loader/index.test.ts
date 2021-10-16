@@ -134,6 +134,12 @@ record 2,def,456,2021-10-12T06:12:00,test.ico,4,2021-10-08T23:15:00,tag 1`
 })
 
 describe('loader', () => {
+  let logMock: jest.SpyInstance
+
+  beforeAll(() => {
+    logMock = jest.spyOn(console, 'log').mockImplementation()
+  })
+
   describe('happy path', () => {
     let loader: Loader
 
@@ -184,5 +190,9 @@ describe('loader', () => {
     //     message: 'Unknown or invalid storage'
     //   })
     // })
+  })
+
+  afterAll(() => {
+    logMock.mockRestore()
   })
 })
