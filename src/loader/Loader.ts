@@ -7,10 +7,10 @@ import { create } from '../api/create'
 import { SearchResult } from 'src/ui/src/types/IStorage'
 
 const logTypes: Record<LogType, string> = {
-  [LogType.info]: '💬',
-  [LogType.warning]: '⚠️',
-  [LogType.error]: '❌',
-  [LogType.fatal]: '💀'
+  info: '💬',
+  warning: '⚠️',
+  error: '❌',
+  fatal: '💀'
 }
 
 export class Loader implements ILoader {
@@ -25,7 +25,7 @@ export class Loader implements ILoader {
     if (detail !== undefined) {
       params.push(detail)
     }
-    if ([LogType.error, LogType.fatal].includes(type)) {
+    if (['error', 'fatal'].includes(type)) {
       console.error(...params)
     } else {
       console.log(...params)
