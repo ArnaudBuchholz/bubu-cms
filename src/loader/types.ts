@@ -18,7 +18,7 @@ export function isCsvLoader (value: any): value is CsvLoader {
 }
 
 export interface CustomLoader {
-  loader: string
+  custom: string
 }
 export function isCustomLoader (value: any): value is CustomLoader {
   if (!isLiteralObject(value)) {
