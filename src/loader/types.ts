@@ -12,9 +12,11 @@ export function isCsvLoader (value: any): value is CsvLoader {
   if (!isLiteralObject(value)) {
     return false
   }
-  const { $type, csv } = value
+  const { $type, csv, separator, tagSeparator } = value
   return (isTypeName($type) || $type === $tag) &&
-    typeof csv === 'string'
+    typeof csv === 'string' &&
+    (separator === undefined || typeof separator === 'string') &&
+    (tagSeparator === undefined || typeof tagSeparator === 'string')
 }
 
 export interface CustomLoader {
@@ -47,6 +49,6 @@ export function isConfiguration (value: any): value is Configuration {
   const { serve, storage, types, loaders } = value
   return (serve === undefined || typeof serve === 'number') &&
     isStorageType(storage) &&
-    types.every((type: any) => isTypeDefinition(type)) &&
-    loaders.every((loader: any) => isLoader(loader))
+    Array.isArray(types) && types.every((type: any) => isTypeDefinition(type)) &&
+    loaders.length > 0 && loaders.every((loader: any) => isLoader(loader))
 }
