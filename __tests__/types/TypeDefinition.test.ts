@@ -15,7 +15,7 @@ import {
   validateRecord
 } from '../../src/types/TypeDefinition'
 import { MemoryStorage } from '../../src/storages/memory'
-import testTypeGuard from './testTypeGuard.helper'
+import testTypeGuard from '../testTypeGuard.helper'
 import { StoredRecordType, StoredRecord, $type, $typefield } from '../../src/types/StoredRecord'
 
 describe('types/TypeDefinition', () => {
