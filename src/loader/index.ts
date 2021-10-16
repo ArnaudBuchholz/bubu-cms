@@ -26,7 +26,7 @@ export async function load (cwd: string): Promise<Loader> {
         loaderSettings.csv = join(cwd, loaderSettings.csv)
       }
       await loadFromCSV(loader, loaderSettings)
-    } else if (isCustomLoader(loaderSettings)) {
+    } else /* istanbul ignore else */ if (isCustomLoader(loaderSettings)) {
       const module = await import(loaderSettings.custom)
       const loaderFunc: any = module.default
       if (typeof loaderFunc !== 'function') {
