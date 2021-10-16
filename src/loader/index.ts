@@ -12,8 +12,9 @@ export async function load (cwd: string): Promise<Loader> {
     throw new Error('Invalid configuration')
   }
   const storage = storageFactory(configuration.storage)
+  /* istanbul ignore next */ // It may fail in the future if the storage includes more options
   if (storage === null) {
-    throw new Error('Unknown storage')
+    throw new Error('Unknown or invalid storage')
   }
   for await (const type of configuration.types) {
     await saveTypeDefinition(storage, type)
@@ -26,7 +27,11 @@ export async function load (cwd: string): Promise<Loader> {
       }
       await loadFromCSV(loader, loaderSettings)
     } else if (isCustomLoader(loaderSettings)) {
-      const loaderFunc: Function = await import(loaderSettings.loader) as Function
+      const module = await import(loaderSettings.custom)
+      const loaderFunc: any = module.default
+      if (typeof loaderFunc !== 'function') {
+        throw new Error('Custom loader not exposing a function')
+      }
       await loaderFunc(loader)
     }
   }
