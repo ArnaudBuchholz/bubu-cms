@@ -1,10 +1,8 @@
 'use strict'
 
-console.log('loading...')
-
 const assert = require('assert')
 
-export default async function (loader) {
+module.exports = async function (loader) {
   assert.strictEqual(typeof loader, 'object')
   assert.strictEqual(typeof loader.log, 'function')
   assert.strictEqual(loader.log.length, 4)
