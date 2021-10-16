@@ -90,7 +90,7 @@ record 2,def,456,2021-10-12T06:12:00,test.ico,4,2021-10-08T23:15:00,tag 1`
   }],
   "loaders": [{
     "$type": "$tag",
-    "csv": "../tags.csv"
+    "csv": "${join('/', 'tags.csv').replace(/\\/g, '\\\\')}"
   }, {
     "$type": "record",
     "csv": "../records.csv"
@@ -99,7 +99,35 @@ record 2,def,456,2021-10-12T06:12:00,test.ico,4,2021-10-08T23:15:00,tag 1`
   }]
 }`
       }
-      console.log(path)
+      if (path === join('/invalid_loader', '.bubu-cms.json')) {
+        return `{
+  "serve": 3000,
+  "storage": "memory",
+  "types": [{
+    "name": "record",
+    "fields": [{
+      "name": "string",
+      "type": "string"
+    }, {
+      "name": "number",
+      "type": "number"
+    }, {
+      "name": "date",
+      "type": "date"
+    }]
+  }],
+  "loaders": [{
+    "$type": "$tag",
+    "csv": "../tags.csv"
+  }, {
+    "$type": "record",
+    "csv": "../records.csv"
+  }, {
+    "custom": "${join(__dirname, 'invalid_loader.js').replace(/\\/g, '\\\\')}"
+  }]
+}`
+      }
+      console.error('unknown file path', path)
       return ''
     }
   }
@@ -142,6 +170,12 @@ describe('loader', () => {
     it('validates the configuration', async () => {
       await expect(load('/invalid')).rejects.toMatchObject({
         message: 'Invalid configuration'
+      })
+    })
+
+    it('validates the loader', async () => {
+      await expect(load('/invalid_loader')).rejects.toMatchObject({
+        message: 'Custom loader not exposing a function'
       })
     })
 
