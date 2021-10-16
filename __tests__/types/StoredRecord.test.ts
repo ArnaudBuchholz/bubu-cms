@@ -16,7 +16,7 @@ import {
   MAX_STOREDRECORDICON_LENGTH,
   isStoredRecord
 } from '../../src/types/StoredRecord'
-import testTypeGuardFunc from './testTypeGuard.helper'
+import testTypeGuardFunc from '../testTypeGuard.helper'
 
 describe('types/StoredRecord', () => {
   testTypeGuardFunc('isFieldValue', isFieldValue, [
