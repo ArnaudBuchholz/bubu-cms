@@ -30,7 +30,7 @@
   "dependencies": {
     "colors": "^1.4.0",
     "mime": "^2.5.2",
-    "nanoid": "^3.1.29",
+    "nanoid": "^3.1.30",
     "reserve": "^1.11.7"
   },
   "devDependencies": {
@@ -41,19 +41,19 @@
     "@sapui5/ts-types-esm": "^1.95.0",
     "@types/colors": "^1.2.1",
     "@types/jest": "^27.0.2",
-    "@types/jquery": "^3.5.6",
-    "@types/node": "^16.10.3",
+    "@types/jquery": "^3.5.8",
+    "@types/node": "^16.11.6",
     "@types/qunit": "^2.11.2",
-    "@ui5/cli": "^2.13.0",
+    "@ui5/cli": "^2.14.0",
     "babel-preset-transform-ui5": "^7.0.5",
-    "jest": "^27.2.4",
+    "jest": "^27.3.1",
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "replace": "^1.2.1",
-    "ts-jest": "^27.0.5",
+    "ts-jest": "^27.0.7",
     "ts-standard": "^10.0.0",
-    "typescript": "^4.4.3",
-    "ui5-test-runner": "^1.0.7"
+    "typescript": "^4.4.4",
+    "ui5-test-runner": "^1.1.2"
   },
   "ts-standard": {
     "env": [
