@@ -1,7 +1,8 @@
 import { EventEmitter } from 'events'
+import { Stats } from 'fs'
 import { IncomingMessage, ServerResponse } from 'http'
 
-declare module reserve {
+declare module 'reserve' {
   type RedirectResponse = undefined | number | string
 
   type IfMatcher = (request: IncomingMessage, url: string, match: RegExpMatchArray) => boolean | RedirectResponse
@@ -15,9 +16,87 @@ declare module reserve {
     cwd: string
   }
 
-  interface FileMapping {
-    file: string
+  // region file
+
+  interface ReadStreamOptions {
+    start: number
+    end: number
   }
+
+  interface CustomFileSystem {
+    readdir?: (folderPath: string) => Promise<string[]>
+    stat: (filePath: string) => Promise<Stats>
+    createReadStream: (filePath: string, options?: ReadStreamOptions) => Promise<ReadableStream>
+  }
+
+  interface FileMapping extends BaseMapping {
+    file: string
+    'case-sensitive'?: boolean
+    'ignore-if-not-found'?: boolean
+    'custom-file-system'?: string | CustomFileSystem
+    'caching-strategy'?: 'modified' | number
+    'strict'?: boolean
+    'mime-types'?: Record<string, string>
+  }
+
+  // endregion file
+
+  // region url
+
+  type Headers = Record<string, string>
+
+  interface RequestSummary {
+    method: string
+    url: string
+    headers: Headers
+  }
+
+  interface ForwardRequestContext {
+    configuration: IConfiguration
+    context: object
+    mapping: BaseUrlMapping
+    match: RegExpMatchArray
+    request: RequestSummary
+    incoming: IncomingMessage
+  }
+
+  interface ForwardResponseContext {
+    configuration: IConfiguration
+    context: object
+    mapping: BaseUrlMapping
+    match: RegExpMatchArray
+    request: RequestSummary
+    statusCode: number
+    headers: Headers
+  }
+
+  interface UrlMapping extends BaseMapping {
+    url: string
+    'unsecure-cookies'?: boolean
+    'forward-request'?: string | ((context: ForwardRequestContext) => Promise<void>)
+    'forward-response'?: string | ((context: ForwardResponseContext) => Promise<RedirectResponse>)
+    'ignore-unverifiable-certificate'?: boolean
+    'absolute-location'?: boolean
+  }
+
+  // endregion url
+
+  // region custom
+
+  interface CustomMapping extends BaseMapping {
+    custom: string | ((request: IncomingMessage, response: ServerResponse, ...capturedGroups: string[]) => Promise<RedirectResponse>)
+    watch?: boolean
+  }
+
+  // endregion custom
+
+  // region use
+
+  interface UseMapping extends BaseMapping {
+    use: object
+  }
+
+  // endregion use
 
   interface SSLSettings {
     cert: string
@@ -50,6 +129,8 @@ declare module reserve {
 
   type Listener = string | ((eventEmitter: EventEmitter) => void)
 
+  type Mapping = BaseMapping | FileMapping | UrlMapping | CustomMapping
+
   interface Configuration {
     hostname?: string
     port?: number
@@ -73,7 +154,7 @@ declare module reserve {
   }
 
   function check (configuration: Configuration): Promise<Configuration>
-  function log (server: EventEmitter, verbose: boolean): EventEmitter
+  function log (server: EventEmitter, verbose?: boolean): EventEmitter
   function serve (configuration: Configuration): EventEmitter
   function mock (configuration: Configuration, mockedHandlers?: Handlers): Promise<EventEmitter>
 }
