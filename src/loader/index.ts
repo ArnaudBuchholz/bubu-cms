@@ -19,7 +19,7 @@ export async function load (cwd: string): Promise<Loader> {
   for await (const type of configuration.types) {
     await saveTypeDefinition(storage, type)
   }
-  const loader = new Loader(storage)
+  const loader = new Loader(configuration, storage)
   for await (const loaderSettings of configuration.loaders) {
     if (isCsvLoader(loaderSettings)) {
       if (!isAbsolute(loaderSettings.csv)) {
@@ -32,7 +32,7 @@ export async function load (cwd: string): Promise<Loader> {
       if (typeof loaderFunc !== 'function') {
         throw new Error('Custom loader not exposing a function')
       }
-      await loaderFunc(loader)
+      await loaderFunc(configuration, loader)
     }
   }
   return loader
