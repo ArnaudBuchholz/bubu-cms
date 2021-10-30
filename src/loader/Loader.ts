@@ -5,6 +5,8 @@ import { StorableRecord, StoredRecordId, $type, $tag } from '../types/StoredReco
 import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
 import { SearchResult } from 'src/ui/src/types/IStorage'
+import { Configuration } from './types'
+import { Configuration as ReserveConfiguration } from 'reserve'
 
 const logTypes: Record<LogType, string> = {
   info: '💬',
@@ -14,7 +16,7 @@ const logTypes: Record<LogType, string> = {
 }
 
 export class Loader implements ILoader {
-  private readonly storage: IStorage
+  // region ILoader
 
   log (type: LogType, module: string, message: string, detail?: object): void {
     const params: any[] = [
@@ -62,7 +64,20 @@ export class Loader implements ILoader {
     return await this.storage.search(options)
   }
 
-  constructor (storage: IStorage) {
+  // endregion
+
+  public readonly storage: IStorage
+  public readonly configuration: Configuration
+
+  buildReserveConfiguration (): ReserveConfiguration {
+    return {
+      port: this.configuration.serve ?? 8080,
+      mappings: []
+    }
+  }
+
+  constructor (configuration: Configuration, storage: IStorage) {
+    this.configuration = configuration
     this.storage = storage
   }
 }
