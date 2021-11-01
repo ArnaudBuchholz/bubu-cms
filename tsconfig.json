@@ -51,8 +51,7 @@
       "sap/ui/base/*": [ "./node_modules/@sapui5/ts-types-esm/types/sap.ui.base.d.ts" ],
       "sap/ui/core/*": [ "./node_modules/@sapui5/ts-types-esm/types/sap.ui.core.d.ts" ],
       "sap/uxap/*": [ "./node_modules/@sapui5/ts-types-esm/types/sap.uxap.d.ts" ],
-      "bubu-cms": [ "./src/ui/src/" ],
-      "reserve": [ "./src/reserve.d.ts" ]
+      "bubu-cms": [ "./src/ui/src/" ]
     },                                 
     "rootDirs": [                                   /* List of root folders whose combined content represents the structure of the project at runtime. */
       "./src"
