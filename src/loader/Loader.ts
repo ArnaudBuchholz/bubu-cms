@@ -7,6 +7,7 @@ import { create } from '../api/create'
 import { SearchResult } from 'src/ui/src/types/IStorage'
 import { Configuration } from './types'
 import { Configuration as ReserveConfiguration } from 'reserve'
+import { buildConfiguration } from './reserve'
 
 const logTypes: Record<LogType, string> = {
   info: '💬',
@@ -70,10 +71,7 @@ export class Loader implements ILoader {
   public readonly configuration: Configuration
 
   buildReserveConfiguration (): ReserveConfiguration {
-    return {
-      port: this.configuration.serve ?? 8080,
-      mappings: []
-    }
+    return buildConfiguration(this)
   }
 
   constructor (configuration: Configuration, storage: IStorage) {
