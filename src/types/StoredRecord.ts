@@ -39,13 +39,14 @@ export function isFields (value: any): value is Fields {
 
 export type StoredRecordId = string
 export const MAX_STOREDRECORDID_LENGTH: number = 16
+export const STOREDRECORDID_REGEX = '[a-zA-Z0-9_-]+'
 export function isValidNonEmptyString (value: any, maxLength: number): value is string {
   return typeof value === 'string' && value.length > 0 && value.length <= maxLength
 }
+const storedRecordRegex = new RegExp(`^${STOREDRECORDID_REGEX}$`)
 export function isStoredRecordId (value: any): value is StoredRecordId {
   return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) &&
-    value.match(/^[A-Z0-9_-]+$/i) !== null &&
-    value.trim() === value
+    value.match(storedRecordRegex) !== null
 }
 
 export type StoredRecordType = StoredRecordId
