@@ -1,9 +1,13 @@
 import { Loader } from './Loader'
 import { Configuration, body } from 'reserve'
 import { IStorage } from '../types/IStorage'
-import { create } from '../api/create'
 import { search } from '../api/search'
+import { create } from '../api/create'
+import { update } from '../api/update'
+import { deleteRecord } from '../api/delete'
 import { IncomingMessage, ServerResponse } from 'http'
+import { $tag, $type, $typefield, STOREDRECORDID_REGEX } from '../types/StoredRecord'
+import { join } from 'path'
 
 declare module 'http' {
   export interface IncomingMessage {
@@ -34,14 +38,14 @@ export function buildConfiguration (loader: Loader): Configuration {
       }
     }, {
       method: 'GET',
-      match: /^\/api\/(search\?.*)/,
+      match: /^\/api\b(\?.*)/,
       custom: async (request: IncomingMessage, response: ServerResponse, url: string): Promise<void> => {
         const { storage } = request
         serialize(response, await search(storage, url))
       }
     }, {
       method: 'POST',
-      match: /^\/api\/create/,
+      match: /^\/api\b/,
       custom: async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
         const { storage } = request
         const result = {
@@ -50,15 +54,25 @@ export function buildConfiguration (loader: Loader): Configuration {
         serialize(response, result)
       }
     }, {
-      method: 'POST',
-      match: /^\/api\/update/,
-      custom: async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+      method: 'PUT',
+      match: /^\/api\b/,
+      custom: async (request: IncomingMessage, response: ServerResponse): Promise<number> => {
         const { storage } = request
-        const result = {
-          id: await create(storage, deserialize(request))
-        }
-        serialize(response, result)
+        await update(storage, deserialize(request))
+        return 204
       }
+    }, {
+      method: 'DELETE',
+      match: new RegExp(`^\\/api\\/(${$tag}|${$type}|${$typefield}|${STOREDRECORDID_REGEX})\\/(${STOREDRECORDID_REGEX})`),
+      custom: async (request: IncomingMessage, response: ServerResponse, type: string, id: string): Promise<number> => {
+        const { storage } = request
+        await deleteRecord(storage, type, id)
+        return 200
+      }
+    }, {
+      method: 'GET',
+      match: /^\/(.*)/,
+      file: join(__dirname, '../ui')
     }]
   }
 }
