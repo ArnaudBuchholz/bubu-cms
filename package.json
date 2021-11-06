@@ -29,9 +29,9 @@
   "homepage": "https://github.com/ArnaudBuchholz/bubu-cms/",
   "dependencies": {
     "colors": "^1.4.0",
-    "mime": "^2.5.2",
+    "mime": "^3.0.0",
     "nanoid": "^3.1.30",
-    "reserve": "^1.12.0"
+    "reserve": "^1.12.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
