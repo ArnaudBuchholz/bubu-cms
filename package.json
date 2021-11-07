@@ -3,7 +3,14 @@
   "version": "0.9.1",
   "private": true,
   "description": "Small, simple & flat CMS for bubu's family",
-  "directories": {},
+  "main": "./dist/src/index.js",
+  "files": [
+    "dist/**/*.js",
+    "dist/*.js"
+  ],
+  "bin": {
+    "bubu-cms": "./dist/src/index.js"
+  },
   "scripts": {
     "start": "node ./dist/index.js",
     "debug": "node --inspect-brk ./dist/index.js",
