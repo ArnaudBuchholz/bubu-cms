@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+
 'use strict'
 
-import { load } from './loader'
+import { load } from './loader/index'
 import { log, serve } from 'reserve'
 
 load(process.cwd())
