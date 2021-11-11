@@ -32,7 +32,7 @@ export async function load (cwd: string): Promise<Loader> {
       if (typeof loaderFunc !== 'function') {
         throw new Error('Custom loader not exposing a function')
       }
-      await loaderFunc(configuration, loader)
+      await loaderFunc(loader)
     }
   }
   return loader
