@@ -4,6 +4,7 @@ import { saveTypeDefinition } from '../../src/types/TypeDefinition'
 import { loadFromCSV } from '../../src/loader/csv'
 import { StoredRecordType, $type, StoredRecordId, StorableRecord, $tag } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
+import { Configuration } from '../../src/loader/types'
 
 jest.mock('../../src/loader/readTextFile', () => {
   return {
@@ -29,9 +30,15 @@ record 1,abc,123,2021-10-03T21:56:00,tag 3`
   }
 })
 
+const fakeConfiguration: Configuration = {
+  storage: 'memory',
+  types: [],
+  loaders: []
+}
+
 describe('loader/csv', () => {
   const storage = new MemoryStorage()
-  const loader = new Loader(storage)
+  const loader = new Loader(fakeConfiguration, storage)
   let mockLog: jest.SpyInstance
   let mockError: jest.SpyInstance
   let recordTypeId: StoredRecordType
@@ -162,7 +169,7 @@ describe('loader/csv', () => {
       failingStorage.create = async function (record: StorableRecord): Promise<StoredRecordId> {
         throw new Error('fail')
       }
-      const failingLoader = new Loader(failingStorage)
+      const failingLoader = new Loader(fakeConfiguration, failingStorage)
       await expect(loadFromCSV(failingLoader, {
         $type: 'record',
         csv: '/full.csv'
