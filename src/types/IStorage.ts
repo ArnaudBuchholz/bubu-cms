@@ -21,6 +21,36 @@ export interface SearchOptions {
   fullNameOnly?: boolean
 }
 
+export function encodeSearchOptions (options: SearchOptions): string {
+  const urlParams: Record<string, string> = {
+    skip: options.paging.skip.toString(),
+    top: options.paging.top.toString()
+  }
+  if (options.sort !== undefined) {
+    let direction
+    if (options.sort.ascending) {
+      direction = 'asc'
+    } else {
+      direction = 'desc'
+    }
+    urlParams.sort = `${options.sort.field} ${direction}`
+  }
+  if (options.search !== undefined) {
+    if (options.fullNameOnly === true) {
+      urlParams.name = encodeURIComponent(options.search)
+    } else {
+      urlParams.search = encodeURIComponent(options.search)
+    }
+  }
+  const refsCount = Object.keys(options.refs).length
+  if (refsCount > 0) {
+    urlParams.refs = JSON.stringify(options.refs)
+  }
+  return Object.keys(urlParams)
+    .map(key => `${key}=${urlParams[key]}`)
+    .join('&')
+}
+
 export interface SearchResult {
   count: number
   records: StoredRecord[]
