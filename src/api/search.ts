@@ -1,12 +1,13 @@
+import { isStoredRecordRefs } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, SortableField } from '../types/IStorage'
 
 export const DEFAULT_PAGE_SIZE: number = 50
 
-type urlParameterName = 'skip' | 'top' | 'sort' | 'search' | 'name'
+type urlParameterName = 'skip' | 'top' | 'sort' | 'search' | 'name' | 'refs'
 type urlParameters = Record<urlParameterName, string>
 
 function isValidUrlParameterName (name: string): name is urlParameterName {
-  return ['skip', 'top', 'sort', 'search', 'name'].includes(name)
+  return ['skip', 'top', 'sort', 'search', 'name', 'refs'].includes(name)
 }
 
 function isANumber (value: string): void {
@@ -34,12 +35,20 @@ function isAValidName (value: string, parameters: urlParameters): void {
   }
 }
 
+function isValidRefs (value: string): void {
+  const refs = JSON.parse(value)
+  if (!isStoredRecordRefs(refs)) {
+    throw new Error('Invalid refs')
+  }
+}
+
 const urlParameterValidators: Record<urlParameterName, (value: string, parameters: urlParameters) => void> = {
   skip: isANumber,
   top: isANumber,
   sort: isASortField,
   search: isAValidSearch,
-  name: isAValidName
+  name: isAValidName,
+  refs: isValidRefs
 }
 
 function extractUrlParameters (search: string): urlParameters {
@@ -48,7 +57,8 @@ function extractUrlParameters (search: string): urlParameters {
     top: DEFAULT_PAGE_SIZE.toString(),
     sort: '',
     search: '',
-    name: ''
+    name: '',
+    refs: ''
   }
   if (search !== undefined) {
     search.replace(/&?(\w+)=([^&]+)/gy, (match: string, name: string, value: string): string => {
@@ -65,9 +75,8 @@ function extractUrlParameters (search: string): urlParameters {
   return parameters
 }
 
-export async function search (storage: IStorage, url: string): Promise<SearchResult> {
-  const [pathname, urlSearch] = url.split('?')
-  const { skip, top, sort, search, name } = extractUrlParameters(urlSearch)
+export function decodeSearchOptions (urlParams: string): SearchOptions {
+  const { skip, top, sort, search, name, refs } = extractUrlParameters(urlParams)
   const options: SearchOptions = {
     paging: {
       skip: parseInt(skip, 10),
@@ -89,6 +98,15 @@ export async function search (storage: IStorage, url: string): Promise<SearchRes
     options.search = name
     options.fullNameOnly = true
   }
+  if (refs !== '') {
+    options.refs = JSON.parse(refs)
+  }
+  return options
+}
+
+export async function search (storage: IStorage, url: string): Promise<SearchResult> {
+  const [pathname, urlParams] = url.split('?')
+  const options: SearchOptions = decodeSearchOptions(urlParams)
   if (pathname === '/records') {
     return await storage.search(options)
   }
