@@ -1,6 +1,6 @@
-import { StoredRecordRefs } from '../../src/types/StoredRecord'
-import { IStorage, SearchOptions, SearchResult } from '../../src/types/IStorage'
-import { DEFAULT_PAGE_SIZE, search } from '../../src/api/search'
+import { StoredRecordRefs, $tag } from '../../src/types/StoredRecord'
+import { IStorage, SearchOptions, SearchResult, encodeSearchOptions } from '../../src/types/IStorage'
+import { DEFAULT_PAGE_SIZE, search, decodeSearchOptions } from '../../src/api/search'
 import { fakeStorage } from './fakeStorage.helper'
 
 type SearchResultAndOptions = SearchResult & {
@@ -143,6 +143,14 @@ describe('api/search', () => {
       it('validates exclusive name vs search', async () => {
         return await expect(search(storage, `${baseUrl}?name=a&search=b`)).rejects.toThrow(Error)
       })
+
+      it('validates refs (invalid JSON)', async () => {
+        return await expect(search(storage, `${baseUrl}?refs={abc}`)).rejects.toThrow(Error)
+      })
+
+      it('validates refs (invalid type)', async () => {
+        return await expect(search(storage, `${baseUrl}?refs={"a":"b"}`)).rejects.toThrow(Error)
+      })
     })
   }
 
@@ -166,6 +174,49 @@ describe('api/search', () => {
 
     it('rejects invalid types (123)', async () => {
       return await expect(search(storage, '/records/123')).rejects.toThrow(Error)
+    })
+  })
+
+  describe('SearchOptions serialization', () => {
+    const options: SearchOptions[] = [{
+      paging: { skip: 0, top: 10 },
+      refs: {}
+    }, {
+      paging: { skip: 1, top: 50 },
+      refs: {},
+      sort: {
+        field: 'name',
+        ascending: true
+      },
+      search: 'a'
+    }, {
+      paging: { skip: 50, top: 100 },
+      refs: {},
+      sort: {
+        field: 'rating',
+        ascending: false
+      },
+      search: 'a',
+      fullNameOnly: true
+    }, {
+      paging: { skip: 50, top: 100 },
+      refs: {
+        [$tag]: ['123', '456']
+      },
+      sort: {
+        field: 'rating',
+        ascending: false
+      },
+      search: 'a',
+      fullNameOnly: true
+    }]
+
+    options.forEach(option => {
+      it(JSON.stringify(option), () => {
+        const urlParams = encodeSearchOptions(option)
+        const deserialized = decodeSearchOptions(urlParams)
+        expect(deserialized).toMatchObject(option)
+      })
     })
   })
 })
