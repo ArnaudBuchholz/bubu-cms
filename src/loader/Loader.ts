@@ -67,15 +67,10 @@ export class Loader implements ILoader {
 
   // endregion
 
-  public readonly storage: IStorage
-  public readonly configuration: Configuration
-
   buildReserveConfiguration (): ReserveConfiguration {
     return buildConfiguration(this)
   }
 
-  constructor (configuration: Configuration, storage: IStorage) {
-    this.configuration = configuration
-    this.storage = storage
+  constructor (public readonly configuration: Configuration, public readonly storage: IStorage) {
   }
 }
