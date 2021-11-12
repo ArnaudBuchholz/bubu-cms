@@ -1,5 +1,6 @@
-import { isStoredRecordRefs } from '../types/StoredRecord'
+import { isStoredRecordRefs, $type, $tag, $typefield } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, SortableField } from '../types/IStorage'
+import { isTypeName, findTypeDefinition } from '../types/TypeDefinition'
 
 export const DEFAULT_PAGE_SIZE: number = 50
 
@@ -115,15 +116,24 @@ export function decodeSearchOptions (urlParams: string): SearchOptions {
 export async function search (storage: IStorage, url: string): Promise<SearchResult> {
   const [pathname, urlParams] = url.split('?')
   const options: SearchOptions = decodeSearchOptions(urlParams)
-  if (pathname === '') {
-    return await storage.search(options)
+  if (pathname !== '') {
+    let type = {
+      $tag: $tag,
+      $type: $type,
+      $typefield: $typefield
+    }[pathname]
+    if (type === undefined) {
+      if (isTypeName(pathname)) {
+        const typeDef = await findTypeDefinition(storage, pathname)
+        if (typeDef !== null) {
+          type = typeDef.id
+        }
+      }
+      if (type === undefined) {
+        type = pathname
+      }
+    }
+    options.refs.$type = [type]
   }
-  // TODO : filter by type if specified
-  const parsedPathname = pathname.match(/\/records\/(\$type|\$tag|[a-zA-Z]+)$/)
-  if (parsedPathname === null) {
-    throw new Error('Invalid request')
-  }
-  const type: undefined | string = parsedPathname[1]
-  options.refs.$type = [type]
   return await storage.search(options)
 }
