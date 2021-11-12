@@ -19,8 +19,10 @@ export function isFieldValue (value: any): value is FieldValue {
 
 export type FieldName = string
 export const MAX_FIELDNAME_LENGTH: number = 64
+export const NAME_REGEX = '[a-zA-Z][a-zA-Z0-9_]*'
+const nameRegex = new RegExp(`^${NAME_REGEX}$`)
 export function isValidName (value: any, maxLength: number): boolean {
-  return typeof value === 'string' && value.match(/^[a-z][a-z_0-9_]*$/i) !== null && value.length <= maxLength
+  return typeof value === 'string' && value.match(nameRegex) !== null && value.length <= maxLength
 }
 export function isFieldName (value: any): value is FieldName {
   return isValidName(value, MAX_FIELDNAME_LENGTH)
