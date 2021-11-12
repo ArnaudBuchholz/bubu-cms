@@ -16,10 +16,16 @@ const logTypes: Record<LogType, string> = {
   fatal: '💀'
 }
 
+const custom: string = '⚙️'
+
 export class Loader implements ILoader {
   // region ILoader
 
-  log (type: LogType, module: string, message: string, detail?: object): void {
+  log (type: LogType, module: string, message?: string, detail?: object): void {
+    if (message === undefined) {
+      message = module
+      module = custom
+    }
     const params: any[] = [
       logTypes[type],
       colors.magenta(module),
