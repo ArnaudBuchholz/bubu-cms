@@ -1,0 +1,24 @@
+{
+  "serve": 3000,
+  "storage": "memory",
+  "types": [{
+    "name": "pokemon",
+    "defaultIcon": "sap-icon://person-placeholder",
+    "fields": [{
+      "name": "pkid",
+      "type": "number"
+    }, {
+      "name": "speciesId",
+      "type": "number"
+    }, {
+      "name": "height",
+      "type": "number"
+    }, {
+      "name": "weight",
+      "type": "number"
+    }]
+  }],
+  "loaders": [{
+    "custom": "./pokemon.js"
+  }]
+}
