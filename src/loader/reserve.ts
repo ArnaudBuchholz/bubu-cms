@@ -38,6 +38,7 @@ export function buildConfiguration (loader: Loader): Configuration {
       }
     }, {
       method: 'GET',
+      // Need to handle type specification
       match: /^\/api\b(\?.*)/,
       custom: async (request: IncomingMessage, response: ServerResponse, url: string): Promise<void> => {
         const { storage } = request
