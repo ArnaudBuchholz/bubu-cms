@@ -24,6 +24,9 @@ export class Loader implements ILoader {
   log (type: LogType, module: string, message?: string, detail?: object): void {
     if (message === undefined) {
       message = module
+      module = ''
+    }
+    if (module === '') {
       module = custom
     }
     const params: any[] = [
