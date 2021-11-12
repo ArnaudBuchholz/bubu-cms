@@ -3,10 +3,18 @@ import { IStorage, SearchOptions, SearchResult, SortableField } from '../types/I
 
 export const DEFAULT_PAGE_SIZE: number = 50
 
-type urlParameterName = 'skip' | 'top' | 'sort' | 'search' | 'name' | 'refs'
-type urlParameters = Record<urlParameterName, string>
+interface UrlParameters {
+  skip: string
+  top: string
+  sort: string
+  search: string
+  name: string
+  refs: string
+}
 
-function isValidUrlParameterName (name: string): name is urlParameterName {
+type UrlParameterName = keyof UrlParameters
+
+function isValidUrlParameterName (name: string): name is UrlParameterName {
   return ['skip', 'top', 'sort', 'search', 'name', 'refs'].includes(name)
 }
 
@@ -23,13 +31,13 @@ function isASortField (value: string): void {
   }
 }
 
-function isAValidSearch (value: string, parameters: urlParameters): void {
+function isAValidSearch (value: string, parameters: UrlParameters): void {
   if (parameters.name !== '') {
     throw new Error('Invalid combination of name and search')
   }
 }
 
-function isAValidName (value: string, parameters: urlParameters): void {
+function isAValidName (value: string, parameters: UrlParameters): void {
   if (parameters.search !== '') {
     throw new Error('Invalid combination of name and search')
   }
@@ -42,7 +50,7 @@ function isValidRefs (value: string): void {
   }
 }
 
-const urlParameterValidators: Record<urlParameterName, (value: string, parameters: urlParameters) => void> = {
+const urlParameterValidators: Record<UrlParameterName, (value: string, parameters: UrlParameters) => void> = {
   skip: isANumber,
   top: isANumber,
   sort: isASortField,
@@ -51,8 +59,8 @@ const urlParameterValidators: Record<urlParameterName, (value: string, parameter
   refs: isValidRefs
 }
 
-function extractUrlParameters (search: string): urlParameters {
-  const parameters: urlParameters = {
+function extractUrlParameters (search: string): UrlParameters {
+  const parameters: UrlParameters = {
     skip: '0',
     top: DEFAULT_PAGE_SIZE.toString(),
     sort: '',
@@ -107,9 +115,10 @@ export function decodeSearchOptions (urlParams: string): SearchOptions {
 export async function search (storage: IStorage, url: string): Promise<SearchResult> {
   const [pathname, urlParams] = url.split('?')
   const options: SearchOptions = decodeSearchOptions(urlParams)
-  if (pathname === '/records') {
+  if (pathname === '') {
     return await storage.search(options)
   }
+  // TODO : filter by type if specified
   const parsedPathname = pathname.match(/\/records\/(\$type|\$tag|[a-zA-Z]+)$/)
   if (parsedPathname === null) {
     throw new Error('Invalid request')
