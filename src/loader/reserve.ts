@@ -6,7 +6,8 @@ import { create } from '../api/create'
 import { update } from '../api/update'
 import { deleteRecord } from '../api/delete'
 import { IncomingMessage, ServerResponse } from 'http'
-import { $tag, $type, $typefield, STOREDRECORDID_REGEX } from '../types/StoredRecord'
+import { $tag, $type, $typefield, NAME_REGEX, STOREDRECORDID_REGEX } from '../types/StoredRecord'
+import { isTypeName, findTypeDefinition } from '../types/TypeDefinition'
 import { join } from 'path'
 
 declare module 'http' {
@@ -38,8 +39,7 @@ export function buildConfiguration (loader: Loader): Configuration {
       }
     }, {
       method: 'GET',
-      // Need to handle type specification
-      match: /^\/api\b(\?.*)/,
+      match: /^\/api\b\/?(.*)/,
       custom: async (request: IncomingMessage, response: ServerResponse, url: string): Promise<void> => {
         const { storage } = request
         serialize(response, await search(storage, url))
@@ -64,9 +64,15 @@ export function buildConfiguration (loader: Loader): Configuration {
       }
     }, {
       method: 'DELETE',
-      match: new RegExp(`^\\/api\\/(${$tag}|${$type}|${$typefield}|${STOREDRECORDID_REGEX})\\/(${STOREDRECORDID_REGEX})`),
+      match: new RegExp(`^\\/api\\/(${$tag}|${$type}|${$typefield}|${STOREDRECORDID_REGEX}|${NAME_REGEX})\\/(${STOREDRECORDID_REGEX})`),
       custom: async (request: IncomingMessage, response: ServerResponse, type: string, id: string): Promise<number> => {
         const { storage } = request
+        if (isTypeName(type)) {
+          const typeDef = await findTypeDefinition(storage, type)
+          if (typeDef !== null) {
+            type = typeDef.id
+          }
+        }
         await deleteRecord(storage, type, id)
         return 200
       }
