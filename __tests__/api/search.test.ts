@@ -154,28 +154,10 @@ describe('api/search', () => {
     })
   }
 
-  describe('all records', () => genTests('/records', {}, 'all records'))
-  describe('tags', () => genTests('/records/$tag', { $type: ['$tag'] }, 'tags'))
-  describe('types', () => genTests('/records/$type', { $type: ['$type'] }, 'types'))
-  describe('custom records', () => genTests('/records/custom', { $type: ['custom'] }, 'custom records'))
-
-  describe('errors', () => {
-    it('validates syntax', async () => {
-      return await expect(search(storage, '/anything')).rejects.toThrow(Error)
-    })
-
-    it('validates syntax (too many steps)', async () => {
-      return await expect(search(storage, '/records/any/thing')).rejects.toThrow(Error)
-    })
-
-    it('rejects invalid types ($any)', async () => {
-      return await expect(search(storage, '/records/$any')).rejects.toThrow(Error)
-    })
-
-    it('rejects invalid types (123)', async () => {
-      return await expect(search(storage, '/records/123')).rejects.toThrow(Error)
-    })
-  })
+  describe('all records', () => genTests('', {}, 'all records'))
+  describe('tags', () => genTests('$tag', { $type: ['$tag'] }, 'tags'))
+  describe('types', () => genTests('$type', { $type: ['$type'] }, 'types'))
+  describe('custom records', () => genTests('custom', { $type: ['custom'] }, 'custom records'))
 
   describe('SearchOptions serialization', () => {
     const options: SearchOptions[] = [{
