@@ -5,7 +5,7 @@
 import { load } from './loader/index'
 import { log, serve } from 'reserve'
 
-load(process.cwd())
+load(process.env.INIT_CWD ?? process.cwd())
   .then(loader => {
     const configuration = loader.buildReserveConfiguration()
     log(serve(configuration))
