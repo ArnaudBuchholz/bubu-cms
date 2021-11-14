@@ -1,13 +1,15 @@
 import colors from 'colors/safe'
 import { LogType, ILoader } from './ILoader'
 import { IStorage, SearchOptions } from '../types/IStorage'
-import { StorableRecord, StoredRecordId, $type, $tag } from '../types/StoredRecord'
+import { StorableRecord, StoredRecordId, StoredRecord, $type, $tag } from '../types/StoredRecord'
 import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
 import { SearchResult } from 'src/ui/src/types/IStorage'
 import { Configuration } from './types'
 import { Configuration as ReserveConfiguration } from 'reserve'
 import { buildConfiguration } from './reserve'
+import { update } from '../api/update'
+import { deleteRecord } from '../api/delete'
 
 const logTypes: Record<LogType, string> = {
   info: '💬',
@@ -66,12 +68,20 @@ export class Loader implements ILoader {
     return null
   }
 
+  async search (options: SearchOptions): Promise<SearchResult> {
+    return await this.storage.search(options)
+  }
+
   async create (record: StorableRecord): Promise<StoredRecordId> {
     return await create(this.storage, record)
   }
 
-  async search (options: SearchOptions): Promise<SearchResult> {
-    return await this.storage.search(options)
+  async update (record: StoredRecord): Promise<void> {
+    return await update(this.storage, record)
+  }
+
+  async delete (record: StoredRecord): Promise<void> {
+    return await deleteRecord(this.storage, record.type, record.id)
   }
 
   // endregion
