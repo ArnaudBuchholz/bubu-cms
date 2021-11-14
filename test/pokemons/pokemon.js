@@ -1,7 +1,8 @@
 const { readFile } = require('fs/promises')
+const { join } = require('path')
 
 async function csv (name) {
-  return (await readFile(name))
+  return (await readFile(join(__dirname, name)))
     .toString()
     .split('\n')
     .slice(1)
@@ -13,7 +14,7 @@ module.exports = async loader => {
   loader.log('info', 'Loading pokemons...')
   loader.log('info', 'Creating pokemon types as tags...')
   const types = {}
-  for await (const record of await csv('./types.csv')) {
+  for await (const record of await csv('types.csv')) {
     const [id, identifier] = record.split(',')
     const tagId = await loader.create({
       type: '$tag',
@@ -27,7 +28,7 @@ module.exports = async loader => {
   const pokemonTypes = {}
   const tagTypeId = (await loader.getType('$tag')).id // Never assume it is $tag
   loader.log('info', '', 'Loading pokemon types...', { tagTypeId })
-  for await (const record of await csv('./pokemon_types.csv')) {
+  for await (const record of await csv('pokemon_types.csv')) {
     const [id, typeId] = record.split(',')
     if (pokemonTypes[id] === undefined) {
       pokemonTypes[id] = []
@@ -36,7 +37,7 @@ module.exports = async loader => {
   }
   const pokemonTypeId = (await loader.getType('pokemon')).id
   loader.log('info', '', 'Creating pokemons...', { pokemonTypeId })
-  for await (const record of await csv('./pokemon.csv')) {
+  for await (const record of await csv('pokemon.csv')) {
     const [pkid, identifier, speciesId, height, weight] = record.split(',')
     const pokemonId = await loader.create({
       type: pokemonTypeId,
