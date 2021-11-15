@@ -133,6 +133,9 @@ export async function search (storage: IStorage, url: string): Promise<SearchRes
         type = pathname
       }
     }
+    if (options.refs === undefined) {
+      options.refs = {}
+    }
     options.refs.$type = [type]
   }
   return await storage.search(options)
