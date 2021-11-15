@@ -1,4 +1,14 @@
-import { StoredRecordType, StoredRecordId, StoredRecordRating, StoredRecordRefs, StorableRecord, StoredRecord, FieldValue, FieldName } from './StoredRecord'
+import {
+  StoredRecordType,
+  StoredRecordId,
+  StoredRecordRating,
+  StoredRecordRefs,
+  StorableRecord,
+  StoredRecord,
+  FieldValue,
+  FieldName,
+  Fields
+} from './StoredRecord'
 
 export type SortableField = 'name' | 'rating' | 'touched'
 export function isSortableField (value: any): value is SortableField {
@@ -16,7 +26,8 @@ export interface SearchOptions {
     top: number
   }
   sort?: SortingOptions
-  refs: StoredRecordRefs
+  refs?: StoredRecordRefs
+  fields?: Fields
   search?: string
   fullNameOnly?: boolean
 }
@@ -42,7 +53,7 @@ export function encodeSearchOptions (options: SearchOptions): string {
       urlParams.search = encodeURIComponent(options.search)
     }
   }
-  const refsCount = Object.keys(options.refs).length
+  const refsCount = Object.keys(options.refs ?? {}).length
   if (refsCount > 0) {
     urlParams.refs = JSON.stringify(options.refs)
   }
