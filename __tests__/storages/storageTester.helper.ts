@@ -46,7 +46,7 @@ export default function testStorage (storage: IStorage): void {
     refs: { [$tag]: ['0', '1', '2'] },
     fields: {
       a: 'A',
-      b: 'B'
+      b: 'b'
     }
   }
 
@@ -102,51 +102,52 @@ export default function testStorage (storage: IStorage): void {
   describe('search', () => {
     it('returns everything (including refs)', async () => {
       const all: SearchResult = await storage.search({
-        paging: { skip: 0, top: 100 },
-        refs: {}
+        paging: { skip: 0, top: 100 }
       })
       expect(all.count).toEqual(tags.length + 3 /* records */ + 3 /* typedef + fields */)
       expect(all.refs[$tag]).not.toEqual(undefined)
       expect(all.refs[$tag].length).not.toEqual(0)
     })
 
-    it('searches through refs', async () => {
-      const all: SearchResult = await storage.search({
-        paging: { skip: 0, top: 100 },
-        refs: {
-          [$tag]: [tags[7].id]
-        }
+    describe('references', () => {
+      it('searches through refs', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {
+            [$tag]: [tags[7].id]
+          }
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0]).toEqual(record0)
+        expect(all.refs[$tag]).toEqual({
+          [tags[0].id]: tags[0],
+          [tags[7].id]: tags[7]
+        })
       })
-      expect(all.count).toEqual(1)
-      expect(all.records[0]).toEqual(record0)
-      expect(all.refs[$tag]).toEqual({
-        [tags[0].id]: tags[0],
-        [tags[7].id]: tags[7]
-      })
-    })
 
-    it('searches through refs (non existing)', async () => {
-      const all: SearchResult = await storage.search({
-        paging: { skip: 0, top: 100 },
-        refs: {
-          [$tag]: ['unknown']
-        }
+      it('searches through refs (non existing)', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {
+            [$tag]: ['unknown']
+          }
+        })
+        expect(all.count).toEqual(0)
       })
-      expect(all.count).toEqual(0)
-    })
 
-    it('searches through multiple refs', async () => {
-      const all: SearchResult = await storage.search({
-        paging: { skip: 0, top: 100 },
-        refs: {
-          [$tag]: [tags[0].id, tags[7].id]
-        }
-      })
-      expect(all.count).toEqual(1)
-      expect(all.records[0]).toEqual(record0)
-      expect(all.refs[$tag]).toEqual({
-        [tags[0].id]: tags[0],
-        [tags[7].id]: tags[7]
+      it('searches through multiple refs', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          refs: {
+            [$tag]: [tags[0].id, tags[7].id]
+          }
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0]).toEqual(record0)
+        expect(all.refs[$tag]).toEqual({
+          [tags[0].id]: tags[0],
+          [tags[7].id]: tags[7]
+        })
       })
     })
 
@@ -154,7 +155,6 @@ export default function testStorage (storage: IStorage): void {
       it('generic text search', async () => {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
-          refs: {},
           search: 'record'
         })
         expect(all.count).toEqual(4)
@@ -163,7 +163,6 @@ export default function testStorage (storage: IStorage): void {
       it('searches using text (case insensitive)', async () => {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
-          refs: {},
           search: 'record 0'
         })
         expect(all.count).toEqual(1)
@@ -177,12 +176,52 @@ export default function testStorage (storage: IStorage): void {
       it('searches using perfect name match', async () => {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
-          refs: {},
           search: 'record',
           fullNameOnly: true
         })
         expect(all.count).toEqual(1)
         expect(all.records[0].id).toEqual(recordTypeId)
+      })
+    })
+
+    describe('fields', () => {
+      it('searches with fields (a)', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          fields: {
+            a: 'a'
+          }
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0].name).toEqual('Record 0')
+      })
+
+      it('searches with fields (b)', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          fields: {
+            b: 'b'
+          },
+          sort: {
+            field: 'rating',
+            ascending: true
+          }
+        })
+        expect(all.count).toEqual(2)
+        expect(all.records[0].name).toEqual('Record 1')
+        expect(all.records[1].name).toEqual('Record 0')
+      })
+
+      it('searches with fields (a & b)', async () => {
+        const all: SearchResult = await storage.search({
+          paging: { skip: 0, top: 100 },
+          fields: {
+            a: 'a',
+            b: 'b'
+          }
+        })
+        expect(all.count).toEqual(1)
+        expect(all.records[0].name).toEqual('Record 0')
       })
     })
 
