@@ -61,7 +61,7 @@ export class MemoryStorage implements IStorage {
   async search (options: SearchOptions): Promise<SearchResult> {
     let records: StoredRecord[] = []
     let initial: boolean = true
-    forEachRef(options.refs, (type: StoredRecordType, id: StoredRecordId) => {
+    forEachRef(options.refs ?? {}, (type: StoredRecordType, id: StoredRecordId) => {
       const refRecords: StoredRecord[] | undefined = this.refs[type]?.[id]
       if (refRecords === undefined) {
         records = []
@@ -89,6 +89,11 @@ export class MemoryStorage implements IStorage {
         const lowerCaseSearch = options.search.toLowerCase()
         records = records.filter(record => record.name.toLowerCase().includes(lowerCaseSearch))
       }
+    }
+
+    if (options.fields !== undefined) {
+      const { fields } = options
+      records = records.filter(record => Object.keys(fields).every(field => record.fields[field] === fields[field]))
     }
 
     if (options.sort !== undefined) {
