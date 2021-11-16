@@ -1,4 +1,4 @@
-import { StoredRecordRefs, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordRefs, STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE } from '../../src/types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, encodeSearchOptions } from '../../src/types/IStorage'
 import { DEFAULT_PAGE_SIZE, search, decodeSearchOptions } from '../../src/api/search'
 import { fakeStorage } from './fakeStorage.helper'
@@ -155,9 +155,9 @@ describe('api/search', () => {
   }
 
   describe('all records', () => genTests('', {}, 'all records'))
-  describe('tags', () => genTests('$tag', { $type: ['$tag'] }, 'tags'))
-  describe('types', () => genTests('$type', { $type: ['$type'] }, 'types'))
-  describe('custom records', () => genTests('custom', { $type: ['custom'] }, 'custom records'))
+  describe('tags', () => genTests(STOREDRECORDTYPE_TAG, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG] }, 'tags'))
+  describe('types', () => genTests(STOREDRECORDTYPE_TYPE, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TYPE] }, 'types'))
+  describe('custom records', () => genTests('custom', { [STOREDRECORDTYPE_TYPE]: ['custom'] }, 'custom records'))
 
   describe('SearchOptions serialization', () => {
     const options: SearchOptions[] = [{
@@ -183,7 +183,7 @@ describe('api/search', () => {
     }, {
       paging: { skip: 50, top: 100 },
       refs: {
-        [$tag]: ['123', '456']
+        [STOREDRECORDTYPE_TAG]: ['123', '456']
       },
       sort: {
         field: 'rating',
