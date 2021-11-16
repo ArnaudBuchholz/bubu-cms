@@ -1,7 +1,7 @@
 import colors from 'colors/safe'
 import { LogType, ILoader } from './ILoader'
 import { IStorage, SearchOptions } from '../types/IStorage'
-import { StorableRecord, StoredRecordId, StoredRecord, $type, $tag } from '../types/StoredRecord'
+import { StorableRecord, StoredRecordId, StoredRecord, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TAG } from '../types/StoredRecord'
 import { findTypeDefinition, StoredTypeDefinition, TypeName } from '../types/TypeDefinition'
 import { create } from '../api/create'
 import { SearchResult } from 'src/ui/src/types/IStorage'
@@ -57,7 +57,7 @@ export class Loader implements ILoader {
         top: 1
       },
       refs: {
-        [$type]: [$tag]
+        [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG]
       },
       search: tagName,
       fullNameOnly: true
