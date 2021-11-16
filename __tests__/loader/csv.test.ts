@@ -2,7 +2,7 @@ import { MemoryStorage } from '../../src/storages/memory'
 import { Loader } from '../../src/loader/Loader'
 import { saveTypeDefinition } from '../../src/types/TypeDefinition'
 import { loadFromCSV } from '../../src/loader/csv'
-import { StoredRecordType, $type, StoredRecordId, StorableRecord, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StorableRecord, STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE } from '../../src/types/StoredRecord'
 import { IStorage } from '../../src/types/IStorage'
 import { Configuration } from '../../src/loader/types'
 
@@ -63,7 +63,7 @@ describe('loader/csv', () => {
     })
     for await (const tag of tags) {
       tagIds.push(await storage.create({
-        type: $tag,
+        type: STOREDRECORDTYPE_TAG,
         name: tag,
         fields: {},
         refs: {}
@@ -85,7 +85,7 @@ describe('loader/csv', () => {
     const results = await storage.search({
       paging: { top: 100, skip: 0 },
       refs: {
-        [$type]: [recordTypeId]
+        [STOREDRECORDTYPE_TYPE]: [recordTypeId]
       }
     })
     expect(mockError).not.toBeCalled()
@@ -102,9 +102,9 @@ describe('loader/csv', () => {
         date: new Date('2021-10-03T21:56:00')
       }
     })
-    expect(record.refs[$tag].length).toBe(2)
-    expect(record.refs[$tag].includes(tagIds[0])).toBe(true)
-    expect(record.refs[$tag].includes(tagIds[1])).toBe(true)
+    expect(record.refs[STOREDRECORDTYPE_TAG].length).toBe(2)
+    expect(record.refs[STOREDRECORDTYPE_TAG].includes(tagIds[0])).toBe(true)
+    expect(record.refs[STOREDRECORDTYPE_TAG].includes(tagIds[1])).toBe(true)
   })
 
   it('supports different separators', async () => {
@@ -117,7 +117,7 @@ describe('loader/csv', () => {
     const results = await storage.search({
       paging: { top: 100, skip: 0 },
       refs: {
-        [$type]: [recordTypeId]
+        [STOREDRECORDTYPE_TYPE]: [recordTypeId]
       }
     })
     expect(results.count).toBe(2)
