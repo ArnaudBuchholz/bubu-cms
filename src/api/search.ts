@@ -1,4 +1,4 @@
-import { isStoredRecordRefs, $type, $tag, $typefield } from '../types/StoredRecord'
+import { isStoredRecordRefs, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPEFIELD } from '../types/StoredRecord'
 import { IStorage, SearchOptions, SearchResult, SortableField } from '../types/IStorage'
 import { isTypeName, findTypeDefinition } from '../types/TypeDefinition'
 
@@ -117,26 +117,22 @@ export async function search (storage: IStorage, url: string): Promise<SearchRes
   const [pathname, urlParams] = url.split('?')
   const options: SearchOptions = decodeSearchOptions(urlParams)
   if (pathname !== '') {
-    let type = {
-      $tag: $tag,
-      $type: $type,
-      $typefield: $typefield
-    }[pathname]
+    let type
+    if ([STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD].includes(pathname)) {
+      type = pathname
+    } else if (isTypeName(pathname)) {
+      const typeDef = await findTypeDefinition(storage, pathname)
+      if (typeDef !== null) {
+        type = typeDef.id
+      }
+    }
     if (type === undefined) {
-      if (isTypeName(pathname)) {
-        const typeDef = await findTypeDefinition(storage, pathname)
-        if (typeDef !== null) {
-          type = typeDef.id
-        }
-      }
-      if (type === undefined) {
-        type = pathname
-      }
+      type = pathname
     }
     if (options.refs === undefined) {
       options.refs = {}
     }
-    options.refs.$type = [type]
+    options.refs[STOREDRECORDTYPE_TYPE] = [type]
   }
   return await storage.search(options)
 }
