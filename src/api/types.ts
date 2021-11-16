@@ -1,5 +1,5 @@
 import { IStorage, SearchResult } from '../types/IStorage'
-import { StoredRecord, $type, $typefield } from '../types/StoredRecord'
+import { StoredRecord, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD } from '../types/StoredRecord'
 import { TypeDefinition, deserializeTypeDefinition } from '../types/TypeDefinition'
 
 export async function getAllTypes (storage: IStorage): Promise<TypeDefinition[]> {
@@ -9,7 +9,7 @@ export async function getAllTypes (storage: IStorage): Promise<TypeDefinition[]>
     const result: SearchResult = await storage.search({
       paging: { skip, top: 10 },
       refs: {
-        [$type]: [$type]
+        [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TYPE]
       }
     })
     if (result.records.length === 0) {
@@ -17,7 +17,7 @@ export async function getAllTypes (storage: IStorage): Promise<TypeDefinition[]>
     }
     skip += result.count
     result.records.forEach((typeRecord: StoredRecord) => {
-      const fieldRecords: StoredRecord[] = typeRecord.refs[$typefield].map(id => result.refs[$typefield][id])
+      const fieldRecords: StoredRecord[] = typeRecord.refs[STOREDRECORDTYPE_TYPEFIELD].map(id => result.refs[STOREDRECORDTYPE_TYPEFIELD][id])
       types.push(deserializeTypeDefinition(typeRecord, fieldRecords))
     })
   }
