@@ -1,4 +1,4 @@
-import { StoredRecordType, StoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, StoredRecord, STOREDRECORDTYPE_TAG } from '../../src/types/StoredRecord'
 import { IStorage, UpdateInstructions } from '../../src/types/IStorage'
 import { update } from '../../src/api/update'
 import { fakeStorage } from './fakeStorage.helper'
@@ -16,7 +16,7 @@ describe('api/create', () => {
       date: now
     },
     refs: {
-      [$tag]: ['tag0', 'tag1', 'tag2'],
+      [STOREDRECORDTYPE_TAG]: ['tag0', 'tag1', 'tag2'],
       any: ['any0', 'any1']
     }
   }
@@ -232,7 +232,7 @@ describe('api/create', () => {
         ...record1,
         refs: {
           any: ['any1', 'any0'],
-          [$tag]: ['tag2', 'tag0', 'tag1']
+          [STOREDRECORDTYPE_TAG]: ['tag2', 'tag0', 'tag1']
         }
       })).resolves.toBeUndefined()
       expect(updateInstructions).toEqual(null)
@@ -242,7 +242,7 @@ describe('api/create', () => {
       await expect(update(storage, {
         ...record1,
         refs: {
-          [$tag]: ['tag2', 'tag3', 'tag4'],
+          [STOREDRECORDTYPE_TAG]: ['tag2', 'tag3', 'tag4'],
           another: ['another1', 'another2']
         }
       })).resolves.toBeUndefined()
@@ -250,11 +250,11 @@ describe('api/create', () => {
         ...baseInstructions,
         refs: {
           del: {
-            [$tag]: ['tag0', 'tag1'],
+            [STOREDRECORDTYPE_TAG]: ['tag0', 'tag1'],
             any: ['any0', 'any1']
           },
           add: {
-            [$tag]: ['tag3', 'tag4'],
+            [STOREDRECORDTYPE_TAG]: ['tag3', 'tag4'],
             another: ['another1', 'another2']
           }
         }
