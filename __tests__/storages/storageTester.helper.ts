@@ -1,12 +1,12 @@
 import { IStorage, SearchResult, SortableField } from '../../src/types/IStorage'
 import { TypeDefinition, saveTypeDefinition } from '../../src/types/TypeDefinition'
-import { StoredRecordType, StoredRecordId, isStoredRecordId, StoredRecord, $tag } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecordId, isStoredRecordId, StoredRecord, STOREDRECORDTYPE_TAG } from '../../src/types/StoredRecord'
 
 export default function testStorage (storage: IStorage): void {
   const tags: StoredRecord[] = [...new Array(10).keys()]
     .map((index: number) => {
       return {
-        type: $tag,
+        type: STOREDRECORDTYPE_TAG,
         id: '',
         name: `Tag ${index}`,
         refs: {},
@@ -31,7 +31,7 @@ export default function testStorage (storage: IStorage): void {
     name: 'Record 0',
     rating: 5,
     touched: new Date('2021-06-12T12:14:23.000Z'),
-    refs: { [$tag]: ['0', '7'] },
+    refs: { [STOREDRECORDTYPE_TAG]: ['0', '7'] },
     fields: {
       a: 'a',
       b: 'b'
@@ -43,7 +43,7 @@ export default function testStorage (storage: IStorage): void {
     id: '',
     name: 'Record 1',
     rating: 3,
-    refs: { [$tag]: ['0', '1', '2'] },
+    refs: { [STOREDRECORDTYPE_TAG]: ['0', '1', '2'] },
     fields: {
       a: 'A',
       b: 'b'
@@ -55,7 +55,7 @@ export default function testStorage (storage: IStorage): void {
     id: '',
     name: 'A record 2',
     touched: new Date('2021-05-26T08:21:00.000Z'),
-    refs: { [$tag]: ['0', '9', '8'] },
+    refs: { [STOREDRECORDTYPE_TAG]: ['0', '9', '8'] },
     fields: {
       a: 'bA',
       b: 'aB'
@@ -71,7 +71,7 @@ export default function testStorage (storage: IStorage): void {
     }
     for await (const record of [record0, record1, record2]) {
       record.type = recordTypeId
-      record.refs[$tag] = record.refs[$tag].map((index: string) => tags[parseInt(index, 10)].id)
+      record.refs[STOREDRECORDTYPE_TAG] = record.refs[STOREDRECORDTYPE_TAG].map((index: string) => tags[parseInt(index, 10)].id)
       record.id = await storage.create(record)
     }
   })
@@ -84,12 +84,12 @@ export default function testStorage (storage: IStorage): void {
 
     it('retreives any record by type and id (tag)', async () => {
       const tag7 = tags[7]
-      const retreived: null | StoredRecord = await storage.get($tag, tag7.id)
+      const retreived: null | StoredRecord = await storage.get(STOREDRECORDTYPE_TAG, tag7.id)
       expect(retreived).toEqual(tag7)
     })
 
     it('returns null if not found (invalid id)', async () => {
-      const retreived: null | StoredRecord = await storage.get($tag, 'tag12')
+      const retreived: null | StoredRecord = await storage.get(STOREDRECORDTYPE_TAG, 'tag12')
       expect(retreived).toEqual(null)
     })
 
@@ -105,8 +105,8 @@ export default function testStorage (storage: IStorage): void {
         paging: { skip: 0, top: 100 }
       })
       expect(all.count).toEqual(tags.length + 3 /* records */ + 3 /* typedef + fields */)
-      expect(all.refs[$tag]).not.toEqual(undefined)
-      expect(all.refs[$tag].length).not.toEqual(0)
+      expect(all.refs[STOREDRECORDTYPE_TAG]).not.toEqual(undefined)
+      expect(all.refs[STOREDRECORDTYPE_TAG].length).not.toEqual(0)
     })
 
     describe('references', () => {
@@ -114,12 +114,12 @@ export default function testStorage (storage: IStorage): void {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
           refs: {
-            [$tag]: [tags[7].id]
+            [STOREDRECORDTYPE_TAG]: [tags[7].id]
           }
         })
         expect(all.count).toEqual(1)
         expect(all.records[0]).toEqual(record0)
-        expect(all.refs[$tag]).toEqual({
+        expect(all.refs[STOREDRECORDTYPE_TAG]).toEqual({
           [tags[0].id]: tags[0],
           [tags[7].id]: tags[7]
         })
@@ -129,7 +129,7 @@ export default function testStorage (storage: IStorage): void {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
           refs: {
-            [$tag]: ['unknown']
+            [STOREDRECORDTYPE_TAG]: ['unknown']
           }
         })
         expect(all.count).toEqual(0)
@@ -139,12 +139,12 @@ export default function testStorage (storage: IStorage): void {
         const all: SearchResult = await storage.search({
           paging: { skip: 0, top: 100 },
           refs: {
-            [$tag]: [tags[0].id, tags[7].id]
+            [STOREDRECORDTYPE_TAG]: [tags[0].id, tags[7].id]
           }
         })
         expect(all.count).toEqual(1)
         expect(all.records[0]).toEqual(record0)
-        expect(all.refs[$tag]).toEqual({
+        expect(all.refs[STOREDRECORDTYPE_TAG]).toEqual({
           [tags[0].id]: tags[0],
           [tags[7].id]: tags[7]
         })
@@ -167,7 +167,7 @@ export default function testStorage (storage: IStorage): void {
         })
         expect(all.count).toEqual(1)
         expect(all.records[0]).toEqual(record0)
-        expect(all.refs[$tag]).toEqual({
+        expect(all.refs[STOREDRECORDTYPE_TAG]).toEqual({
           [tags[0].id]: tags[0],
           [tags[7].id]: tags[7]
         })
@@ -255,7 +255,7 @@ export default function testStorage (storage: IStorage): void {
         it(`sort by ${field} (${ascending ? 'ascending' : 'descending'})`, async () => {
           const all: SearchResult = await storage.search({
             paging: { skip: 0, top: 100 },
-            refs: { [$tag]: [tags[0].id] },
+            refs: { [STOREDRECORDTYPE_TAG]: [tags[0].id] },
             sort: {
               field: field as SortableField,
               ascending
@@ -283,7 +283,7 @@ export default function testStorage (storage: IStorage): void {
 
     beforeAll(async () => {
       lifecycle.type = recordTypeId
-      lifecycle.refs = { [$tag]: [tags[0].id, tags[9].id, tags[8].id] }
+      lifecycle.refs = { [STOREDRECORDTYPE_TAG]: [tags[0].id, tags[9].id, tags[8].id] }
       expect(lifecycle.type).not.toBeUndefined()
       lifecycle.id = await storage.create(lifecycle)
     })
@@ -388,10 +388,10 @@ export default function testStorage (storage: IStorage): void {
           fields: {},
           refs: {
             add: {
-              [$tag]: [tags[1].id]
+              [STOREDRECORDTYPE_TAG]: [tags[1].id]
             },
             del: {
-              [$tag]: [tags[0].id]
+              [STOREDRECORDTYPE_TAG]: [tags[0].id]
             }
           }
         })
@@ -406,8 +406,8 @@ export default function testStorage (storage: IStorage): void {
 
         if (record !== null) {
           expect(Object.keys(record.refs).length).toStrictEqual(1)
-          expect(record.refs[$tag]).not.toBeUndefined()
-          expect([...record.refs[$tag]].sort(compare)).toEqual([tags[9].id, tags[8].id, tags[1].id].sort(compare))
+          expect(record.refs[STOREDRECORDTYPE_TAG]).not.toBeUndefined()
+          expect([...record.refs[STOREDRECORDTYPE_TAG]].sort(compare)).toEqual([tags[9].id, tags[8].id, tags[1].id].sort(compare))
         }
       })
     })
