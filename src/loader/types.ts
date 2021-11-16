@@ -1,4 +1,4 @@
-import { $tag, isLiteralObject } from '../types/StoredRecord'
+import { STOREDRECORDTYPE_TAG, isLiteralObject } from '../types/StoredRecord'
 import { isTypeDefinition, isTypeName, TypeDefinition } from '../types/TypeDefinition'
 import { isStorageType, StorageType } from '../storages'
 
@@ -13,7 +13,7 @@ export function isCsvLoader (value: any): value is CsvLoader {
     return false
   }
   const { $type, csv, separator, tagSeparator } = value
-  return (isTypeName($type) || $type === $tag) &&
+  return (isTypeName($type) || $type === STOREDRECORDTYPE_TAG) &&
     typeof csv === 'string' &&
     (separator === undefined || typeof separator === 'string') &&
     (tagSeparator === undefined || typeof tagSeparator === 'string')
