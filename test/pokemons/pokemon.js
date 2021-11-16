@@ -100,7 +100,10 @@ module.exports = async loader => {
   let lastPokemon
   let lastUpdate = new Date()
   for await (const record of moves) {
-    const [pkid,, mvid,, level] = record.split(',')
+    const [pkid, version, mvid,, level] = record.split(',')
+    if (version !== '18') {
+      continue
+    }
     if (!lastPokemon || pkid !== lastPokemon.fields.pkid) {
       if (lastPokemon) {
         await loader.update(lastPokemon)
@@ -138,7 +141,7 @@ module.exports = async loader => {
     })).records[0]
     const pokemonMoveId = await loader.create({
       type: pokemonMoveTypeId,
-      name: '123', // move.name,
+      name: `${lastPokemon.name} -> ${move.name}`,
       fields: {
         level
       },
