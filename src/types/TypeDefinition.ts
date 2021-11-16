@@ -8,9 +8,9 @@ import {
   StoredRecordId,
   StorableRecord,
   StoredRecord,
-  $type,
-  $tag,
-  $typefield
+  STOREDRECORDTYPE_TYPE,
+  STOREDRECORDTYPE_TAG,
+  STOREDRECORDTYPE_TYPEFIELD
 } from '../types/StoredRecord'
 
 export type FieldType = 'string' | 'number' | 'date'
@@ -72,8 +72,8 @@ export interface StoredTypeDefinition extends TypeDefinition {
 }
 
 const $TagTypeDefinition: StoredTypeDefinition = {
-  id: $tag,
-  name: $tag,
+  id: STOREDRECORDTYPE_TAG,
+  name: STOREDRECORDTYPE_TAG,
   fields: []
 }
 
@@ -119,13 +119,13 @@ export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecord
 }
 
 export async function loadTypeDefinition (storage: IStorage, type: StoredRecordType): Promise<StoredTypeDefinition | null> {
-  const typeRecord: StoredRecord | null = await storage.get($type, type)
+  const typeRecord: StoredRecord | null = await storage.get(STOREDRECORDTYPE_TYPE, type)
   if (typeRecord === null) {
     return null
   }
   const fieldRecords: StoredRecord[] = []
-  for await (const fieldId of typeRecord.refs[$typefield]) {
-    const fieldRecord: StoredRecord | null = await storage.get($typefield, fieldId)
+  for await (const fieldId of typeRecord.refs[STOREDRECORDTYPE_TYPEFIELD]) {
+    const fieldRecord: StoredRecord | null = await storage.get(STOREDRECORDTYPE_TYPEFIELD, fieldId)
     if (fieldRecord === null) {
       return null
     }
@@ -135,7 +135,7 @@ export async function loadTypeDefinition (storage: IStorage, type: StoredRecordT
 }
 
 export async function findTypeDefinition (storage: IStorage, name: string): Promise<StoredTypeDefinition | null> {
-  if (name === $tag) {
+  if (name === STOREDRECORDTYPE_TAG) {
     return $TagTypeDefinition
   }
   const result: SearchResult = await storage.search({
@@ -143,12 +143,12 @@ export async function findTypeDefinition (storage: IStorage, name: string): Prom
     search: name,
     fullNameOnly: true,
     refs: {
-      [$type]: [$type]
+      [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TYPE]
     }
   })
   if (result.count === 1) {
     const typeRecord: StoredRecord = result.records[0]
-    const fieldRecords: StoredRecord[] = typeRecord.refs[$typefield].map(id => result.refs[$typefield][id])
+    const fieldRecords: StoredRecord[] = typeRecord.refs[STOREDRECORDTYPE_TYPEFIELD].map(id => result.refs[STOREDRECORDTYPE_TYPEFIELD][id])
     return deserializeTypeDefinition(typeRecord, fieldRecords)
   }
   return null
@@ -156,7 +156,7 @@ export async function findTypeDefinition (storage: IStorage, name: string): Prom
 
 export async function saveTypeDefinition (storage: IStorage, typeDefinition: TypeDefinition): Promise<StoredRecordType> {
   const type: StorableRecord = {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     name: typeDefinition.name,
     fields: {},
     refs: {}
@@ -164,7 +164,7 @@ export async function saveTypeDefinition (storage: IStorage, typeDefinition: Typ
   map(mappableTypeDefinitionFields, typeDefinition, type.fields)
   const fields: StorableRecord[] = typeDefinition.fields.map(fieldDefinition => {
     const record: StorableRecord = {
-      type: $typefield,
+      type: STOREDRECORDTYPE_TYPEFIELD,
       name: fieldDefinition.name,
       fields: {
         type: fieldDefinition.type
@@ -175,7 +175,7 @@ export async function saveTypeDefinition (storage: IStorage, typeDefinition: Typ
     return record
   })
   const fieldIds: StoredRecordId[] = await Promise.all(fields.map(async field => await storage.create(field)))
-  type.refs[$typefield] = fieldIds
+  type.refs[STOREDRECORDTYPE_TYPEFIELD] = fieldIds
   return await storage.create(type)
 }
 
