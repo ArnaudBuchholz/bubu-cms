@@ -16,7 +16,7 @@ import {
 } from '../../src/types/TypeDefinition'
 import { MemoryStorage } from '../../src/storages/memory'
 import testTypeGuard from '../testTypeGuard.helper'
-import { StoredRecordType, StoredRecord, $type, $typefield } from '../../src/types/StoredRecord'
+import { StoredRecordType, StoredRecord, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD } from '../../src/types/StoredRecord'
 
 describe('types/TypeDefinition', () => {
   testTypeGuard('isFieldType', isFieldType, [
@@ -204,10 +204,10 @@ describe('types/TypeDefinition', () => {
 
     it('returns null if the record gets corrupted', async () => {
       const typeId = typesId[0]
-      const typeRecord: StoredRecord | null = await storage.get($type, typeId)
+      const typeRecord: StoredRecord | null = await storage.get(STOREDRECORDTYPE_TYPE, typeId)
       expect(typeRecord).not.toBeNull()
       if (typeRecord !== null) {
-        await storage.delete($typefield, typeRecord.refs[$typefield][0])
+        await storage.delete(STOREDRECORDTYPE_TYPEFIELD, typeRecord.refs[STOREDRECORDTYPE_TYPEFIELD][0])
         const savedType: TypeDefinition | null = await loadTypeDefinition(storage, typeId)
         expect(savedType).toBeNull()
       }
