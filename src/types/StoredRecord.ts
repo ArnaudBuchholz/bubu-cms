@@ -53,11 +53,11 @@ export function isStoredRecordId (value: any): value is StoredRecordId {
 
 export type StoredRecordType = StoredRecordId
 export const MAX_STOREDRECORDTYPE_LENGTH: number = MAX_STOREDRECORDID_LENGTH
-export const $tag: StoredRecordType = '$tag'
-export const $type: StoredRecordType = '$type'
-export const $typefield: StoredRecordType = '$typefield'
+export const STOREDRECORDTYPE_TAG: StoredRecordType = '$tag'
+export const STOREDRECORDTYPE_TYPE: StoredRecordType = '$type'
+export const STOREDRECORDTYPE_TYPEFIELD: StoredRecordType = '$typefield'
 export function isStoredRecordType (value: any): value is StoredRecordType {
-  return [$tag, $type, $typefield].includes(value) || isStoredRecordId(value)
+  return [STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD].includes(value) || isStoredRecordId(value)
 }
 
 export const MAX_STOREDRECORDNAME_LENGTH: number = 256
