@@ -5,8 +5,8 @@ import {
   isFieldName,
   isFields,
   MAX_STOREDRECORDTYPE_LENGTH,
-  $type,
-  $tag,
+  STOREDRECORDTYPE_TYPE,
+  STOREDRECORDTYPE_TAG,
   isStoredRecordType,
   MAX_STOREDRECORDID_LENGTH,
   isStoredRecordId,
@@ -46,7 +46,7 @@ describe('types/StoredRecord', () => {
   ])
 
   testTypeGuardFunc('isStoredRecordType', isStoredRecordType, [
-    $tag, $type, 'a', 'anyType', 'aVeryLongTypeId', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH, 'abc')
+    STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, 'a', 'anyType', 'aVeryLongTypeId', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH, 'abc')
   ], [
     '', ' a', 'a ', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH + 1, 'abc'), '#abc', '$abc'
   ])
@@ -54,7 +54,7 @@ describe('types/StoredRecord', () => {
   testTypeGuardFunc('isStoredRecordId', isStoredRecordId, [
     'a', 'anyId', ''.padStart(MAX_STOREDRECORDID_LENGTH, 'abc')
   ], [
-    $tag, $type, '', ' a', 'a ', 'aReallyVeryLongId', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
+    STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, '', ' a', 'a ', 'aReallyVeryLongId', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
   ])
 
   testTypeGuardFunc('isStoredRecordRating', isStoredRecordRating, [
@@ -64,46 +64,46 @@ describe('types/StoredRecord', () => {
   ])
 
   testTypeGuardFunc('isStoredRecordRefs', isStoredRecordRefs, [
-    {}, { $type: ['$tag'] }, { any: ['123', 'abc_$%?&'] }, { $type: ['$tag'], any: ['123', 'abc_$%?&'] }
+    {}, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG] }, { any: ['123', 'abc_$%?&'] }, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG], any: ['123', 'abc_$%?&'] }
   ], [
-    undefined, null, '', true, false, 0, new Date(), { ' a ': [] }, { $type: 0 }
+    undefined, null, '', true, false, 0, new Date(), { ' a ': [] }, { STOREDRECORDTYPE_TYPE: 0 }
   ])
 
   testTypeGuardFunc('isStoredRecord', isStoredRecord, [{
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
     fields: {},
     refs: {}
   }, {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: ''.padEnd(MAX_STOREDRECORDNAME_LENGTH, 'Hello World'),
     fields: {},
     refs: {}
   }, {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
     icon: 'test.jpg',
     fields: {},
     refs: {}
   }, {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
     icon: ''.padEnd(MAX_STOREDRECORDICON_LENGTH, 'test.jpg'),
     fields: {},
     refs: {}
   }, {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
     rating: 2,
     fields: {},
     refs: {}
   }, {
-    type: $type,
+    type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
     touched: new Date(),
