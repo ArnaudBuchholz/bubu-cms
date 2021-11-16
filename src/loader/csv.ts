@@ -1,6 +1,6 @@
 import { readTextFile } from './readTextFile'
 import { FieldType, FieldDefinition, StoredTypeDefinition } from '../types/TypeDefinition'
-import { $tag, FieldName, FieldValue, StorableRecord, StoredRecordRating } from '../types/StoredRecord'
+import { FieldName, FieldValue, StorableRecord, StoredRecordRating, STOREDRECORDTYPE_TAG } from '../types/StoredRecord'
 import { ILoader } from './ILoader'
 import { CsvLoader } from './types'
 
@@ -65,7 +65,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
       } else if (column === '$touched') {
         record.touched = new Date(value)
       } else if (column === '$tags') {
-        record.refs[$tag] = []
+        record.refs[STOREDRECORDTYPE_TAG] = []
         const listOfTagNames = value.split(tagSeparator)
         for await (const tagName of listOfTagNames) {
           const tagId: string | null = await loader.getTagId(tagName)
@@ -76,7 +76,7 @@ export async function loadFromCSV (loader: ILoader, settings: CsvLoader): Promis
               record
             })
           }
-          record.refs[$tag].push(tagId)
+          record.refs[STOREDRECORDTYPE_TAG].push(tagId)
         }
       } else {
         record.fields[column] = parseValue(value, columnType[column])
