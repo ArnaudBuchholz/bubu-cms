@@ -17,6 +17,28 @@
       "name": "weight",
       "type": "number"
     }]
+  }, {
+    "name": "move",
+    "defaultIcon": "sap-icon://journey-depart",
+    "fields": [{
+      "name": "mvid",
+      "type": "number"
+    }, {
+      "name": "power",
+      "type": "number"
+    }, {
+      "name": "pp",
+      "type": "number"
+    }, {
+      "name": "accuracy",
+      "type": "number"
+    }]
+  }, {
+    "name": "pokemon_move",
+    "fields": [{
+      "name": "level",
+      "type": "number"
+    }]
   }],
   "loaders": [{
     "custom": "./pokemon.js"
