@@ -6,7 +6,7 @@ import { create } from '../api/create'
 import { update } from '../api/update'
 import { deleteRecord } from '../api/delete'
 import { IncomingMessage, ServerResponse } from 'http'
-import { $tag, $type, $typefield, NAME_REGEX, STOREDRECORDID_REGEX } from '../types/StoredRecord'
+import { STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD, NAME_REGEX, STOREDRECORDID_REGEX } from '../types/StoredRecord'
 import { isTypeName, findTypeDefinition } from '../types/TypeDefinition'
 import { join } from 'path'
 
@@ -64,7 +64,7 @@ export function buildConfiguration (loader: Loader): Configuration {
       }
     }, {
       method: 'DELETE',
-      match: new RegExp(`^\\/api\\/(${$tag}|${$type}|${$typefield}|${STOREDRECORDID_REGEX}|${NAME_REGEX})\\/(${STOREDRECORDID_REGEX})`),
+      match: new RegExp(`^\\/api\\/(${STOREDRECORDTYPE_TAG}|${STOREDRECORDTYPE_TYPE}|${STOREDRECORDTYPE_TYPEFIELD}|${STOREDRECORDID_REGEX}|${NAME_REGEX})\\/(${STOREDRECORDID_REGEX})`),
       custom: async (request: IncomingMessage, response: ServerResponse, type: string, id: string): Promise<number> => {
         const { storage } = request
         if (isTypeName(type)) {
