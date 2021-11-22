@@ -5,6 +5,7 @@ import { search } from '../api/search'
 import { create } from '../api/create'
 import { update } from '../api/update'
 import { deleteRecord } from '../api/delete'
+import { getAllTypes } from '../api/types'
 import { IncomingMessage, ServerResponse } from 'http'
 import { STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD, NAME_REGEX, STOREDRECORDID_REGEX } from '../types/StoredRecord'
 import { isTypeName, findTypeDefinition } from '../types/TypeDefinition'
@@ -36,6 +37,13 @@ export function buildConfiguration (loader: Loader): Configuration {
     mappings: [{
       custom: async (request: IncomingMessage): Promise<void> => {
         request.storage = loader.storage
+      }
+    }, {
+      method: 'GET',
+      match: /^\/api\/allTypes/,
+      custom: async (request: IncomingMessage, response: ServerResponse, url: string): Promise<void> => {
+        const { storage } = request
+        serialize(response, await getAllTypes(storage))
       }
     }, {
       method: 'GET',
@@ -79,7 +87,11 @@ export function buildConfiguration (loader: Loader): Configuration {
     }, {
       method: 'GET',
       match: /^\/(.*)/,
-      file: join(__dirname, '../ui')
+      file: join(__dirname, '../../../src/ui/webapp', '$1')
+    // }, {
+    //   method: 'GET',
+    //   match: /^\/(.*)/,
+    //   file: join(__dirname, '../../ui', '$1')
     }]
   }
 }
