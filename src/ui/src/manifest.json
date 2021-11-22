@@ -1,16 +1,7 @@
 {
 	"sap.app": {
 		"id": "bubu-cms",
-		"type": "application",
-		"dataSources": {
-			"mainService": {
-				"uri": "/api/odata/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0"
-				}
-			}
-		}
+		"type": "application"
 	},
 	"sap.ui5": {
 		"dependencies": {
@@ -58,13 +49,7 @@
 				"preload": true
 			},
 			"": {
-				"type": "sap.ui.model.odata.v2.ODataModel",
-				"dataSource": "mainService",
-				"settings": {
-					"defaultBindingMode": "TwoWay",
-					"defaultCountMode": "InlineRepeat",
-					"useBatch": false
-				},
+				"type": "bubu-cms.model.Storage",
 				"preload": true
 			}
 		},
