@@ -46,7 +46,7 @@ module.exports = async loader => {
     })
     ++nbPokemons
   }
-  loader.log('info', `Created ${nbPokemons} pokemons`)
+  loader.log('info', `Created ${nbPokemons} pokemons.`)
 
   loader.log('info', 'Assigning pokemon types...')
   let nbPokemonTypes = 0
@@ -68,7 +68,7 @@ module.exports = async loader => {
     await loader.update(pokemon)
     ++nbPokemonTypes
   }
-  loader.log('info', `Assigned ${nbPokemonTypes} pokemon types`)
+  loader.log('info', `Assigned ${nbPokemonTypes} pokemon types.`)
 
   const moveTypeId = (await loader.getType('move')).id
   loader.log('info', '', 'Creating pokemon moves...', { moveTypeId })
@@ -90,7 +90,7 @@ module.exports = async loader => {
     })
     ++nbMoves
   }
-  loader.log('info', `Created ${nbMoves} pokemon moves`)
+  loader.log('info', `Created ${nbMoves} pokemon moves.`)
 
   const pokemonMoveTypeId = (await loader.getType('pokemon_move')).id
   loader.log('info', '', 'Associating pokemon moves...', { pokemonMoveTypeId })
@@ -167,5 +167,5 @@ module.exports = async loader => {
       loader.log('info', `Associating pokemon moves (${Math.floor(100 * nbPokemonMoves / moves.length)}% ${format(elapsed)} / ${format(elapsed * moves.length / nbPokemonMoves)})...`)
     }
   }
-  loader.log('info', `Associated ${nbPokemonMoves} pokemon moves`)
+  loader.log('info', `Associated ${nbPokemonMoves} pokemon moves.`)
 }
