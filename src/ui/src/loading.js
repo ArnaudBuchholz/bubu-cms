@@ -6,7 +6,7 @@
   const loading = document.body.appendChild(document.createElement('div'))
   loading.setAttribute('style', 'z-index: 999; position: absolute; left: 2rem; top: 2rem; font-size: 5rem; opacity: .5;')
 
-  const steps = ['&#9625;', '&#9627;', '&#9628;', '&#9631;', '&#9626;', '&#9630;']
+  const steps = ['\u280b', '\u2819', '\u2839', '\u2838', '\u283c', '\u2834', '\u2826', '\u2827', '\u2807', '\u280f']
 
   let count = 0
   function animate () {
