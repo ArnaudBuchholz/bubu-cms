@@ -5,6 +5,8 @@ import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
 import ResourceModel from 'sap/ui/model/resource/ResourceModel'
+import { isThenable } from '../types/helpers'
+import Log from 'sap/base/Log'
 
 /**
  * @namespace bubu-cms.controller
@@ -22,7 +24,7 @@ export default class BaseController extends Controller {
     return this.getView().getModel(name)
   }
 
-  private readonly i18nResourceBundle: ResourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
+  private i18nResourceBundle: ResourceBundle
 
   public i18n (key: string, ...params: string[]): string {
     return this.i18nResourceBundle.getText(key, params)
@@ -118,5 +120,17 @@ export default class BaseController extends Controller {
         search: this.escapeSearch('#' + tag)
       }
     }, undefined, false)
+  }
+
+  constructor (sName: string | Object[]) {
+    super(sName)
+    const resourceBundlePromise = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
+    if (isThenable(resourceBundlePromise)) {
+      resourceBundlePromise.then(resourceBundle => {
+        this.i18nResourceBundle = resourceBundle
+      }, reason => Log.error('Failed to get i18n resource bundle', reason.toString()))
+    } else {
+      this.i18nResourceBundle = resourceBundlePromise
+    }
   }
 }
