@@ -24,9 +24,16 @@ export default class BaseController extends Controller {
     return this.getView().getModel(name)
   }
 
-  private i18nResourceBundle: ResourceBundle
+  private i18nResourceBundle: ResourceBundle | null = null
 
-  public i18n (key: string, ...params: string[]): string {
+  protected async i18n (key: string, ...params: string[]): Promise<string> {
+    if (this.i18nResourceBundle === null) {
+      let resourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
+      if (isThenable(resourceBundle)) {
+        resourceBundle = await resourceBundle
+      }
+      this.i18nResourceBundle = resourceBundle
+    }
     return this.i18nResourceBundle.getText(key, params)
   }
 
@@ -120,17 +127,5 @@ export default class BaseController extends Controller {
         search: this.escapeSearch('#' + tag)
       }
     }, undefined, false)
-  }
-
-  constructor (sName: string | Object[]) {
-    super(sName)
-    const resourceBundlePromise = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
-    if (isThenable(resourceBundlePromise)) {
-      resourceBundlePromise.then(resourceBundle => {
-        this.i18nResourceBundle = resourceBundle
-      }, reason => Log.error('Failed to get i18n resource bundle', reason.toString()))
-    } else {
-      this.i18nResourceBundle = resourceBundlePromise
-    }
   }
 }
