@@ -36,13 +36,7 @@
 		</subHeader>
 		<content>
 			<List id="records"
-				items="{
-					path : '/RecordSet',
-					sorter: {
-						path: 'name',
-						descending: false
-					}
-				}"
+				items="{/records}"
 				mode="None"
 				growing="true"
 				growingScrollToLoad="true"
