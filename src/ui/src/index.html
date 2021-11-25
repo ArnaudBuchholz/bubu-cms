@@ -4,35 +4,33 @@
 		<title></title>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta charset="UTF-8" />
+		<meta http-equiv="Content-Security-Policy" content="
+default-src 'self' ;
+script-src 'self' UI5_CDN/ ;
+style-src 'self' UI5_CDN/ 'unsafe-inline' ;
+font-src 'self' UI5_CDN/ ;
+img-src 'self' UI5_CDN/ data: ;
+media-src 'self' ;
+object-src 'self' ;
+frame-src 'self' ;
+worker-src 'self' ;
+child-src 'self' ;
+connect-src 'self' UI5_CDN/ ;
+base-uri 'self'
+" />
 	</head>
-	<body class="sapUiBody" id="root" role="application" />
+	<body class="sapUiBody" id="root" role="application">
+		<div data-sap-ui-component data-name="bubu-cms" data-id="container" data-settings='{"id" : "cms"}'></div>
+	</body>
 	<script src="loading.js"></script>
 	<script id="sap-ui-bootstrap" type="text/javascript"
 		src="UI5_CDN/resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_belize"
+		data-sap-ui-theme="sap_fiori_3"
 		data-sap-ui-libs="sap.m"
 		data-sap-ui-bindingSyntax="complex"
-		data-sap-ui-compatVersion="edge"
 		data-sap-ui-async="true"
-		data-sap-ui-resourceroots='{"bubu-cms": "./"}'>
-	</script>
-	<script>
-		sap.ui.getCore().attachInit(function() {
-			sap.ui.require([
-				"sap/ui/core/Component",
-				"sap/ui/core/ComponentContainer"
-			], function(Component, ComponentContainer) {
-				sap.ui.component({
-					id: "todo",
-					name: "bubu-cms",
-					async: true
-				}).then(function(oComponent) {
-					document.body.dataset.loading = 'off'
-					new ComponentContainer({
-						component: oComponent
-					}).placeAt("root");
-				});
-			});
-		});
+		data-sap-ui-resourceroots='{"bubu-cms": "./"}'
+		data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+	>
 	</script>
 </html>
