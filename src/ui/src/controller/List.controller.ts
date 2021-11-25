@@ -1,10 +1,11 @@
 import BaseController from './BaseController'
 import Event from 'sap/ui/base/Event'
 // import SearchField from 'sap/m/SearchField'
-import { StoredRecord, $tag } from '../types/StoredRecord'
+import { StoredRecord } from '../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
 import { SearchOptions, SortableField, isSortableField, SortingOptions } from '../types/IStorage'
 import ListViewState from '../model/ListViewState'
+import Storage from '../model/Storage'
 
 interface QueryParameters {
   search?: string
@@ -41,7 +42,7 @@ export default class ListController extends BaseController {
     }
   }
 
-  private onDisplayList (event: Event): void {
+  private async onDisplayList (event: Event): Promise<void> {
     const searchOptions: SearchOptions = {
       paging: {
         skip: 0,
@@ -58,9 +59,10 @@ export default class ListController extends BaseController {
     }
 
     searchOptions.sort = this.readSortingCriteria(this.queryParameters.sort)
-    this.viewState.sortingFieldLabel = this.i18n(`sort.field.${searchOptions.sort.field}`)
+    this.viewState.sortingFieldLabel = await this.i18n(`sort.field.${searchOptions.sort.field}`)
     this.viewState.sortingAscending = searchOptions.sort.ascending
 
+    const storage = this.getModel() as Storage
     // binding.refresh()
   }
 
@@ -92,7 +94,7 @@ export default class ListController extends BaseController {
 
   onRecordPress (event: Event): void {
     const record: StoredRecord = (event.getSource() as ObjectListItem).getBindingContext().getObject() as StoredRecord
-    if (record.type === $tag) {
+    if (record.type === '$tag') {
       this.navigateToListFilteredByTag(record.name)
     } else {
       this.getRouter().navTo('record', record)
