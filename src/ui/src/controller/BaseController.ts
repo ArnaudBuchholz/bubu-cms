@@ -5,8 +5,6 @@ import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
 import ResourceModel from 'sap/ui/model/resource/ResourceModel'
-import { isThenable } from '../types/helpers'
-import Log from 'sap/base/Log'
 
 /**
  * @namespace bubu-cms.controller
@@ -28,11 +26,7 @@ export default class BaseController extends Controller {
 
   protected async i18n (key: string, ...params: string[]): Promise<string> {
     if (this.i18nResourceBundle === null) {
-      let resourceBundle = (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
-      if (isThenable(resourceBundle)) {
-        resourceBundle = await resourceBundle
-      }
-      this.i18nResourceBundle = resourceBundle
+      this.i18nResourceBundle = await (this.getOwnerComponent().getModel('i18n') as ResourceModel).getResourceBundle()
     }
     return this.i18nResourceBundle.getText(key, params)
   }
