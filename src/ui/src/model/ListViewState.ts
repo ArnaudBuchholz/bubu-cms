@@ -1,5 +1,8 @@
 import JSONModel from 'sap/ui/model/json/JSONModel'
 
+/**
+ * @namespace bubu-cms.controller
+ */
 export default class ListViewState extends JSONModel {
   public search: undefined | string = ''
   public sortingFieldLabel: undefined | string = 'name'
