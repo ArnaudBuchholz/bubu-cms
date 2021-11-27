@@ -22,7 +22,7 @@
     "build": "npm-run-all build:tsc :ui5.types build:ui5.ts build:ui5",
     "build:tsc": "tsc --project tsconfig-build.json",
     "build:ui5.types": "ncp src/types src/ui/src/types",
-    "build:ui5.ts": "babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files && replace UI5_CDN https://ui5.sap.com/1.96.0 src/ui/webapp --include=*.html -r",
+    "build:ui5.ts": "babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files && replace UI5_CDN https://ui5.sap.com/1.96.1 src/ui/webapp --include=*.html -r",
     "build:ui5": "ui5 build --dest ./dist/ui --clean-dest",
     "watch:ui5.ts": "watch \"npm run build:ui5.ts\" src/ui/src"
   },
@@ -47,7 +47,7 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@sapui5/ts-types-esm": "^1.95.0",
+    "@sapui5/ts-types-esm": "^1.96.1",
     "@types/colors": "^1.2.1",
     "@types/jest": "^27.0.3",
     "@types/jquery": "^3.5.9",
@@ -63,7 +63,7 @@
     "ts-standard": "^11.0.0",
     "typescript": "^4.5.2",
     "ui5-test-runner": "^1.1.3",
-    "watch": "^0.13.0"
+    "watch": "^1.0.2"
   },
   "ts-standard": {
     "env": [
