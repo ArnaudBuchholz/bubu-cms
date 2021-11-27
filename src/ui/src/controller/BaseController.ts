@@ -90,8 +90,11 @@ export default class BaseController extends Controller {
     }
 */
 
-  public renderRating (rating: StoredRecordRating): string {
-    return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
+  public renderRating (rating?: StoredRecordRating): string {
+    if (rating !== undefined) {
+      return new Array(rating + 1).join('\u2605') + new Array(6 - rating).join('\u2606')
+    }
+    return ''
   }
 
   /*
