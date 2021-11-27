@@ -47,8 +47,7 @@ export default class ListController extends BaseController {
       paging: {
         skip: 0,
         top: 20
-      },
-      refs: {}
+      }
     }
 
     this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
@@ -63,7 +62,7 @@ export default class ListController extends BaseController {
     this.viewState.sortingAscending = searchOptions.sort.ascending
 
     const storage = this.getModel() as Storage
-    // binding.refresh()
+    storage.getFirstPage(searchOptions)
   }
 
   private reload (): void {
