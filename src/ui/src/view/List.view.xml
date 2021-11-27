@@ -36,7 +36,7 @@
 		</subHeader>
 		<content>
 			<List id="records"
-				items="{/records}"
+				items="{/list/records}"
 				mode="None"
 				growing="true"
 				growingScrollToLoad="true"
