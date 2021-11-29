@@ -40,10 +40,12 @@
 				mode="None"
 				growing="true"
 				growingScrollToLoad="true"
+				growingThreshold="{settings>/list/page}"
 				showNoData="true"
 				showSeparators="None"
 				rememberSelections="false"
 				noDataText="{i18n>list.nodata}"
+				updateStarted="onUpdateStarted"
 			>
 				<ObjectListItem
 					title="{name}"
@@ -53,6 +55,7 @@
 					numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
 					press="onRecordPress"
 					type="Navigation"
+					busy="{= ${type} === '$filler' }"
 				>
 					<firstStatus>
 						<ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
