@@ -51,6 +51,11 @@
 			"": {
 				"type": "bubu-cms.model.Storage",
 				"preload": true
+			},
+			"settings": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "model/settings.json",
+				"preload": true
 			}
 		},
 		"routing": {
