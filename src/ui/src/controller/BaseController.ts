@@ -5,6 +5,9 @@ import ResourceBundle from 'sap/base/i18n/ResourceBundle'
 import { StoredRecordRating } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
 import ResourceModel from 'sap/ui/model/resource/ResourceModel'
+import JSONModel from 'sap/ui/model/json/JSONModel'
+import { Settings } from '../model/Settings'
+import Storage from '../model/Storage'
 
 /**
  * @namespace bubu-cms.controller
@@ -19,7 +22,16 @@ export default class BaseController extends Controller {
   }
 
   protected getModel (name: string | undefined = undefined): Model {
-    return this.getView().getModel(name)
+    return this.getView().getModel(name) ?? this.getComponent().getModel(name)
+  }
+
+  protected getSettings (): Settings {
+    const settingsModel = this.getComponent().getModel('settings') as JSONModel
+    return settingsModel.getData() as Settings
+  }
+
+  protected getStorage (): Storage {
+    return this.getComponent().getModel() as Storage
   }
 
   private i18nResourceBundle: ResourceBundle | null = null
