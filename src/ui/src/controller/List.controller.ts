@@ -5,7 +5,6 @@ import { StoredRecord } from '../types/StoredRecord'
 import ObjectListItem from 'sap/m/ObjectListItem'
 import { SearchOptions, SortableField, isSortableField, SortingOptions } from '../types/IStorage'
 import ListViewState from '../model/ListViewState'
-import Storage from '../model/Storage'
 
 interface QueryParameters {
   search?: string
@@ -19,7 +18,7 @@ export default class ListController extends BaseController {
   private viewState: ListViewState = new ListViewState()
 
   onInit (): void {
-    this.getRouter().getRoute('list').attachPatternMatched(this.onDisplayList, this)
+    this.getRouter().getRoute('list').attachPatternMatched(this.onRefreshList, this)
     this.byId('records').focus()
     this.getView().setModel(this.viewState, 'state')
   }
@@ -42,27 +41,38 @@ export default class ListController extends BaseController {
     }
   }
 
-  private async onDisplayList (event: Event): Promise<void> {
+  private buildSearchOptions (skip: number = 0): SearchOptions {
+    const { page } = this.getSettings().list
     const searchOptions: SearchOptions = {
       paging: {
-        skip: 0,
-        top: 20
+        skip,
+        top: page
       }
     }
-
-    this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
-
-    this.viewState.search = this.queryParameters.search
     if (this.queryParameters.search !== undefined) {
       searchOptions.search = this.queryParameters.search
     }
-
     searchOptions.sort = this.readSortingCriteria(this.queryParameters.sort)
-    this.viewState.sortingFieldLabel = await this.i18n(`sort.field.${searchOptions.sort.field}`)
-    this.viewState.sortingAscending = searchOptions.sort.ascending
+    return searchOptions
+  }
 
-    const storage = this.getModel() as Storage
-    storage.getFirstPage(searchOptions)
+  private async onRefreshList (event: Event): Promise<void> {
+    this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
+    this.viewState.search = this.queryParameters.search
+    const searchOptions = this.buildSearchOptions()
+    const { max } = this.getSettings().list
+    this.viewState.sortingFieldLabel = await this.i18n(`sort.field.${searchOptions.sort?.field ?? ''}`)
+    this.viewState.sortingAscending = searchOptions.sort?.ascending ?? true
+    return await this.getStorage().getListFirstPage(searchOptions, max)
+  }
+
+  private async onUpdateStarted (event: Event): Promise<void> {
+    const reason = event.getParameter('reason') as string
+    const actual = event.getParameter('actual') as number
+    if (reason === 'Growing') {
+      const searchOptions = this.buildSearchOptions(actual)
+      return await this.getStorage().getListNextPage(searchOptions)
+    }
   }
 
   private reload (): void {
