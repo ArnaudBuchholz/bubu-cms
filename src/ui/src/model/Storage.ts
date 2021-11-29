@@ -7,6 +7,7 @@ async function fetchJson<T> (url: string): Promise<T> {
   return await fetch(url)
     .then(async response => await response.json())
 }
+
 /**
  * @namespace bubu-cms.model
  */
@@ -22,12 +23,30 @@ export default class Storage extends JSONModel {
     })
   }
 
-  async getFirstPage (searchOptions: SearchOptions): Promise<void> {
+  async getListFirstPage (searchOptions: SearchOptions, max: number): Promise<void> {
     this.setProperty('/list/busy', true)
     const result: SearchResult = await fetchJson('/api?' + encodeSearchOptions(searchOptions))
+    const length = Math.max(result.count, max)
     this.records.length = 0
     this.records.push(...result.records)
+    this.records.length = length
+    this.records.fill({
+      id: '',
+      type: '$filler',
+      name: '',
+      fields: {},
+      refs: {}
+    }, searchOptions.paging.top)
     this.setProperty('/list/count', result.count)
+    this.setProperty('/list/busy', false)
+  }
+
+  async getListNextPage (searchOptions: SearchOptions): Promise<void> {
+    this.setProperty('/list/busy', true)
+    const result: SearchResult = await fetchJson('/api?' + encodeSearchOptions(searchOptions))
+    result.records.forEach((record: StoredRecord, index: number) => {
+      this.records[searchOptions.paging.skip + index] = record
+    })
     this.setProperty('/list/busy', false)
   }
 
