@@ -2,7 +2,7 @@ import Component from '../Component'
 import Router from 'sap/m/routing/Router'
 import Controller from 'sap/ui/core/mvc/Controller'
 import ResourceBundle from 'sap/base/i18n/ResourceBundle'
-import { StoredRecordRating } from '../types/StoredRecord'
+import { StoredRecordRating, StoredRecord } from '../types/StoredRecord'
 import Model from 'sap/ui/model/Model'
 import ResourceModel from 'sap/ui/model/resource/ResourceModel'
 import JSONModel from 'sap/ui/model/json/JSONModel'
@@ -77,18 +77,13 @@ export default class BaseController extends Controller {
       }
       return result
     },
+*/
 
-    formatIcon: function (type, icon) {
-      if (icon) {
-        return icon
-      }
-      const defaultIcon = this.i18n(type, 'defaultIcon')
-      if (defaultIcon) {
-        return 'sap-icon://' + defaultIcon
-      }
-      return ''
-    },
+  protected formatIcon (record: StoredRecord): string {
+    return this.getStorage().getRecordIcon(record)
+  }
 
+/*
     formatNumberUnit: function (type) {
       return this.i18n(type, 'numberUnit')
     },
