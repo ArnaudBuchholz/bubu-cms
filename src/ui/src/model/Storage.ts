@@ -23,6 +23,8 @@ export default class Storage extends JSONModel {
     })
   }
 
+  // region List handling
+
   async getListFirstPage (searchOptions: SearchOptions, max: number): Promise<void> {
     this.setProperty('/list/busy', true)
     const result: SearchResult = await fetchJson('/api?' + encodeSearchOptions(searchOptions))
@@ -49,6 +51,28 @@ export default class Storage extends JSONModel {
     })
     this.setProperty('/list/busy', false)
   }
+
+  // endregion List handling
+
+  // region Formating
+
+  getRecordIcon (record: StoredRecord): string {
+    return 'sap-icon://business-objects-mobile'
+/*
+    // if ()
+    //   if (icon) {
+    //     return icon
+    //   }
+    //   const defaultIcon = this.i18n(type, 'defaultIcon')
+    //   if (defaultIcon) {
+    //     return 'sap-icon://' + defaultIcon
+    //   }
+    //   return ''
+*/
+  }
+ 
+
+  // endregion
 
   constructor () {
     super()
