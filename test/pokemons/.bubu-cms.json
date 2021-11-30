@@ -3,7 +3,7 @@
   "storage": "memory",
   "types": [{
     "name": "pokemon",
-    "defaultIcon": "sap-icon://person-placeholder",
+    "defaultIcon": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pkid}.png",
     "fields": [{
       "name": "pkid",
       "type": "number"
