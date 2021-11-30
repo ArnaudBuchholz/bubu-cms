@@ -46,16 +46,18 @@
 				rememberSelections="false"
 				noDataText="{i18n>list.nodata}"
 				updateStarted="onUpdateStarted"
+				busy="{/list/busy}"
 			>
 				<ObjectListItem
 					title="{name}"
-					icon="{parts: ['type', 'icon'], formatter: '.formatIcon'}"
+					icon="{parts: [''], formatter: '.formatIcon'}"
 					iconDensityAware="false"
 					number="{number}"
 					numberUnit="{path: 'type', formatter: '.formatNumberUnit'}"
 					press="onRecordPress"
 					type="Navigation"
 					busy="{= ${type} === '$filler' }"
+					busyIndicatorDelay="0"
 				>
 					<firstStatus>
 						<ObjectStatus title="{path: 'type', formatter: '.formatStatus1'}" visible="{= ${statusState1} !== '' }" text="{statusText1}" state="{= ${statusState1} || 'None' }" />
