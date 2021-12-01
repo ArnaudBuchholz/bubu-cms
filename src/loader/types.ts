@@ -1,6 +1,7 @@
 import { STOREDRECORDTYPE_TAG, isLiteralObject } from '../types/StoredRecord'
 import { isTypeDefinition, isTypeName, TypeDefinition } from '../types/TypeDefinition'
-import { isStorageType, StorageType } from '../storages'
+import { checkStorageType, StorageType } from '../storages'
+import { isA } from '../types/helpers'
 
 export interface CsvLoader {
   $type: string
@@ -42,13 +43,31 @@ export interface Configuration {
   loaders: RecordLoader[]
 }
 
-export function isConfiguration (value: any): value is Configuration {
+export function checkConfiguration (value: any): void {
   if (!isLiteralObject(value)) {
-    return false
+    throw new Error('Invalid configuration : expected literal object')
   }
   const { serve, storage, types, loaders } = value
-  return (serve === undefined || typeof serve === 'number') &&
-    isStorageType(storage) &&
-    Array.isArray(types) && types.every((type: any) => isTypeDefinition(type)) &&
-    loaders.length > 0 && loaders.every((loader: any) => isLoader(loader))
+  if (serve !== undefined && typeof serve !== 'number') {
+    throw new Error('Invalid configuration : serve must be a number')
+  }
+  checkStorageType(storage)
+  if (!Array.isArray(types) || types.length === 0) {
+    throw new Error('Invalid configuration : types must be a non empty array')
+  }
+  types.forEach((type: any, index: number): void => {
+    if (!isTypeDefinition(type)) {
+      throw new Error(`Invalid configuration : type #${index.toString()} is invalid`)
+    }
+  })
+  if (!Array.isArray(loaders) || loaders.length === 0) {
+    throw new Error('Invalid configuration : loaders must be a non empty array')
+  }
+  loaders.forEach((loader: any, index: number): void => {
+    if (!isLoader(loader)) {
+      throw new Error(`Invalid configuration : loader #${index.toString()} is invalid`)
+    }
+  })
 }
+
+export const isConfiguration = isA<Configuration>(checkConfiguration)
