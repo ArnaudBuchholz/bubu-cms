@@ -10,7 +10,8 @@ import {
   StoredRecord,
   STOREDRECORDTYPE_TYPE,
   STOREDRECORDTYPE_TAG,
-  STOREDRECORDTYPE_TYPEFIELD
+  STOREDRECORDTYPE_TYPEFIELD,
+  MAX_STOREDRECORDICON_LENGTH
 } from '../types/StoredRecord'
 
 export type FieldType = 'string' | 'number' | 'date'
@@ -49,7 +50,7 @@ export function isTypeName (value: any): value is TypeName {
 }
 
 export type DefaultIcon = string
-export const MAX_DEFAULTICON_LENGTH = 64
+export const MAX_DEFAULTICON_LENGTH = MAX_STOREDRECORDICON_LENGTH
 export function isDefaultIcon (value: any): value is DefaultIcon {
   return isValidNonEmptyString(value, MAX_DEFAULTICON_LENGTH)
 }
