@@ -1,8 +1,4 @@
-export function isDate (value: any): value is Date {
-  return typeof value === 'object' &&
-    value !== null &&
-    Object.prototype.toString.call(value) === '[object Date]'
-}
+import { isDate, isLiteralObject } from './helpers'
 
 export type FieldValue = string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
@@ -29,11 +25,6 @@ export function isFieldName (value: any): value is FieldName {
 }
 
 export type Fields = Record<FieldName, FieldValue>
-export function isLiteralObject (value: any): value is Record<string, any> {
-  return value instanceof Object &&
-    Object.prototype.toString.call(value) === '[object Object]' &&
-    Object.getPrototypeOf(value) === Object.getPrototypeOf({})
-}
 export function isFields (value: any): value is Fields {
   return isLiteralObject(value) &&
     Object.keys(value).every((name: string) => isFieldName(name) && isFieldValue(value[name]))
