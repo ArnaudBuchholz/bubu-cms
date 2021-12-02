@@ -5,7 +5,7 @@ import { isA } from '../types/helpers'
 
 export type StorageType = 'memory' | 'sqlite'
 
-export function checkStorageType (value: any): void {
+export function checkStorageType (value: any): asserts value is StorageType {
   if (typeof value !== 'string') {
     throw new Error('Invalid storage type : expected string')
   }
@@ -14,7 +14,7 @@ export function checkStorageType (value: any): void {
   }
 }
 
-export const isStorageType = isA<StorageType>(checkStorageType)
+export const isStorageType = isA(checkStorageType)
 
 export function storageFactory (type: StorageType): IStorage | null {
   if (type === 'memory') {
