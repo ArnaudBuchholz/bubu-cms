@@ -1,7 +1,7 @@
-import { STOREDRECORDTYPE_TAG, isLiteralObject } from '../types/StoredRecord'
+import { isLiteralObject, isA } from '../types/helpers'
+import { STOREDRECORDTYPE_TAG } from '../types/StoredRecord'
 import { isTypeDefinition, isTypeName, TypeDefinition } from '../types/TypeDefinition'
 import { checkStorageType, StorageType } from '../storages'
-import { isA } from '../types/helpers'
 
 export interface CsvLoader {
   $type: string
@@ -43,7 +43,7 @@ export interface Configuration {
   loaders: RecordLoader[]
 }
 
-export function checkConfiguration (value: any): void {
+export function checkConfiguration (value: any): asserts value is Configuration {
   if (!isLiteralObject(value)) {
     throw new Error('Invalid configuration : expected literal object')
   }
@@ -70,4 +70,4 @@ export function checkConfiguration (value: any): void {
   })
 }
 
-export const isConfiguration = isA<Configuration>(checkConfiguration)
+export const isConfiguration = isA(checkConfiguration)
