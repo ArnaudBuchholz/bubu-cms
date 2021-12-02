@@ -1,6 +1,6 @@
 import { join, isAbsolute } from 'path'
 import { readTextFile } from './readTextFile'
-import { isConfiguration, isCsvLoader, isCustomLoader } from './types'
+import { checkConfiguration, isCsvLoader, isCustomLoader } from './types'
 import { storageFactory } from '../storages'
 import { saveTypeDefinition } from '../types/TypeDefinition'
 import { Loader } from './Loader'
@@ -8,8 +8,14 @@ import { loadFromCSV } from './csv'
 
 export async function load (cwd: string): Promise<Loader> {
   const configuration = JSON.parse(await readTextFile(join(cwd, '.bubu-cms.json')))
-  if (!isConfiguration(configuration)) {
-    throw new Error('Invalid configuration')
+  try {
+    checkConfiguration(configuration)
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new Error(`Invalid configuration : ${e.message}`)
+    } else {
+      throw e
+    }
   }
   const storage = storageFactory(configuration.storage)
   /* istanbul ignore next */ // It may fail in the future if the storage includes more options
