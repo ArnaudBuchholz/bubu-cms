@@ -27,7 +27,10 @@
     "watch": "npm-watch"
   },
   "watch": {
-    "build:ui5.ts": "src/ui/src//*"
+    "build:ui5.ts": {
+      "patterns": ["src/ui/src"],
+      "extensions": "ts,xml,json"
+    }
   },
   "repository": {
     "type": "git",
