@@ -1,6 +1,6 @@
+import { isLiteralObject } from '../types/helpers'
 import { SearchResult, IStorage } from '../types/IStorage'
 import {
-  isLiteralObject,
   isValidNonEmptyString,
   isValidName,
   isFieldName,
@@ -59,6 +59,7 @@ export interface TypeDefinition {
   name: TypeName
   labelKey?: string
   defaultIcon?: string
+  selectOrder?: number // If !undefined, will appear in the type select
   fields: FieldDefinition[]
 /*
   number?: string
