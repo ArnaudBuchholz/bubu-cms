@@ -12,7 +12,7 @@ export function isA<T> (checker: (value: any) => asserts value is T): (value: an
 export function checkDate (value: any): asserts value is Date {
   if (typeof value !== 'object' ||
     value === null ||
-    Object.prototype.toString.call(value) === '[object Date]') {
+    Object.prototype.toString.call(value) !== '[object Date]') {
     throw new Error('Expected date')
   }
 }
