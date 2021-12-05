@@ -1,10 +1,14 @@
-  
 {
-    "ignore": [
-        "**/*.d.ts"
-    ],
-    "presets": [
-        "transform-ui5",
-        "@babel/preset-typescript"
-    ]
+  "ignore": [
+    "**/*.d.ts"
+  ],
+  "plugins": [
+    ["@babel/plugin-transform-flow-strip-types"],
+    ["@babel/plugin-proposal-decorators", { "legacy": true}],
+    ["@babel/plugin-proposal-class-properties", { "loose": true}]    
+  ],
+  "presets": [
+    "transform-ui5",
+    "@babel/preset-typescript"
+  ]
 }
