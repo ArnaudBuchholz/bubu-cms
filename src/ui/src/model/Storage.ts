@@ -21,6 +21,10 @@ export default class Storage extends JSONModel {
     typeDefs.forEach((typeDef: TypeDefinition) => {
       this.types[typeDef.name] = typeDef
     })
+    const selectableTypes = typeDefs
+      .filter(type => type.selectOrder !== undefined)
+      .sort((t1, t2) => (t1.selectOrder ?? 0) - (t2.selectOrder ?? 0))
+    this.setProperty('/selectableTypes', selectableTypes)
   }
 
   // region List handling
