@@ -24,7 +24,7 @@ export type LiteralObject = Record<string, any>
 export function checkLiteralObject (value: any): asserts value is LiteralObject {
   if (typeof value !== 'object' ||
     Object.prototype.toString.call(value) !== '[object Object]' ||
-    Object.getPrototypeOf(value) !== Object.getPrototypeOf({}) ) {
+    Object.getPrototypeOf(value) !== Object.getPrototypeOf({})) {
     throw new Error('Expected literal object')
   }
 }
