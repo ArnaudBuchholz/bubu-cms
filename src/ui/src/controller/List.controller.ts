@@ -7,6 +7,7 @@ import { SearchOptions, SortableField, isSortableField, SortingOptions } from '.
 import ListViewState from '../model/ListViewState'
 
 interface QueryParameters {
+  selectedType?: string
   search?: string
   sort?: string
 }
@@ -49,6 +50,11 @@ export default class ListController extends BaseController {
         top: page
       }
     }
+    if (this.queryParameters.selectedType !== undefined) {
+      searchOptions.refs = {
+        $type: [this.queryParameters.selectedType]
+      }
+    }
     if (this.queryParameters.search !== undefined) {
       searchOptions.search = this.queryParameters.search
     }
@@ -58,6 +64,7 @@ export default class ListController extends BaseController {
 
   private async onRefreshList (event: Event): Promise<void> {
     this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
+    this.viewState.selectedType = this.queryParameters.selectedType
     this.viewState.search = this.queryParameters.search
     const searchOptions = this.buildSearchOptions()
     const { max } = this.getSettings().list
