@@ -1,5 +1,6 @@
+import { isDate } from '../types/helpers'
 import { IStorage, UpdateInstructions } from '../types/IStorage'
-import { isDate, isStoredRecord, StoredRecord } from '../types/StoredRecord'
+import { isStoredRecord, StoredRecord } from '../types/StoredRecord'
 import { join } from '../util/array'
 
 function buildInstructions (received: Record<string, any>, record: Record<string, any>, field: string, instructions: Record<string, any>): boolean {
