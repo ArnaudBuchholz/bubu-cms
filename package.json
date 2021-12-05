@@ -28,7 +28,9 @@
   },
   "watch": {
     "build:ui5.ts": {
-      "patterns": ["src/ui/src"],
+      "patterns": [
+        "src/ui/src"
+      ],
       "extensions": "ts,xml,json"
     }
   },
@@ -51,6 +53,9 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/plugin-proposal-decorators": "^7.16.4",
+    "@babel/plugin-transform-flow-strip-types": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@sapui5/ts-types-esm": "^1.97.0",
