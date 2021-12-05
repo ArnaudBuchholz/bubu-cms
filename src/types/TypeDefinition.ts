@@ -83,10 +83,11 @@ export function isTypeDefinition (value: any): value is TypeDefinition {
   if (!isLiteralObject(value)) {
     return false
   }
-  const { name, labelKey, defaultIcon, fields } = value
+  const { name, labelKey, defaultIcon, selectOrder, fields } = value
   return isTypeName(name) &&
     (labelKey === undefined || isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)) &&
     (defaultIcon === undefined || isDefaultIcon(defaultIcon)) &&
+    (selectOrder === undefined || typeof selectOrder === 'number') &&
     (Array.isArray(fields) && fields.every(isFieldDefinition))
 }
 
@@ -99,7 +100,7 @@ function map (fields: string[], source: Record<string, any>, destination: any): 
   })
 }
 
-const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon']
+const mappableTypeDefinitionFields = ['labelKey', 'defaultIcon', 'selectOrder']
 const mappableFieldDefinitionFields = ['labelKey', 'regexp', 'placeholderKey']
 
 export function deserializeTypeDefinition (typeRecord: StoredRecord, fieldRecords: StoredRecord[]): StoredTypeDefinition {
