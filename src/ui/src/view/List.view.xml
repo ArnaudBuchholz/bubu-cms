@@ -10,8 +10,10 @@
 			<Toolbar>
 				<Select
 					id="type"
+					items="{/selectableTypes}"
+					value="{state>/selectedType}"
 				>
-					<core:Item key="0123" text="Pokemon"/>
+					<core:Item key="{id}" text="{name}"/>
 				</Select>
 				<SearchField
 					id="search"
