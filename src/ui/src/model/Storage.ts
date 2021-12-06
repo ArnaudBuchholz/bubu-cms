@@ -1,6 +1,6 @@
 import JSONModel from 'sap/ui/model/json/JSONModel'
-import { StoredRecordType, StoredRecord } from '../types/StoredRecord'
-import { TypeDefinition } from '../types/TypeDefinition'
+import { NAME_REGEX, StoredRecordId, StoredRecord } from '../types/StoredRecord'
+import { StoredTypeDefinition } from '../types/TypeDefinition'
 import { SearchOptions, encodeSearchOptions, SearchResult } from '../types/IStorage'
 
 async function fetchJson<T> (url: string): Promise<T> {
@@ -13,13 +13,13 @@ async function fetchJson<T> (url: string): Promise<T> {
  */
 export default class Storage extends JSONModel {
   private readonly pSequentialImportCompleted: Promise<void>
-  private readonly types: Record<StoredRecordType, TypeDefinition> = {}
+  private readonly types: Record<StoredRecordId, StoredTypeDefinition> = {}
   private readonly records: StoredRecord[] = []
 
   private async init (): Promise<void> {
-    const typeDefs: TypeDefinition[] = await fetchJson('/api/allTypes')
-    typeDefs.forEach((typeDef: TypeDefinition) => {
-      this.types[typeDef.name] = typeDef
+    const typeDefs: StoredTypeDefinition[] = await fetchJson('/api/allTypes')
+    typeDefs.forEach((typeDef: StoredTypeDefinition) => {
+      this.types[typeDef.id] = typeDef
     })
     const selectableTypes = typeDefs
       .filter(type => type.selectOrder !== undefined)
@@ -27,12 +27,23 @@ export default class Storage extends JSONModel {
     this.setProperty('/selectableTypes', selectableTypes)
   }
 
+  private getType (record: StoredRecord): StoredTypeDefinition {
+    return this.types[record.type]
+  }
+
+  public getFirstTypeId (): StoredRecordId {
+    return this.getProperty('/selectableTypes/0/id') as StoredRecordId
+  }
+
   // region List handling
 
   async getListFirstPage (searchOptions: SearchOptions, max: number): Promise<void> {
     this.setProperty('/list/busy', true)
     const result: SearchResult = await fetchJson('/api?' + encodeSearchOptions(searchOptions))
-    const length = Math.max(result.count, max)
+    let length = result.count
+    if (length > max) {
+      length = max
+    }
     this.records.length = 0
     this.records.push(...result.records)
     this.records.length = length
@@ -60,21 +71,20 @@ export default class Storage extends JSONModel {
 
   // region Formating
 
-  getRecordIcon (record: StoredRecord): string {
-    return 'sap-icon://business-objects-mobile'
-/*
-    // if ()
-    //   if (icon) {
-    //     return icon
-    //   }
-    //   const defaultIcon = this.i18n(type, 'defaultIcon')
-    //   if (defaultIcon) {
-    //     return 'sap-icon://' + defaultIcon
-    //   }
-    //   return ''
-*/
+  private static readonly fieldRegex = new RegExp(`\\$\\{(${NAME_REGEX})}`, 'g')
+
+  private interpolate (record: StoredRecord, template: string): string {
+    const { fields } = record
+    return template.replace(Storage.fieldRegex, (match, fieldName) => fields[fieldName]?.toString() ?? '')
   }
- 
+
+  getRecordIcon (record: StoredRecord): string {
+    const { defaultIcon } = this.getType(record)
+    if (defaultIcon !== undefined) {
+      return this.interpolate(record, defaultIcon)
+    }
+    return 'sap-icon://business-objects-mobile'
+  }
 
   // endregion
 
