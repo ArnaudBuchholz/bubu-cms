@@ -1,28 +1,18 @@
 import JSONModel from 'sap/ui/model/json/JSONModel'
 
 /** @namespace bubu-cms.model */
-export default class ListViewState extends JSONModel {
-  public selectedType: undefined | string = ''
-  public search: undefined | string = ''
-  public sortingFieldLabel: undefined | string = 'name'
-  public sortingAscending: undefined | boolean = true
-}
+export default class ListViewState {
+  public selectedType: string = ''
+  public search: string = ''
+  public sortingFieldLabel: string = 'name'
+  public sortingAscending: boolean = true
 
-const mappings: any = {
-  selectedType: '',
-  search: '',
-  sortingFieldLabel: 'name',
-  sortingAscending: true
-}
+  private _model: JSONModel | null = null
 
-Object.keys(mappings).forEach(name => {
-  const defaultValue: any = mappings[name]
-  Object.defineProperty(ListViewState.prototype, name, {
-    get: function (): any {
-      return this.getProperty(`/${name}`) ?? defaultValue
-    },
-    set: function (value: any) {
-      this.setProperty(`/${name}`, value ?? defaultValue)
+  public model (): JSONModel {
+    if (this._model === null) {
+      this._model = new JSONModel(this)
     }
-  })
-})
+    return this._model
+  }
+}
