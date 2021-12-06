@@ -79,11 +79,14 @@ export default class BaseController extends Controller {
     },
 */
 
-  protected formatIcon (record: StoredRecord): string {
-    return this.getStorage().getRecordIcon(record)
+  protected formatIcon (record?: StoredRecord): string {
+    if (record !== undefined && record.type !== '$filler') {
+      return this.getStorage().getRecordIcon(record)
+    }
+    return 'sap-icon://lateness'
   }
 
-/*
+  /*
     formatNumberUnit: function (type) {
       return this.i18n(type, 'numberUnit')
     },
