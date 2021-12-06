@@ -21,7 +21,7 @@ export default class ListController extends BaseController {
   onInit (): void {
     this.getRouter().getRoute('list').attachPatternMatched(this.onRefreshList, this)
     this.byId('records').focus()
-    this.getView().setModel(this.viewState, 'state')
+    this.getView().setModel(this.viewState.model(), 'state')
   }
 
   private queryParameters: QueryParameters = {}
@@ -48,11 +48,9 @@ export default class ListController extends BaseController {
       paging: {
         skip,
         top: page
-      }
-    }
-    if (this.queryParameters.selectedType !== undefined) {
-      searchOptions.refs = {
-        $type: [this.queryParameters.selectedType]
+      },
+      refs: {
+        $type: [this.queryParameters.selectedType ?? this.getStorage().getFirstTypeId()]
       }
     }
     if (this.queryParameters.search !== undefined) {
@@ -64,12 +62,13 @@ export default class ListController extends BaseController {
 
   private async onRefreshList (event: Event): Promise<void> {
     this.queryParameters = event.getParameter('arguments')['?query'] ?? {}
-    this.viewState.selectedType = this.queryParameters.selectedType
-    this.viewState.search = this.queryParameters.search
+    this.viewState.selectedType = this.queryParameters.selectedType ?? this.getStorage().getFirstTypeId()
+    this.viewState.search = this.queryParameters.search ?? ''
     const searchOptions = this.buildSearchOptions()
     const { max } = this.getSettings().list
     this.viewState.sortingFieldLabel = await this.i18n(`sort.field.${searchOptions.sort?.field ?? ''}`)
     this.viewState.sortingAscending = searchOptions.sort?.ascending ?? true
+    this.viewState.model().refresh()
     return await this.getStorage().getListFirstPage(searchOptions, max)
   }
 
@@ -109,7 +108,7 @@ export default class ListController extends BaseController {
   }
 
   onRecordPress (event: Event): void {
-    const record: StoredRecord = (event.getSource() as ObjectListItem).getBindingContext().getObject() as StoredRecord
+    const record: StoredRecord = (event.getSource() as ObjectListItem).getBindingContext()?.getObject() as StoredRecord
     if (record.type === '$tag') {
       this.navigateToListFilteredByTag(record.name)
     } else {
