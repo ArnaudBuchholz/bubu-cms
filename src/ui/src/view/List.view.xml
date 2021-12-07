@@ -60,8 +60,8 @@
 					title="{name}"
 					icon="{parts: [''], formatter: '.formatIcon'}"
 					iconDensityAware="false"
-					number="{path: [''], formatter: '.formatNumber'}"
-					numberUnit="{path: [''], formatter: '.formatNumberUnit'}"
+					number="{parts: [''], formatter: '.formatNumber'}"
+					numberUnit="{parts: [''], formatter: '.formatNumberUnit'}"
 					press="onRecordPress"
 					type="Navigation"
 					busy="{= ${type} === '$filler' }"
@@ -69,14 +69,15 @@
 				>
 					<firstStatus>
 						<ObjectStatus
-						  title="{path: [''], formatter: '.formatStatus1'}"
-						  visible="{= ${statusState1} !== '' }"
-						  text="{statusText1}"
-						  state="{= ${statusState1} || 'None' }"
+						  title="{parts: [''], formatter: '.formatStatus1'}"
+						  text="{parts: [''], formatter: '.formatStatusText1'}"
 						/>
 					</firstStatus>
 					<secondStatus>
-						<ObjectStatus title="{path: ['']', formatter: '.formatStatus2'}" visible="{= ${statusState2} !== '' }" text="{statusText2}" state="{= ${statusState2} || 'None' }" />
+						<ObjectStatus
+						  title="{parts: [''], formatter: '.formatStatus2'}"
+						  text="{parts: [''], formatter: '.formatStatusText2'}"
+						/>
 					</secondStatus>
 					<attributes>
 						<ObjectAttribute title="{i18n>attribute.rating}" text="{path: 'rating', formatter: '.renderRating'}" visible="{= ${rating} > 0 }" />
