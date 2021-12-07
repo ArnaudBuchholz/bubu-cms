@@ -79,11 +79,57 @@ export default class BaseController extends Controller {
     },
 */
 
+  private isValidRecord (record?: StoredRecord): record is StoredRecord {
+    return record !== undefined && record.type !== '$filler'
+  }
+
   protected formatIcon (record?: StoredRecord): string {
-    if (record !== undefined && record.type !== '$filler') {
+    if (this.isValidRecord(record)) {
       return this.getStorage().getRecordIcon(record)
     }
     return 'sap-icon://lateness'
+  }
+
+  protected formatNumber (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumber(record)
+    }
+    return ''
+  }
+
+  protected formatNumberUnit (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumberUnit(record)
+    }
+    return ''
+  }
+
+  protected formatStatus1 (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumberStatus1(record)
+    }
+    return ''
+  }
+
+  protected formatStatusText1 (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumberStatusText1(record)
+    }
+    return ''
+  }
+
+  protected formatStatus2 (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumberStatus2(record)
+    }
+    return ''
+  }
+
+  protected formatStatusText2 (record?: StoredRecord): string {
+    if (this.isValidRecord(record)) {
+      return this.getStorage().getRecordNumberStatusText2(record)
+    }
+    return ''
   }
 
   /*
