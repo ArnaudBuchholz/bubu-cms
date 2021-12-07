@@ -62,7 +62,7 @@
     "@types/colors": "^1.2.1",
     "@types/jest": "^27.0.3",
     "@types/jquery": "^3.5.9",
-    "@types/node": "^16.11.11",
+    "@types/node": "^16.11.12",
     "@types/qunit": "^2.11.2",
     "@ui5/cli": "^2.14.1",
     "babel-preset-transform-ui5": "^7.0.5",
