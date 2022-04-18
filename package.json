@@ -15,13 +15,14 @@
     "start": "node ./dist/src/index.js",
     "debug": "node --inspect-brk ./dist/index.js",
     "lint": "ts-standard --fix",
+    "clear-jest-cache": "jest --clearCache",
     "test": "jest",
     "test:api": "jest",
     "test:ui": "ui5-test-runner -webapp:src/ui/webapp",
     "test:debug": "jest --runInBand",
     "build": "npm-run-all build:tsc build:ui5.types build:ui5.ts build:ui5",
     "build:tsc": "tsc --project tsconfig-build.json",
-    "build:ui5.types": "ncp src/types src/ui/src/types",
+    "build:ui5.types": "cpy src/types/*.ts !src/types/*.spec.ts src/ui/src/types",
     "build:ui5.ts": "babel src/ui/src --out-dir src/ui/webapp --source-maps inline --extensions \".ts,.js\" --copy-files && replace UI5_CDN https://ui5.sap.com/1.100.2 src/ui/webapp --include=*.html -r",
     "build:ui5": "ui5 build --dest ./dist/ui --clean-dest",
     "watch": "npm-watch"
@@ -66,8 +67,9 @@
     "@types/qunit": "^2.11.3",
     "@ui5/cli": "^2.14.8",
     "babel-preset-transform-ui5": "^7.0.5",
+    "cpy": "^9.0.1",
+    "cpy-cli": "^4.1.0",
     "jest": "^27.5.1",
-    "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.11.0",
     "replace": "^1.2.1",
@@ -90,9 +92,10 @@
   },
   "jest": {
     "preset": "ts-jest",
+    "cacheDirectory": "./tmp/jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
-      "\\.helper\\.ts$",
+      "\\.test\\.ts$",
       "\\.js$"
     ],
     "collectCoverage": true,
@@ -101,6 +104,7 @@
     ],
     "coveragePathIgnorePatterns": [
       "sqlite\\.ts$",
+      "\\.test\\.ts$",
       "./src/index\\.ts",
       "./src/ui/.*"
     ],
