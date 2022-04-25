@@ -1,4 +1,4 @@
-import { isLiteralObject } from '../types/helpers'
+import { checkLiteralObject, isA, isLiteralObject } from '../types/helpers'
 import { SearchResult, IStorage } from '../types/IStorage'
 import {
   isValidNonEmptyString,
@@ -31,17 +31,21 @@ export interface FieldDefinition {
 export const MAX_TRANSLATIONKEY_LENGTH: number = 64
 export const MAX_REGEXP_LENGTH: number = 128
 
-export function isFieldDefinition (value: any): value is FieldDefinition {
-  if (!isLiteralObject(value)) {
-    return false
+export function checkFieldDefinition (value: any): asserts value is FieldDefinition {
+  try {
+    checkLiteralObject(value)
+    const { name, type, labelKey, regexp, placeholderKey } = value
+    checkFieldName(name)
+    checkFieldType(type)
+    labelKey !== undefined && isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)
+    regexp !== undefined && isValidNonEmptyString(regexp, MAX_REGEXP_LENGTH)
+    placeholderKey !== undefined && isValidNonEmptyString(placeholderKey, MAX_TRANSLATIONKEY_LENGTH)
+  } catch (e) {
+    throw new Error(`Invalid FieldDefinition: ${e.toString()}`)
   }
-  const { name, type, labelKey, regexp, placeholderKey } = value
-  return isFieldName(name) &&
-    isFieldType(type) &&
-    (labelKey === undefined || isValidNonEmptyString(labelKey, MAX_TRANSLATIONKEY_LENGTH)) &&
-    (regexp === undefined || isValidNonEmptyString(regexp, MAX_REGEXP_LENGTH)) &&
-    (placeholderKey === undefined || isValidNonEmptyString(placeholderKey, MAX_TRANSLATIONKEY_LENGTH))
 }
+
+export const isFieldDefinition = isA(checkFieldDefinition)
 
 export type TypeName = string
 export const MAX_TYPENAME_LENGTH = 64
@@ -79,7 +83,7 @@ const $TagTypeDefinition: StoredTypeDefinition = {
   fields: []
 }
 
-export function isTypeDefinition (value: any): value is TypeDefinition {
+export function checkTypeDefinition (value: any): value is TypeDefinition {
   if (!isLiteralObject(value)) {
     return false
   }
@@ -90,6 +94,8 @@ export function isTypeDefinition (value: any): value is TypeDefinition {
     (selectOrder === undefined || typeof selectOrder === 'number') &&
     (Array.isArray(fields) && fields.every(isFieldDefinition))
 }
+
+export const isTypeDefinition = isA(checkTypeDefinition)
 
 function map (fields: string[], source: Record<string, any>, destination: any): void {
   fields.forEach(field => {
