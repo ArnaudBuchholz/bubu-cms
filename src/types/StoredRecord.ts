@@ -1,34 +1,55 @@
-import { isDate, isLiteralObject } from './helpers'
+import { isA, notA, checkLiteralObject, checkDate } from './helpers'
 
 export type FieldValue = string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
-export function isFieldValue (value: any): value is FieldValue {
+export function checkFieldValue (value: any): asserts value is FieldValue {
   const typeofValue: string = typeof value
   if (typeofValue === 'string') {
-    return value.length <= MAX_FIELDVALUE_LENGTH
+    if (value.length > MAX_FIELDVALUE_LENGTH) {
+      notA('FieldValue', new Error('string too long'))
+    }
+    return
   }
-  if (typeofValue === 'number') {
-    return Math.round(value) === value // Integer
+  if ((typeofValue === 'number' && Math.round(value) !== value) || !(value instanceof Date)) {
+    notA('FieldValue', new Error('string, integer or date only'))
   }
-  return value instanceof Date
 }
+export const isFieldValue = isA(checkFieldValue)
 
 export type FieldName = string
 export const MAX_FIELDNAME_LENGTH: number = 64
 export const NAME_REGEX = '[a-zA-Z][a-zA-Z0-9_]*'
 const nameRegex = new RegExp(`^${NAME_REGEX}$`)
-export function isValidName (value: any, maxLength: number): boolean {
-  return typeof value === 'string' && value.match(nameRegex) !== null && value.length <= maxLength
+export function checkValidName (value: any, maxLength: number): void {
+  if (typeof value !== 'string' || value.match(nameRegex) === null || value.length > maxLength) {
+    throw new Error('Invalid name or name too long')
+  }
 }
-export function isFieldName (value: any): value is FieldName {
-  return isValidName(value, MAX_FIELDNAME_LENGTH)
+export function checkFieldName (value: any): asserts value is FieldName {
+  try {
+    checkValidName(value, MAX_FIELDNAME_LENGTH)
+  } catch (e) {
+    if (e instanceof Error) {
+      notA('FieldName', e)
+    }
+    throw e
+  }
 }
+export const isFieldName = isA(checkFieldName)
 
 export type Fields = Record<FieldName, FieldValue>
-export function isFields (value: any): value is Fields {
-  return isLiteralObject(value) &&
-    Object.keys(value).every((name: string) => isFieldName(name) && isFieldValue(value[name]))
+export function checkFields (value: any): asserts value is Fields {
+  try {
+    checkLiteralObject(value)
+    Object.keys(value).forEach((name: string) => {
+      checkFieldName(name)
+      checkFieldValue(value[name])
+    })
+  } catch (e) {
+    notA('Fields')
+  }
 }
+export const isFields = isA(checkFields)
 
 export type StoredRecordId = string
 export const MAX_STOREDRECORDID_LENGTH: number = 16
@@ -37,51 +58,69 @@ export function isValidNonEmptyString (value: any, maxLength: number): value is 
   return typeof value === 'string' && value.length > 0 && value.length <= maxLength
 }
 const storedRecordRegex = new RegExp(`^${STOREDRECORDID_REGEX}$`)
-export function isStoredRecordId (value: any): value is StoredRecordId {
-  return isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) &&
-    value.match(storedRecordRegex) !== null
+export function checkStoredRecordId (value: any): asserts value is StoredRecordId {
+  if (!isValidNonEmptyString(value, MAX_STOREDRECORDID_LENGTH) ||
+    value.match(storedRecordRegex) === null) {
+    notA('StoredRecordID')
+  }
 }
+export const isStoredRecordId = isA(checkStoredRecordId)
 
 export type StoredRecordType = StoredRecordId
 export const MAX_STOREDRECORDTYPE_LENGTH: number = MAX_STOREDRECORDID_LENGTH
 export const STOREDRECORDTYPE_TAG: StoredRecordType = '$tag'
 export const STOREDRECORDTYPE_TYPE: StoredRecordType = '$type'
 export const STOREDRECORDTYPE_TYPEFIELD: StoredRecordType = '$typefield'
-export function isStoredRecordType (value: any): value is StoredRecordType {
-  return [STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD].includes(value) || isStoredRecordId(value)
+export function checkStoredRecordType (value: any): asserts value is StoredRecordType {
+  if (![STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, STOREDRECORDTYPE_TYPEFIELD].includes(value) && !isStoredRecordId(value)) {
+    notA('StoredRecordType')
+  }
 }
+export const isStoredRecordType = isA(checkStoredRecordType)
 
 export const MAX_STOREDRECORDNAME_LENGTH: number = 256
 export type StoredRecordName = string
-function isStoredRecordName (value: any): value is StoredRecordName {
-  return isValidNonEmptyString(value, MAX_STOREDRECORDNAME_LENGTH)
+function checkStoredRecordName (value: any): asserts value is StoredRecordName {
+  if (!isValidNonEmptyString(value, MAX_STOREDRECORDNAME_LENGTH)) {
+    notA('StoredRecordName')
+  }
 }
+const isStoredRecordName = isA(checkStoredRecordName)
 
 export const MAX_STOREDRECORDICON_LENGTH: number = 256
 export type StoredRecordIcon = string
-function isStoredRecordIcon (value: any): value is StoredRecordIcon {
-  return isValidNonEmptyString(value, MAX_STOREDRECORDICON_LENGTH)
+function checkStoredRecordIcon (value: any): asserts value is StoredRecordIcon {
+  if (!isValidNonEmptyString(value, MAX_STOREDRECORDICON_LENGTH)) {
+    notA('StoredRecordIcon')
+  }
 }
+const isStoredRecordIcon = isA(checkStoredRecordIcon)
 
 export type StoredRecordRating = 1 | 2 | 3 | 4 | 5
-export function isStoredRecordRating (value: any): value is StoredRecordRating {
-  return typeof value === 'number' && [1, 2, 3, 4, 5].includes(value)
+export function checkStoredRecordRating (value: any): asserts value is StoredRecordRating {
+  if (![1, 2, 3, 4, 5].includes(value)) {
+    notA('StoredRecordRating')
+  }
 }
+export const isStoredRecordRating = isA(checkStoredRecordRating)
 
 export type StoredRecordRefs = Record<StoredRecordType, StoredRecordId[]>
-export function isStoredRecordRefs (value: any): value is StoredRecordRefs {
-  return isLiteralObject(value) &&
-    Object.keys(value).every((type: string) => {
-      if (!isStoredRecordType(type)) {
-        return false
-      }
+export function checkStoredRecordRefs (value: any): asserts value is StoredRecordRefs {
+  try {
+    checkLiteralObject(value)
+    Object.keys(value).forEach((type: string) => {
+      checkStoredRecordType(type)
       const ids: any = value[type]
       if (!Array.isArray(ids)) {
-        return false
+        throw new Error()
       }
-      return ids.every((id: any) => isStoredRecordId)
+      ids.forEach((id: any) => checkStoredRecordId)
     })
+  } catch (e) {
+    notA('StoredRecordRefs')
+  }
 }
+export const isStoredRecordRefs = isA(checkStoredRecordRefs)
 
 export interface StorableRecord {
   type: StoredRecordType
@@ -97,22 +136,35 @@ export interface StoredRecord extends StorableRecord {
   id: StoredRecordId
 }
 
-export function isStorableRecord (value: any): value is StorableRecord {
-  if (!isLiteralObject(value)) {
-    return false
+export function checkStorableRecord (value: any): asserts value is StorableRecord {
+  try {
+    checkLiteralObject(value)
+    const { type, name, icon, rating, touched, fields, refs } = value
+    checkStoredRecordType(type)
+    checkStoredRecordName(name)
+    if (icon !== undefined) {
+      checkStoredRecordIcon(icon)
+    }
+    if (rating !== undefined) {
+      checkStoredRecordRating(rating)
+    }
+    if (touched === undefined) {
+      checkDate(touched)
+    }
+    checkFields(fields)
+    checkStoredRecordRefs(refs)
+  } catch (e) {
+    notA('StorableRecord')
   }
-  const { type, name, icon, rating, touched, fields, refs } = value
-  return isStoredRecordType(type) && isStoredRecordName(name) &&
-    (icon === undefined || isStoredRecordIcon(icon)) &&
-    (rating === undefined || isStoredRecordRating(rating)) &&
-    (touched === undefined || isDate(touched)) &&
-    isFields(fields) &&
-    isStoredRecordRefs(refs)
 }
+export const isStorableRecord = isA(checkStorableRecord)
 
-export function isStoredRecord (value: any): value is StoredRecord {
-  if (!isStorableRecord(value)) {
-    return false
+export function checkStoredRecord (value: any): asserts value is StoredRecord {
+  try {
+    checkStorableRecord(value)
+    checkStoredRecordId((value as any).id)
+  } catch (e) {
+    notA('StoredRecord')
   }
-  return isStoredRecordId((value as any).id)
 }
+export const isStoredRecord = isA(checkStoredRecord)
