@@ -26,6 +26,17 @@ export function isA<T> (checker: (value: any) => asserts value is T): (value: an
   }
 }
 
+export function checkA (type: string, checkFunction: () => void): void {
+  try {
+    checkFunction()
+  } catch (e) {
+    if (e instanceof Error) {
+      notA(type, e)
+    }
+    throw e
+  }
+}
+
 export function checkDate (value: any): asserts value is Date {
   if (typeof value !== 'object' ||
     value === null ||
