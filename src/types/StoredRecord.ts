@@ -1,18 +1,23 @@
-import { isA, notA, checkLiteralObject, checkDate } from './helpers'
+import { isA, checkA, notA, checkLiteralObject, checkDate } from './helpers'
 
 export type FieldValue = string | number | Date
 export const MAX_FIELDVALUE_LENGTH = 256
+
 export function checkFieldValue (value: any): asserts value is FieldValue {
-  const typeofValue: string = typeof value
-  if (typeofValue === 'string') {
-    if (value.length > MAX_FIELDVALUE_LENGTH) {
-      notA('FieldValue', new Error('string too long'))
+  checkA('FieldValue', () => {
+    const typeofValue: string = typeof value
+    if (typeofValue === 'string') {
+      if (value.length > MAX_FIELDVALUE_LENGTH) {
+        throw new Error('string too long')
+      }
+    } else if (typeofValue === 'number') {
+      if (Math.round(value) !== value) {
+        throw new Error('string, integer or date only')
+      }
+    } else if (!(value instanceof Date)) {
+      throw new Error('string, integer or date only')
     }
-    return
-  }
-  if ((typeofValue === 'number' && Math.round(value) !== value) || !(value instanceof Date)) {
-    notA('FieldValue', new Error('string, integer or date only'))
-  }
+  })
 }
 export const isFieldValue = isA(checkFieldValue)
 
@@ -26,28 +31,19 @@ export function checkValidName (value: any, maxLength: number): void {
   }
 }
 export function checkFieldName (value: any): asserts value is FieldName {
-  try {
-    checkValidName(value, MAX_FIELDNAME_LENGTH)
-  } catch (e) {
-    if (e instanceof Error) {
-      notA('FieldName', e)
-    }
-    throw e
-  }
+  checkA('FieldName', () => checkValidName(value, MAX_FIELDNAME_LENGTH))
 }
 export const isFieldName = isA(checkFieldName)
 
 export type Fields = Record<FieldName, FieldValue>
 export function checkFields (value: any): asserts value is Fields {
-  try {
+  checkA('Fields', () => {
     checkLiteralObject(value)
     Object.keys(value).forEach((name: string) => {
       checkFieldName(name)
       checkFieldValue(value[name])
     })
-  } catch (e) {
-    notA('Fields')
-  }
+  })
 }
 export const isFields = isA(checkFields)
 
