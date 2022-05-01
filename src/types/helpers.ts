@@ -1,18 +1,18 @@
-export class NotATypeError extends Error {
+export class ErrorWithReason extends Error {
   constructor (
-    private readonly _type: string,
-    private readonly _reason: NotATypeError | Error | null = null
+    message: string,
+    private readonly _reason: ErrorWithReason | Error | null = null
   ) {
-    super(`Invalid ${_type}`)
+    super(message)
   }
 
-  get reason (): NotATypeError | Error | null {
+  get reason (): ErrorWithReason | Error | null {
     return this._reason
   }
 }
 
-export function notA (type: string, reason: NotATypeError | Error | null = null): never {
-  throw new NotATypeError(type, reason)
+export function notA (type: string, reason: ErrorWithReason | Error | null = null): never {
+  throw new ErrorWithReason(`Invalid ${type}`, reason)
 }
 
 export function isA<T> (checker: (value: any) => asserts value is T): (value: any) => value is T {
