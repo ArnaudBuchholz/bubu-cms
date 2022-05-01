@@ -1,5 +1,6 @@
 import {
   MAX_FIELDVALUE_LENGTH,
+  checkFieldValue,
   isFieldValue,
   MAX_FIELDNAME_LENGTH,
   isFieldName,
@@ -16,22 +17,22 @@ import {
   MAX_STOREDRECORDICON_LENGTH,
   isStoredRecord
 } from './StoredRecord'
-import testTypeGuardFunc from '../testTypeGuard.test'
+import { testIsA, testType } from '../testTypeGuard.test'
 
 describe('types/StoredRecord', () => {
-  testTypeGuardFunc('isFieldValue', isFieldValue, [
+  testType('FieldValue', { is: isFieldValue, check: checkFieldValue }, [
     '', 'Hello World !', ''.padStart(MAX_FIELDVALUE_LENGTH, 'abc'), 0, 1, 2, -1, -2, new Date()
   ], [
     undefined, null, false, true, ''.padStart(MAX_FIELDVALUE_LENGTH + 1, 'abc'), 0.5, {}, Symbol('whatever'), function () {}
   ])
 
-  testTypeGuardFunc('isFieldName', isFieldName, [
+  testIsA('FieldName', isFieldName, [
     'a', 'anyField', 'AVeryLongFieldName', ''.padStart(MAX_FIELDNAME_LENGTH, 'abc'), 'test_1'
   ], [
     '', ' a', 'a ', ''.padStart(MAX_FIELDNAME_LENGTH + 1, 'abc'), '_abc', '$abc'
   ])
 
-  testTypeGuardFunc('isFields', isFields, [
+  testIsA('Fields', isFields, [
     {},
     { a: 'a' },
     { a: 'a', b: 1, c: new Date() }
@@ -45,31 +46,31 @@ describe('types/StoredRecord', () => {
     { d: undefined }
   ])
 
-  testTypeGuardFunc('isStoredRecordType', isStoredRecordType, [
+  testIsA('StoredRecordType', isStoredRecordType, [
     STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, 'a', 'anyType', 'aVeryLongTypeId', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH, 'abc')
   ], [
     '', ' a', 'a ', ''.padStart(MAX_STOREDRECORDTYPE_LENGTH + 1, 'abc'), '#abc', '$abc'
   ])
 
-  testTypeGuardFunc('isStoredRecordId', isStoredRecordId, [
+  testIsA('StoredRecordId', isStoredRecordId, [
     'a', 'anyId', ''.padStart(MAX_STOREDRECORDID_LENGTH, 'abc')
   ], [
     STOREDRECORDTYPE_TAG, STOREDRECORDTYPE_TYPE, '', ' a', 'a ', 'aReallyVeryLongId', ''.padStart(MAX_STOREDRECORDID_LENGTH + 1, 'abc')
   ])
 
-  testTypeGuardFunc('isStoredRecordRating', isStoredRecordRating, [
+  testIsA('StoredRecordRating', isStoredRecordRating, [
     1, 2, 3, 4, 5
   ], [
     undefined, null, '', true, false, 0, 6, -1, -2
   ])
 
-  testTypeGuardFunc('isStoredRecordRefs', isStoredRecordRefs, [
+  testIsA('StoredRecordRefs', isStoredRecordRefs, [
     {}, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG] }, { any: ['123', 'abc_$%?&'] }, { [STOREDRECORDTYPE_TYPE]: [STOREDRECORDTYPE_TAG], any: ['123', 'abc_$%?&'] }
   ], [
     undefined, null, '', true, false, 0, new Date(), { ' a ': [] }, { STOREDRECORDTYPE_TYPE: 0 }
   ])
 
-  testTypeGuardFunc('isStoredRecord', isStoredRecord, [{
+  testIsA('StoredRecord', isStoredRecord, [{
     type: STOREDRECORDTYPE_TYPE,
     id: '123',
     name: 'Hello World',
