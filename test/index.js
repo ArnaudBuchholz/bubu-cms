@@ -1,2 +1,2 @@
 const bubuCms = require('bubu-cms')
-bubuCms.test();
+bubuCms.test()
