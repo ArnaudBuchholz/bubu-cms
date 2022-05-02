@@ -82,7 +82,7 @@ export const isStoredRecordType = isA(checkStoredRecordType)
 export const MAX_STOREDRECORDNAME_LENGTH: number = 256
 export type StoredRecordName = string
 export function checkStoredRecordName (value: any): asserts value is StoredRecordName {
-  checkA('StoredRecordName', () => checkValidString(value, MAX_STOREDRECORDID_LENGTH, nameRegex))
+  checkA('StoredRecordName', () => checkValidString(value, MAX_STOREDRECORDNAME_LENGTH))
 }
 export const isStoredRecordName = isA(checkStoredRecordName)
 
@@ -112,7 +112,11 @@ export function checkStoredRecordRefs (value: any): asserts value is StoredRecor
         if (!Array.isArray(ids)) {
           throw new Error('Not an array')
         }
-        ids.forEach((id: any) => checkStoredRecordId(id))
+        if (type === STOREDRECORDTYPE_TYPE) {
+          ids.forEach((id: any) => checkStoredRecordType(id))
+        } else {
+          ids.forEach((id: any) => checkStoredRecordId(id))
+        }
       } catch (e) {
         throw new ErrorWithReason(`while processing ${type}`, e as Error)
       }
@@ -147,7 +151,7 @@ export function checkStorableRecord (value: any): asserts value is StorableRecor
     if (rating !== undefined) {
       checkStoredRecordRating(rating)
     }
-    if (touched === undefined) {
+    if (touched !== undefined) {
       checkDate(touched)
     }
     checkFields(fields)
