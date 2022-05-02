@@ -1,9 +1,12 @@
 export class ErrorWithReason extends Error {
   constructor (
-    message: string,
+    private readonly _message: string,
     private readonly _reason: ErrorWithReason | Error | null = null
   ) {
-    super(message)
+    if (_reason !== null) {
+      _message = [`${_message}\n`].concat(_reason.message.split('\n').map(line => `\t${line}`)).join('\n')
+    }
+    super(_message)
   }
 
   get reason (): ErrorWithReason | Error | null {
