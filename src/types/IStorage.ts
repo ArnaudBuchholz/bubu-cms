@@ -1,25 +1,46 @@
 import {
+  checkValidString,
+  checkFieldName,
   StoredRecordType,
   StoredRecordId,
+  checkStoredRecordIcon,
+  checkStoredRecordRating,
   StoredRecordRating,
+  checkStoredRecordRefs,
   StoredRecordRefs,
   StorableRecord,
   StoredRecord,
   FieldValue,
   FieldName,
+  checkFields,
   Fields
 } from './StoredRecord'
+import { checkA, checkDate, checkLiteralObject, isA, notA } from './helpers'
 
 export type SortableField = 'name' | 'rating' | 'touched'
-export function isSortableField (value: any): value is SortableField {
-  return ['name', 'rating', 'touched'].includes(value)
+export function checkSortableField (value: any): asserts value is SortableField {
+  if (!['name', 'rating', 'touched'].includes(value)) {
+    notA('SortableField')
+  }
 }
+export const isSortableField: (value: any) => value is SortableField = isA(checkSortableField)
 
 export interface SortingOptions {
   field: SortableField
   ascending: boolean
 }
+export function checkSortingOptions (value: any): asserts value is SortingOptions {
+  checkA('SortingOptions', () => {
+    checkLiteralObject(value)
+    checkSortableField(value.field)
+    if (typeof value.ascending !== 'boolean') {
+      throw new Error('Missing ascending property')
+    }
+  })
+}
+export const isSortingOptions: (value: any) => value is SortingOptions = isA(checkSortingOptions)
 
+export const MAX_SEARCHSTRING_LENGTH = 255
 export interface SearchOptions {
   paging: {
     skip: number
@@ -31,6 +52,28 @@ export interface SearchOptions {
   search?: string
   fullNameOnly?: boolean
 }
+export function checkSearchOptions (value: any): asserts value is SearchOptions {
+  checkA('SearchOptions', () => {
+    checkLiteralObject(value)
+    const { sort, refs, fields, search, fullNameOnly } = value
+    if (sort !== undefined) {
+      checkSortingOptions(sort)
+    }
+    if (refs !== undefined) {
+      checkStoredRecordRefs(refs)
+    }
+    if (fields !== undefined) {
+      checkFields(fields)
+    }
+    if (search !== undefined) {
+      checkValidString(search, MAX_SEARCHSTRING_LENGTH)
+    }
+    if (fullNameOnly !== undefined && typeof fullNameOnly !== 'boolean') {
+      throw new Error('invalid fullNameOnly')
+    }
+  })
+}
+export const isSearchOptions: (value: any) => value is SearchOptions = isA(checkSearchOptions)
 
 export function encodeSearchOptions (options: SearchOptions): string {
   const urlParams: Record<string, string> = {
@@ -81,6 +124,31 @@ export interface UpdateInstructions {
     del: StoredRecordRefs
   }
 }
+export function checkUpdateInstructions (value: any): asserts value is UpdateInstructions {
+  checkA('UpdateInstructions', () => {
+    checkLiteralObject(value)
+    const { name, icon, rating, touched, fields, refs } = value
+    if (name !== undefined) {
+      checkFieldName(name)
+    }
+    if (icon !== undefined) {
+      checkStoredRecordIcon(icon)
+    }
+    if (rating !== undefined && rating !== null) {
+      checkStoredRecordRating(rating)
+    }
+    if (touched !== undefined && touched !== null) {
+      checkDate(touched)
+    }
+    if (fields !== undefined) {
+      checkFields(fields)
+    }
+    checkLiteralObject(refs)
+    checkStoredRecordRefs(refs.add)
+    checkStoredRecordRefs(refs.del)
+  })
+}
+export const isUpdateInstructions: (value: any) => value is UpdateInstructions = isA(checkUpdateInstructions)
 
 export interface IStorage {
   search: (options: SearchOptions) => Promise<SearchResult>
