@@ -50,11 +50,14 @@ export function checkDate (value: any): asserts value is Date {
 export const isDate = isA(checkDate)
 
 export type LiteralObject = Record<string, any>
-export function checkLiteralObject (value: any): asserts value is LiteralObject {
+export function checkLiteralObject (value: any, allowedMembers: null | Record<string, boolean> = null): asserts value is LiteralObject {
   if (typeof value !== 'object' ||
     Object.prototype.toString.call(value) !== '[object Object]' ||
     Object.getPrototypeOf(value) !== Object.getPrototypeOf({})) {
     notA('LiteralObject')
+  }
+  if (allowedMembers !== null) {
+    // const members = Object.keys(value)
   }
 }
 export const isLiteralObject = isA(checkLiteralObject)
