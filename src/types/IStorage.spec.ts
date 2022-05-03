@@ -1,33 +1,23 @@
-import { isSortableField } from './IStorage'
+import {
+  checkSortableField,
+  isSortableField,
+  checkSortingOptions,
+  isSortingOptions
+} from './IStorage'
+import { testType } from '../testTypeGuard.test'
 
 describe('types/IStorage', () => {
-  describe('isSortableField', () => {
-    interface ITest {
-      value: string
-      expected: boolean
-    }
+  const invalidValues = ['undefined', null, false, true, {}, Symbol('whatever'), function () {}, '']
 
-    const tests: ITest[] = [{
-      value: 'name',
-      expected: true
-    }, {
-      value: 'rating',
-      expected: true
-    }, {
-      value: 'touched',
-      expected: true
-    }, {
-      value: '',
-      expected: false
-    }, {
-      value: 'any',
-      expected: false
-    }]
+  testType('SortableField', { is: isSortableField, check: checkSortableField }, [
+    'name', 'rating', 'touched'
+  ], [
+    ...invalidValues, 'any'
+  ])
 
-    tests.forEach((test: ITest) => {
-      it(`${test.value}: ${test.expected.toString()}`, () => {
-        expect(isSortableField(test.value)).toEqual(test.expected)
-      })
-    })
-  })
+  testType('SortingOptions', { is: isSortingOptions, check: checkSortingOptions }, [{
+
+  }], [
+    ...invalidValues, 'any'
+  ])
 })
