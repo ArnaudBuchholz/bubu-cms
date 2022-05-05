@@ -28,5 +28,11 @@ describe('types/helpers', () => {
         b: false
       }, { a: false })).toThrow()
     })
+
+    it('checks for required members', () => {
+      expect(() => checkLiteralObject({
+        b: false
+      }, { a: true, b: false })).toThrow()
+    })
   })
 })
