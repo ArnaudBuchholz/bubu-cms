@@ -51,14 +51,28 @@ export const isDate = isA(checkDate)
 
 export type LiteralObject = Record<string, any>
 export function checkLiteralObject (value: any, allowedMembers: null | Record<string, boolean> = null): asserts value is LiteralObject {
-  if (typeof value !== 'object' ||
-    Object.prototype.toString.call(value) !== '[object Object]' ||
-    Object.getPrototypeOf(value) !== Object.getPrototypeOf({})) {
-    notA('LiteralObject')
-  }
-  if (allowedMembers !== null) {
-    // const members = Object.keys(value)
-  }
+  checkA('LiteralObject', () => {
+    if (typeof value !== 'object' ||
+      Object.prototype.toString.call(value) !== '[object Object]' ||
+      Object.getPrototypeOf(value) !== Object.getPrototypeOf({})) {
+      throw new Error('Invalid type')
+    }
+    if (allowedMembers !== null) {
+      Object.keys(value)
+        .forEach(member => {
+          if (!Object.prototype.hasOwnProperty.call(allowedMembers, member)) {
+            throw new Error(`Unexpected extra property named '${member}'`)
+          }
+        })
+      Object.keys(allowedMembers)
+        .filter(member => allowedMembers[member])
+        .forEach(member => {
+          if (!Object.prototype.hasOwnProperty.call(value, member)) {
+            throw new Error(`Missing required property named '${member}'`)
+          }
+        })
+    }
+  })
 }
 export const isLiteralObject = isA(checkLiteralObject)
 
